@@ -24,10 +24,16 @@ import axios from 'axios';
 var QRCode = require('qrcode.react');
 
 var apiBaseUrl = "http://localhost:8000/api/";
-var headers = {
-  'Content-Type': 'application/json',
-  'Authorization': localStorage.getItem("token") 
+
+function RenderQR(props){
+  if(props.isOnboarded){
+    return <QRCode value={props.connectionMessage} size={256}/>
+  } else {
+    return null
+  }
+
 }
+
 /*
 Module:superagent
 superagent is used to handle post/get requests to server
@@ -39,7 +45,7 @@ class IssuerScreen extends Component {
     super(props);
     this.state={
       //TODO: change username
-      username: 'jesse',
+      username: '',
       connection_message: '',
       citizen_did:'',
       citizen_verkey:'',
@@ -56,16 +62,20 @@ class IssuerScreen extends Component {
         "verkey": this.state.citizen_verkey,
         "role": "NONE"
     }
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
     axios.post(apiBaseUrl + 'nym' ,payload, {headers: headers})
         .then(function (response) {
             console.log(response);
             console.log(response.status);
-            if (response.status === 201) {
+            if (response.status === 200) {
                 console.log("Onboarding successfully executed");
                 console.log(response.data);
                 var payload_conn = {
                   "meta": {
-                    "username": this.state.username
+                    "username": self.state.username
                   },
                   "data": {
                     "app": "<your-app-or-service-name>"
@@ -75,8 +85,8 @@ class IssuerScreen extends Component {
                 .then(function (response) {
                   console.log(response);
                   console.log(response.status);
-                  if (response.status === 200) {
-                    self.setState({connection_message: response.data.message})
+                  if (response.status === 201) {
+                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
                   }
                 }).catch(function (error) {
                   alert(error);
@@ -99,26 +109,33 @@ class IssuerScreen extends Component {
 }
 
   componentWillMount(){
+    if(this.state.onboarded){
     var self = this;
-    var payload_conn = {
-      "meta": {
-        "username": this.state.username
-      },
-      "data": {
-        "app": "<your-app-or-service-name>"
-      }
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
     }
-    axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-    .then(function (response) {
-      console.log(response);
-      console.log(response.status);
-      if (response.status === 201) {
-        self.setState({connection_message: JSON.stringify(response.data.message)})
-      }
-    }).catch(function (error) {
-      alert(error);
-      console.log(error);
-  });
+     var payload_conn = {
+                  "meta": {
+                    "username": self.state.username
+                  },
+                  "data": {
+                    "app": "<your-app-or-service-name>"
+                  }
+                }
+                axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
+                .then(function (response) {
+                  console.log(response);
+                  console.log(response.status);
+                  if (response.status === 201) {
+                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
+                  }
+                }).catch(function (error) {
+                  alert(error);
+                  console.log(error);
+              });
+            } 
+
   }
   /*
   Function:handleCloseClick
@@ -128,14 +145,40 @@ class IssuerScreen extends Component {
   */
 
  handleSelect(event){
+  var self = this;
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
   this.setState({
     onboarded: event.target.value
   })
+  if(event.target.value){
+     var payload_conn = {
+                  "meta": {
+                    "username": self.state.username
+                  },
+                  "data": {
+                    "app": "<your-app-or-service-name>"
+                  }
+                }
+              axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
+                .then(function (response) {
+                  console.log(response);
+                  console.log(response.status);
+                  if (response.status === 201) {
+                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
+                  }
+                }).catch(function (error) {
+                  alert(error);
+                  console.log(error);
+              });
+            } 
 }
 
-  handleCloseClick(event,index){
+handleCloseClick(event,index){
 
-  }
+}
 
 handleClick(event){
   
@@ -165,12 +208,19 @@ handleLogout(event){
   var self = this;
   self.props.history.push("/");
 }
+
   render() {
     return (
       <div className="App">
       <div>
       <center>
       <MuiThemeProvider>
+      <TextField
+                hintText="Enter username of citizen"
+                floatingLabelText="Citizen username"
+                onChange={(event, newValue) => this.setState({ username: newValue })}
+            />
+            <br/>
       <TextField
                 hintText="Enter citizen DID"
                 floatingLabelText="Citizen DID"
@@ -190,7 +240,7 @@ handleLogout(event){
       <div>
         Is the citizen already onboarded? <br />
             <MuiThemeProvider>
-              <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>
+              <select value={this.state.onboarded} onChange={(event) => this.handleSelect(event)}>
               <option value={true}>Already onboarded</option>
               <option value={false}>Not yet onboarded</option>
               </select>
@@ -199,7 +249,7 @@ handleLogout(event){
           <div onClick={(event) => this.handleDivClick(event)}>
           <center>
           <div>
-            <QRCode value={this.state.connection_message} />,
+          <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
           </div>
           </center>
       <MuiThemeProvider>
