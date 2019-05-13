@@ -1,20 +1,65 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
+import Drawer from 'material-ui/Drawer';
+import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
+import MenuIcon from 'material-ui/Menu';
+import List from 'material-ui/List';
+import ListItem from 'material-ui/List/ListItem';
+import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import IssuerScreen from './IssuerScreen'
+import Divider from 'material-ui/Divider';
+import Toolbar from 'material-ui/Toolbar';
+import OnboardingScreen from './OnboardingScreen';
 import axios from 'axios';
 import { Link, withRouter, Redirect} from "react-router-dom";
+
+var apiBaseUrl = ""REPLACE"";
 
 class Login extends Component {
     constructor(props) {
         super(props);
         var localloginComponent=[];
+        this.state = {
+            username: '',
+            password: '',
+            loginComponent:localloginComponent,
+            draweropen: false
+        }
     localloginComponent.push(
         <MuiThemeProvider>
         <div>
-            <AppBar title="Login" />
+            <AppBar title="Login">
+            <Toolbar disableGutters={!this.state.draweropen}>
+            <IconButton
+              aria-label="Open drawer"
+              onClick={this.handleDrawerOpen}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+          </AppBar>
+            <Drawer
+          variant="persistent"
+          anchor="left"
+          open={this.state.draweropen}
+        >
+          <div>
+            <IconButton onClick={this.handleDrawerClose}>
+              {<ChevronLeftIcon />}
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            {['Home', 'Onboarding', 'Credential', 'Schema'].map((text, index) => (
+              <ListItem button key={text}>
+                {text}
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
             <TextField
                 hintText="Enter your Username"
                 floatingLabelText="Username"
@@ -30,20 +75,53 @@ class Login extends Component {
             <br />
             <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClick(event)} />
         </div>
+        
     </MuiThemeProvider>
     )
-    this.state = {
-        username: '',
-        password: '',
-        loginComponent:localloginComponent
-    }
-    }
+}
+handleDrawerOpen = () => {
+        this.setState({ draweropen: true });
+};
+    
+handleDrawerClose = () => {
+        this.setState({ draweropen: false });
+};
+
+
+
     componentWillMount(){
         var localloginComponent=[];
     localloginComponent.push(
         <MuiThemeProvider>
         <div>
-            <AppBar title="Login" />
+        <AppBar title="Login">
+            <Toolbar disableGutters={!this.state.draweropen}>
+            <IconButton
+            color="blue"
+              aria-label="Open drawer"
+              onClick={this.handleDrawerOpen}/>
+          </Toolbar>
+          </AppBar>
+            <Drawer
+          variant="persistent"
+          anchor="left"
+          open={this.state.draweropen}
+        >
+          <div>
+            <IconButton onClick={this.handleDrawerClose}>
+              {<ChevronLeftIcon />}
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            {['Home', 'Onboarding', 'Credential', 'Schema'].map((text, index) => (
+              <ListItem button key={text}>
+                {text}
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
             <TextField
                 hintText="Enter your Username"
                 floatingLabelText="Username"
@@ -64,7 +142,6 @@ class Login extends Component {
     this.setState({loginComponent:localloginComponent})
     }
     handleClick(event) {
-        var apiBaseUrl = "http://localhost:8000/api/";
         var self = this;
         var payload = {
             "username": this.state.username,
@@ -82,7 +159,7 @@ class Login extends Component {
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
                     self.props.handler()
-                    self.props.history.push("/issuer");
+                    self.props.history.push("/onboarding");
 
 
                 }
@@ -105,6 +182,7 @@ class Login extends Component {
             <div>
             {this.state.loginComponent}
             </div>
+            
         );
     }
 }

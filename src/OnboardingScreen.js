@@ -40,16 +40,17 @@ superagent is used to handle post/get requests to server
 */
 var request = require('superagent');
 
-class IssuerScreen extends Component {
+class OnboardingScreen extends Component {
   constructor(props){
     super(props);
+
     this.state={
       //TODO: change username
       username: '',
       connection_message: '',
       citizen_did:'',
       citizen_verkey:'',
-      onboarded:false,
+      onboarded:true,
       printingmessage:'',
       printButtonDisabled:false
     }
@@ -108,7 +109,7 @@ class IssuerScreen extends Component {
         });
 }
 
-  componentWillMount(){
+  componentDidMount(){
     if(this.state.onboarded){
     var self = this;
     var headers = {
@@ -128,7 +129,7 @@ class IssuerScreen extends Component {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
+                    self.setState({connection_message: JSON.stringify(response.data.message)})
                   }
                 }).catch(function (error) {
                   alert(error);
@@ -144,7 +145,7 @@ class IssuerScreen extends Component {
   if user clicks close icon adjacent to selected file
   */
 
- handleSelect(event){
+ handleSelect(event) {
   var self = this;
   var headers = {
     'Content-Type': 'application/json',
@@ -152,14 +153,14 @@ class IssuerScreen extends Component {
   }
   this.setState({
     onboarded: event.target.value
-  })
-  if(event.target.value){
+  });
+  if(event.target.value === true){
      var payload_conn = {
                   "meta": {
                     "username": self.state.username
                   },
                   "data": {
-                    "app": "<your-app-or-service-name>"
+                    "app": "issuer app"
                   }
                 }
               axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
@@ -167,7 +168,7 @@ class IssuerScreen extends Component {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
+                    self.setState({connection_message: JSON.stringify(response.data.message)})
                   }
                 }).catch(function (error) {
                   alert(error);
@@ -240,7 +241,7 @@ handleLogout(event){
       <div>
         Is the citizen already onboarded? <br />
             <MuiThemeProvider>
-              <select value={this.state.onboarded} onChange={(event) => this.handleSelect(event)}>
+              <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>
               <option value={true}>Already onboarded</option>
               <option value={false}>Not yet onboarded</option>
               </select>
@@ -248,9 +249,13 @@ handleLogout(event){
           </div>
           <div onClick={(event) => this.handleDivClick(event)}>
           <center>
+          <br />
           <div>
+          <br />
           <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
+          <br />
           </div>
+          <br />
           </center>
       <MuiThemeProvider>
            <RaisedButton label="Logout" primary={true} style={style} onClick={(event) => this.handleLogout(event)}/>
@@ -265,4 +270,4 @@ const style = {
   margin: 15,
 };
 
-export default withRouter(IssuerScreen);
+export default withRouter(OnboardingScreen);

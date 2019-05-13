@@ -3,14 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import IssuerScreen from './IssuerScreen'
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
+import OnboardingScreen from './OnboardingScreen';
+import SchemaScreen from './SchemaScreen';
+import CredentialDefScreen from './CredentialDefScreen';
+import LandingScreen from './LandingScreen';
+import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 
 const routing = (
     <Router>
       <div>
         <Route exact path="/" component={App} />
-        <Route path="/issuer" component={IssuerScreen} />
+        <Route path="/home" component={LandingScreen} />
+        <Route path="/onboarding" component={OnboardingScreen} />
+        <Route path="/credentialdef" component={CredentialDefScreen} />
+        <Route path="/schema" component={SchemaScreen} />
+        <Route path="/credentialdef" component={CredentialDefScreen} />
       </div>
     </Router>
   )
