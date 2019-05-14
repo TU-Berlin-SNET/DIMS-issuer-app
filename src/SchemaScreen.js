@@ -36,9 +36,12 @@ class SchemaScreen extends Component {
 
     this.state={
       schemas: [],
-      schema_name: "certificate_of_employment",
+      schema_name: "Italian ID Card",
       schema_version: "1.0",
-      schema_attrNames: ["Name@string", "Company@string", "Title@string", "Date@date", "Location@string" ,"Salary@string"]
+      schema_attrNames: ["Issuing municipality", "Last name", 
+       "Given name", "Place of birth", "Date of birth" ,"Sex"
+       ,"Number of birth registration","Height","Municipality of residence",
+       "Address","Issuing date","Expiration date","Nationality","Fiscal code","Signature","Validity to travel"]
     }
   }
   
@@ -86,6 +89,9 @@ class SchemaScreen extends Component {
                 </ListItem>
                 <ListItem>
                 {schema.version}
+                </ListItem>
+                <ListItem>
+                {schema.schemaId}
                 </ListItem>
                 <ListItem>
                   Attribute Names:
