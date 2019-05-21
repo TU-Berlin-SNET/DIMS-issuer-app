@@ -22,15 +22,31 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 
+var apiBaseUrl = ""REPLACE"";
+
 class CredentialScreen extends Component {
 
     constructor(props){
         super(props);
+        if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
+        this.state={
+          recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
+          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "",
+          credentialRequestId: props.location.state.hasOwnProperty("credentialRequestId") ? props.location.state.credentialRequestId : "",
+          credentialValues: {},
+          credentialRequests: [],
+          credentialDefinitions: []
+        }
+      } else {
         this.state={
           recipientDid: "",
           credDefId: "",
-          credentialRequests: []
+          credentialRequestId: "",
+          credentialValues: {},
+          credentialRequests: [],
+          credentialDefinitions: []
         }
+      }
       }
 
 /* POST /api/credentialoffer
@@ -40,6 +56,26 @@ class CredentialScreen extends Component {
 }
 */
 async sendCredentialOffer(){
+ var self = this;
+ var headers = {
+  'Content-Type': 'application/json',
+  'Authorization': localStorage.getItem("token") 
+ }
+ var payload = {
+   'recipientDid': this.state.recipientDid,
+   'credDefId': this.state.credDefId
+}
+ axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers: headers}).then(function (response) {
+  console.log(response);
+  console.log(response.status);
+  if (response.status === 201) {
+    alert("credential request successfully sent")
+  }
+}).catch(function (error) {
+alert(error);
+alert(JSON.stringify(payload))
+console.log(error);
+});
 
 }
 
@@ -47,8 +83,80 @@ async sendCredentialOffer(){
 /api/credential
 */
 async listCredentialRequests(){
+ var self = this;
+ var headers = {
+  'Content-Type': 'application/json',
+  'Authorization': localStorage.getItem("token") 
+ }
+ await axios.get(apiBaseUrl + 'credentialrequest' , {headers: headers}).then(function (response) {
+    console.log(response);
+    console.log(response.status);
+    if (response.status === 200) {
+      let credReqs = response.data.map((credReq) => {
+        const {credentialValues} = self.state;
+        credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret")).map((elem) => 
+          {credentialValues[elem[0]] = ""})
+        return(
+          <div>
+            Credential requests:
+            <List onClick={() => self.setState({ recipientDid: credReq.recipientDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
+              <ListItem onClick={() => self.setState({ recipientDid: credReq.recipientDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
+              Sender (own) DID: {credReq.senderDid}
+              </ListItem>
+              <ListItem>
+              Recipient DID: {credReq.recipientDid}
+              </ListItem>
+              <ListItem>
+              Credential definition ID: {credReq.message.message.cred_def_id}
+              </ListItem>
+              <ListItem>
+              Credential request ID: {credReq.id}
+              </ListItem>
+              <ListItem>
+                Credential attributes names:
+                <List>
+                {credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret")).map((elem) => 
+                  {return(<ListItem>{elem[0]}</ListItem>)})}
+                </List>
+              </ListItem>
+            </List>
+          </div>
+        )
+      })
+      self.setState({credentialRequests: credReqs})
+    }
+  }).catch(function (error) {
+  alert(error);
+  console.log(error);
+})
 
 }
+
+componentDidMount(){
+  this.listCredentialRequests()
+}
+
+sendCredentialClick(){
+  this.acceptCredentialRequestAndSendCred()
+}
+
+sendCredentialOfferClick(){
+  this.sendCredentialOffer()
+}
+
+setRecipientDid(){
+
+}
+
+setCredDefId(){
+
+}
+
+credentialRequestId(){
+
+}
+
+
 
 /* POST 
 {
@@ -61,8 +169,101 @@ async listCredentialRequests(){
 }
 */
 async acceptCredentialRequestAndSendCred(){
+  var self = this;
+  var headers = {
+  'Content-Type': 'application/json',
+  'Authorization': localStorage.getItem("token")
+}
+var payload = {
+  'credentialRequestId': this.state.credentialRequestId,
+  'values': this.state.credentialValues
+}
+axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
+  console.log(response);
+  console.log(response.status);
+  if (response.status === 201) {
+    alert("credential succesfully issued")
+  }
+}).catch(function (error) {
+alert(error);
+alert(JSON.stringify(payload))
+console.log(error);
+});
 
 }
+
+render() {
+  return(
+    <div className="App">
+      <MuiThemeProvider>
+      <div>
+      {this.state.credentialRequests}
+      
+      <div>
+      Send credential offer:
+      <br />
+      <TextField
+                hintText="Set recipient DID"
+                floatingLabelText="Recipient DID"
+                defaultValue={this.state.recipientDid}
+                onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
+            />
+            <br />
+      <TextField
+                hintText="Set credential defintion ID"
+                floatingLabelText="Credential definition ID"
+                defaultValue={this.state.credDefId}
+                onChange={(event, newValue) => this.setState({ credDefId: newValue })}
+            />
+            <br />
+            <RaisedButton label="Offer" primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)} />
+      </div>
+      Send credential:
+      <br />
+      <TextField
+                hintText="Set credential request ID"
+                floatingLabelText="Credential request ID"
+                defaultValue={this.state.credentialRequestId}
+                onChange={(event, newValue) => this.setState({ credentialRequestId: newValue })}
+            />
+            <br />
+      <TextField
+                hintText="Set recipient DID"
+                floatingLabelText="Recipient DID"
+                defaultValue={this.state.recipientDid}
+                onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
+            />
+            <br />
+            <TextField
+                hintText="Set credential definition ID"
+                floatingLabelText="Credential definition ID"
+                defaultValue={this.state.credDefId}
+                onChange={(event, newValue) => this.setState({ credDefId: newValue })}
+            />
+            <br />
+            
+            {Object.keys(this.state.credentialValues).map((key) => {return(
+              <div>
+              <TextField hintText={"Set " + key} 
+              floatingLabelText={key}
+              defaultValue={this.state.credentialValues[key]}
+              onChange={(event, newValue) => {
+                const {credentialValues} = this.state;
+                credentialValues[key] = newValue;
+                this.setState({ credentialValues: credentialValues})}}
+                />
+                <br />
+                </div>
+                );
+              })}
+              
+            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)} />
+      </div>
+      </MuiThemeProvider>
+    </div>
+  )
+}
+
 }
 
 const style = {

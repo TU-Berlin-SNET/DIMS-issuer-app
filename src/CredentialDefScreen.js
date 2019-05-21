@@ -55,7 +55,7 @@ class CredentialDefScreen extends Component {
     var credDef_payload = { 
       "schemaId": self.state.schemaId, 
       "tag": self.state.tag, 
-      "supportRevocation": false
+      "supportRevocation": self.state.supportRevocation
     }
     await axios.post(apiBaseUrl + "credentialdef", credDef_payload, {headers: headers}).then(function (response) {
       console.log(response);
@@ -112,6 +112,9 @@ class CredentialDefScreen extends Component {
       console.log(error);
     });
   }
+  handleGoToIssuingClick(credDefId){
+    this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
+  }
 
   async listCredDefs(){
     var self = this;
@@ -129,6 +132,10 @@ class CredentialDefScreen extends Component {
               <List>
                 <ListItem>
                 {credDef.credDefId}
+                <RaisedButton label="Issue credential" 
+                primary={true} style={style} 
+                onClick={() => self.handleGoToIssuingClick(credDef.credDefId)} 
+                />
                 </ListItem>
                 <ListItem>
                 {credDef.wallet}
@@ -195,7 +202,7 @@ class CredentialDefScreen extends Component {
                 onChange={(event, newValue) => this.setState({ tag: newValue })}
             />
             <br />
-              <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: newValue })}>
+              <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
               <option value={true}>enabled</option>
               <option value={false}>disabled</option>
               </select>

@@ -8,6 +8,7 @@ import SchemaScreen from './SchemaScreen';
 import CredentialDefScreen from './CredentialDefScreen';
 import LandingScreen from './LandingScreen';
 import CredentialScreen from './CredentialScreen';
+import ConnectionsScreen from './ConnectionsScreen';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 
 const routing = (
@@ -16,6 +17,7 @@ const routing = (
         <Route exact path="/" component={App} />
         <Route path="/home" component={LandingScreen} />
         <Route path="/onboarding" component={OnboardingScreen} />
+        <Route path="/connections" component={ConnectionsScreen} />
         <Route path="/credentialdef" component={CredentialDefScreen} />
         <Route path="/schema" component={SchemaScreen} />
         <Route path="/credential" component={CredentialScreen} />

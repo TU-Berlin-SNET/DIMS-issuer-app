@@ -23,7 +23,7 @@ import axios from 'axios';
 
 var QRCode = require('qrcode.react');
 
-var apiBaseUrl = "http://localhost:8000/api/";
+var apiBaseUrl = ""REPLACE"";
 
 function RenderQR(props){
   if(props.isOnboarded){
