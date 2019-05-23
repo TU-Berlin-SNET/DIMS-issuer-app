@@ -40,8 +40,8 @@ class CredentialDefScreen extends Component {
     this.state={
       schemas: [],
       credDefs: [],
-      schemaId: "UM8WENh7B5DsvQZfeMGp57:2:sample_schema:1.0",
-      tag: "Martina-Italian-ID-card",
+      schemaId: "Click on the schema to select ID",
+      tag: "Add your tag",
       supportRevocation: false
     }
   }
@@ -84,7 +84,7 @@ class CredentialDefScreen extends Component {
         let schemas = response.data.map((schema) => {
           return(
             <div>
-              <List>
+              <List onClick={() => self.setState({schemaId: schema.schemaId})}>
                 <ListItem>
                 {schema.name}
                 </ListItem>
@@ -191,17 +191,20 @@ class CredentialDefScreen extends Component {
       <MuiThemeProvider>
         <div>
             <TextField
-                hintText="Enter the id of the selected schema"
+                hintText="Enter the schema id or click on the schema to select it"
                 floatingLabelText="Schema id"
+                value={this.state.schemaId}
                 onChange={(event, newValue) => this.setState({ schemaId: newValue })}
             />
             <br />
             <TextField
                 hintText="Enter the tag for the schema"
                 floatingLabelText="Tag"
+                value={this.state.tag}
                 onChange={(event, newValue) => this.setState({ tag: newValue })}
             />
             <br />
+              Revocation:
               <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
               <option value={true}>enabled</option>
               <option value={false}>disabled</option>

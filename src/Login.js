@@ -30,7 +30,7 @@ class Login extends Component {
     localloginComponent.push(
         <MuiThemeProvider>
         <div>
-            <AppBar title="Login">
+            <AppBar title="Login as Issuer">
             <Toolbar disableGutters={!this.state.draweropen}>
             <IconButton
               aria-label="Open drawer"
@@ -94,7 +94,7 @@ handleDrawerClose = () => {
     localloginComponent.push(
         <MuiThemeProvider>
         <div>
-        <AppBar title="Login">
+        <AppBar title="Login to bank as issuer">
             <Toolbar disableGutters={!this.state.draweropen}>
             <IconButton
             color="blue"

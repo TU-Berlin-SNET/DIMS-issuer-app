@@ -11,6 +11,8 @@ Material-UI is used for designing ui of the app
 */
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
@@ -197,6 +199,14 @@ render() {
     <div className="App">
       <MuiThemeProvider>
       <div>
+      <AppBar title="Login to bank as issuer">
+            <Toolbar disableGutters={!this.state.draweropen}>
+            <IconButton
+            color="blue"
+              aria-label="Open drawer"
+              onClick={this.handleDrawerOpen}/>
+          </Toolbar>
+          </AppBar>
       {this.state.credentialRequests}
       
       <div>
