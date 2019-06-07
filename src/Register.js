@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import axios from 'axios';
 import Login from './Login';
+import IssuerBar from "./IssuerBar"
 
 var apiBaseUrl = "http://localhost:8000/api/";
 
@@ -74,9 +75,7 @@ class Register extends Component {
       <div>
         <MuiThemeProvider>
           <div>
-          <AppBar
-             title="Register"
-           />
+          <IssuerBar />
            <TextField
              hintText="Enter your username"
              floatingLabelText="username"

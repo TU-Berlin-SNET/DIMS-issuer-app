@@ -21,6 +21,7 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
+import IssuerBar from './IssuerBar';
 
 /*
 Module:superagent
@@ -149,6 +150,7 @@ class SchemaScreen extends Component {
       <div className="App">
       <MuiThemeProvider>
         <div>
+          <IssuerBar />
             <TextField
                 hintText="Enter the name of the schema"
                 floatingLabelText="Schema name"
