@@ -20,6 +20,7 @@ import { Link, withRouter, Redirect} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
+import IssuerBar from "./IssuerBar"
 
 var QRCode = require('qrcode.react');
 
@@ -216,6 +217,7 @@ handleLogout(event){
       <div>
       <center>
       <MuiThemeProvider>
+      <IssuerBar />
       <TextField
                 hintText="Enter username of citizen"
                 floatingLabelText="Citizen username"

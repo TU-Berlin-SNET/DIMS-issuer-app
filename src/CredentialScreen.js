@@ -23,6 +23,7 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
+import IssuerBar from './IssuerBar';
 
 var apiBaseUrl = ""REPLACE"";
 
@@ -95,18 +96,19 @@ async listCredentialRequests(){
     console.log(response.status);
     if (response.status === 200) {
       let credReqs = response.data.map((credReq) => {
-        const {credentialValues} = self.state;
+        //const {credentialValues} = self.state;
+        var credentialValues = {}
         credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret")).map((elem) => 
           {credentialValues[elem[0]] = ""})
         return(
           <div>
             Credential requests:
-            <List onClick={() => self.setState({ recipientDid: credReq.recipientDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
-              <ListItem onClick={() => self.setState({ recipientDid: credReq.recipientDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
-              Sender (own) DID: {credReq.senderDid}
+            <List onClick={() => self.setState({ recipientDid: credReq.senderDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
+              <ListItem onClick={() => self.setState({ recipientDid: credReq.senderDid, credDefId: credReq.message.message.cred_def_id, credentialValues: credentialValues, credentialRequestId: credReq.id})}>
+              Sender (own) DID: {credReq.recipientDid}
               </ListItem>
               <ListItem>
-              Recipient DID: {credReq.recipientDid}
+              Recipient DID: {credReq.senderDid}
               </ListItem>
               <ListItem>
               Credential definition ID: {credReq.message.message.cred_def_id}
@@ -199,14 +201,7 @@ render() {
     <div className="App">
       <MuiThemeProvider>
       <div>
-      <AppBar title="Login to bank as issuer">
-            <Toolbar disableGutters={!this.state.draweropen}>
-            <IconButton
-            color="blue"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}/>
-          </Toolbar>
-          </AppBar>
+      <IssuerBar />
       {this.state.credentialRequests}
       
       <div>

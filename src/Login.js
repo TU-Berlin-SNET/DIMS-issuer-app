@@ -14,12 +14,14 @@ import Toolbar from 'material-ui/Toolbar';
 import OnboardingScreen from './OnboardingScreen';
 import axios from 'axios';
 import { Link, withRouter, Redirect} from "react-router-dom";
+import IssuerBar from "./IssuerBar"
 
 var apiBaseUrl = ""REPLACE"";
 
 class Login extends Component {
     constructor(props) {
         super(props);
+        
         var localloginComponent=[];
         this.state = {
             username: '',
@@ -27,57 +29,6 @@ class Login extends Component {
             loginComponent:localloginComponent,
             draweropen: false
         }
-    localloginComponent.push(
-        <MuiThemeProvider>
-        <div>
-            <AppBar title="Login as Issuer">
-            <Toolbar disableGutters={!this.state.draweropen}>
-            <IconButton
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-          </AppBar>
-            <Drawer
-          variant="persistent"
-          anchor="left"
-          open={this.state.draweropen}
-        >
-          <div>
-            <IconButton onClick={this.handleDrawerClose}>
-              {<ChevronLeftIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            {['Home', 'Onboarding', 'Credential', 'Schema'].map((text, index) => (
-              <ListItem button key={text}>
-                {text}
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-        </Drawer>
-            <TextField
-                hintText="Enter your Username"
-                floatingLabelText="Username"
-                onChange={(event, newValue) => this.setState({ username: newValue })}
-            />
-            <br />
-            <TextField
-                type="password"
-                hintText="Enter your Password"
-                floatingLabelText="Password"
-                onChange={(event, newValue) => this.setState({ password: newValue })}
-            />
-            <br />
-            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClick(event)} />
-        </div>
-        
-    </MuiThemeProvider>
-    )
 }
 handleDrawerOpen = () => {
         this.setState({ draweropen: true });
@@ -90,58 +41,10 @@ handleDrawerClose = () => {
 
 
     componentWillMount(){
-        var localloginComponent=[];
-    localloginComponent.push(
-        <MuiThemeProvider>
-        <div>
-        <AppBar title="Login to bank as issuer">
-            <Toolbar disableGutters={!this.state.draweropen}>
-            <IconButton
-            color="blue"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}/>
-          </Toolbar>
-          </AppBar>
-            <Drawer
-          variant="persistent"
-          anchor="left"
-          open={this.state.draweropen}
-        >
-          <div>
-            <IconButton onClick={this.handleDrawerClose}>
-              {<ChevronLeftIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            {['Home', 'Onboarding', 'Credential', 'Schema'].map((text, index) => (
-              <ListItem button key={text}>
-                {text}
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-        </Drawer>
-            <TextField
-                hintText="Enter your Username"
-                floatingLabelText="Username"
-                onChange={(event, newValue) => this.setState({ username: newValue })}
-            />
-            <br />
-            <TextField
-                type="password"
-                hintText="Enter your Password"
-                floatingLabelText="Password"
-                onChange={(event, newValue) => this.setState({ password: newValue })}
-            />
-            <br />
-            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClick(event)} />
-        </div>
-    </MuiThemeProvider>
-    )
-    this.setState({loginComponent:localloginComponent})
+        
     }
-    handleClick(event) {
+
+    handleLoginClick(event) {
         var self = this;
         var payload = {
             "username": this.state.username,
@@ -179,9 +82,26 @@ handleDrawerClose = () => {
     }
     render() {
         return (
-            <div>
-            {this.state.loginComponent}
-            </div>
+          <MuiThemeProvider>
+          <div>
+              <IssuerBar />
+              <TextField
+                  hintText="Enter your Username"
+                  floatingLabelText="Username"
+                  onChange={(event, newValue) => this.setState({ username: newValue })}
+              />
+              <br />
+              <TextField
+                  type="password"
+                  hintText="Enter your Password"
+                  floatingLabelText="Password"
+                  onChange={(event, newValue) => this.setState({ password: newValue })}
+              />
+              <br />
+              <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleLoginClick(event)} />
+          </div>
+          
+      </MuiThemeProvider>
             
         );
     }
