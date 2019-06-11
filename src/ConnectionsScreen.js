@@ -21,8 +21,13 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
+import * as Constants from "./Constants"
+import IssuerBar from "./IssuerBar"
 
-var apiBaseUrl = ""REPLACE"";
+const apiBaseUrl = Constants.apiBaseUrl;
+
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 class ConnectionScreen extends Component {
 
@@ -74,9 +79,10 @@ class ConnectionScreen extends Component {
                     {
                         "my_did": conn.my_did, 
                         "their_did": conn.their_did, 
-                        "theirEndpointDid": conn.theirEndpointDid,
-                        "theirEndpointVk": conn.theirEndpointVk,
-                        "theirEndpoint": conn.theirEndpoint
+                        "theirEndpointDid": conn.metadata.theirEndpointDid,
+                        "theirEndpointVk": conn.metadata.theirEndpointVk,
+                        "theirEndpoint": conn.theirEndpoint,
+                        "theirUsername": conn.metadata.username
                     }
                   )
               })
@@ -94,6 +100,7 @@ class ConnectionScreen extends Component {
       return(
         <div className="App">
         <MuiThemeProvider>
+        <IssuerBar />
             <div>
                 Selected recipient: {this.state.selectedRecipientDid}
                 <RaisedButton label="Issue credential" 
@@ -108,7 +115,12 @@ class ConnectionScreen extends Component {
         <List>
         {this.state.pairwiseConnections.map((connection) => {return(
             <ListItem onClick={() => this.setState({selectedRecipientDid: connection.their_did})} >
-                {connection.their_did}
+                Username: {connection.theirUsername}
+                <br />
+                DID: {connection.their_did}
+                <br />
+                Endpoint DID: {connection.theirEndpointDid}
+                <br />
             </ListItem>
                 );
               })}

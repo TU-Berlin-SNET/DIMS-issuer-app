@@ -15,8 +15,12 @@ import OnboardingScreen from './OnboardingScreen';
 import axios from 'axios';
 import { Link, withRouter, Redirect} from "react-router-dom";
 import IssuerBar from "./IssuerBar"
+import * as Constants from "./Constants"
+const apiBaseUrl = Constants.apiBaseUrl;
 
-var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
+
 
 class Login extends Component {
     constructor(props) {

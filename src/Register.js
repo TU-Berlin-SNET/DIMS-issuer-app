@@ -6,8 +6,11 @@ import TextField from 'material-ui/TextField';
 import axios from 'axios';
 import Login from './Login';
 import IssuerBar from "./IssuerBar"
+import * as Constants from "./Constants"
+const apiBaseUrl = Constants.apiBaseUrl;
 
-var apiBaseUrl = "http://localhost:8000/api/";
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 class Register extends Component {
   

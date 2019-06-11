@@ -21,10 +21,15 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./IssuerBar"
+import * as Constants from "./Constants"
 
 var QRCode = require('qrcode.react');
 
-var apiBaseUrl = ""REPLACE"";
+
+const apiBaseUrl = Constants.apiBaseUrl;
+
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 function RenderQR(props){
   if(props.isOnboarded){
@@ -49,6 +54,7 @@ class OnboardingScreen extends Component {
       //TODO: change username
       username: '',
       connection_message: '',
+      app: "issuer app",
       citizen_did:'',
       citizen_verkey:'',
       onboarded:true,
@@ -80,7 +86,7 @@ class OnboardingScreen extends Component {
                     "username": self.state.username
                   },
                   "data": {
-                    "app": "<your-app-or-service-name>"
+                    "app": self.state.app
                   }
                 }
                 axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
@@ -122,7 +128,7 @@ class OnboardingScreen extends Component {
                     "username": self.state.username
                   },
                   "data": {
-                    "app": "<your-app-or-service-name>"
+                    "app": self.state.app
                   }
                 }
                 axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
@@ -161,7 +167,7 @@ class OnboardingScreen extends Component {
                     "username": self.state.username
                   },
                   "data": {
-                    "app": "issuer app"
+                    "app": self.state.app
                   }
                 }
               axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
@@ -176,6 +182,33 @@ class OnboardingScreen extends Component {
                   console.log(error);
               });
             } 
+}
+
+handleConnMessage(event) {
+  var self = this;
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+  var payload_conn = {
+              "meta": {
+                "username": self.state.username
+              },
+                "data": {
+                  "app": self.state.app
+                }
+              }
+            axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
+              .then(function (response) {
+                console.log(response);
+                console.log(response.status);
+                if (response.status === 201) {
+                  self.setState({connection_message: JSON.stringify(response.data.message)})
+                }
+              }).catch(function (error) {
+                alert(error);
+                console.log(error);
+            });
 }
 
 handleCloseClick(event,index){
@@ -211,58 +244,81 @@ handleLogout(event){
   self.props.history.push("/");
 }
 
+onboardingComponent(isOnboarded){
+
+}
+
   render() {
     return (
       <div className="App">
+      <MuiThemeProvider>
       <div>
       <center>
-      <MuiThemeProvider>
+      
       <IssuerBar />
-      <TextField
+      <br />
+      Create connection QR code:
+          <div>
+          <TextField
                 hintText="Enter username of citizen"
                 floatingLabelText="Citizen username"
-                onChange={(event, newValue) => this.setState({ username: newValue })}
+                defaultValue="jesse"
+                value={this.state.username}
+                onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
             />
             <br/>
       <TextField
+                hintText="Enter app name"
+                floatingLabelText="Citizen DID"
+                defaultValue="issuer app"
+                value={this.state.app}
+                onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+            />
+            <br/>
+          <br />
+          <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
+          <br />
+          </div>
+          <div>
+        Is the citizen already onboarded? <br />
+              <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>
+              <option value={true}>Already onboarded</option>
+              <option value={false}>Not yet onboarded</option>
+              </select>
+          </div>
+          <TextField
+                hintText="Enter username of citizen"
+                floatingLabelText="Citizen username"
+                value={this.state.username}
+                onChange={(event, newValue) => this.setState({ username: newValue })}
+            />
+            <br/>
+          <TextField
                 hintText="Enter citizen DID"
                 floatingLabelText="Citizen DID"
+                value={this.state.citizen_did}
                 onChange={(event, newValue) => this.setState({ citizen_did: newValue })}
             />
             <br/>
             <TextField
                 hintText="Enter citizen verkey"
                 floatingLabelText="Citizen verkey"
+                value={this.state.citizen_verkey}
                 onChange={(event, newValue) => this.setState({ citizen_verkey: newValue })}
             />
              <br />
            <RaisedButton label="Onboard citizen" primary={true} style={style} onClick={(event) => this.handleOnboarding(event)}/>
-      </MuiThemeProvider>
+      
       </center>
       </div>
-      <div>
-        Is the citizen already onboarded? <br />
-            <MuiThemeProvider>
-              <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>
-              <option value={true}>Already onboarded</option>
-              <option value={false}>Not yet onboarded</option>
-              </select>
-            </MuiThemeProvider>
-          </div>
           <div onClick={(event) => this.handleDivClick(event)}>
           <center>
           <br />
-          <div>
-          <br />
-          <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
-          <br />
-          </div>
-          <br />
           </center>
-      <MuiThemeProvider>
            <RaisedButton label="Logout" primary={true} style={style} onClick={(event) => this.handleLogout(event)}/>
-      </MuiThemeProvider>
+           
           </div>
+          </MuiThemeProvider>
           </div>
     );
   }

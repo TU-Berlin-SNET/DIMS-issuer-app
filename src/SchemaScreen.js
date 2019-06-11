@@ -22,14 +22,17 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
+import * as Constants from "./Constants"
+const apiBaseUrl = Constants.apiBaseUrl;
+
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 /*
 Module:superagent
 superagent is used to handle post/get requests to server
 */
 var request = require('superagent');
-
-var apiBaseUrl = ""REPLACE"";
 
 class SchemaScreen extends Component {
   constructor(props){
@@ -163,13 +166,6 @@ class SchemaScreen extends Component {
                 floatingLabelText="Version"
                 defaultValue={this.state.schema_version}
                 onChange={(event, newValue) => this.setState({ shchema_version: newValue })}
-            />
-            <br />
-            <TextField
-                hintText="Enter the attributes of the schema"
-                floatingLabelText="Schema attributes"
-                defaultValue={this.state.schema_attrNames}
-                onChange={(event, newValue) => this.setState({ schema_attrNames: JSON.parse(newValue) })}
             />
             <br />
             {this.state.schema_attrNames.map((attr, index) => {

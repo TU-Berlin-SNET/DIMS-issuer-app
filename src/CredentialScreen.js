@@ -24,8 +24,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
+import Select from 'react-select'
+import * as Constants from "./Constants"
+const apiBaseUrl = Constants.apiBaseUrl;
 
-var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 class CredentialScreen extends Component {
 
@@ -38,7 +42,8 @@ class CredentialScreen extends Component {
           credentialRequestId: props.location.state.hasOwnProperty("credentialRequestId") ? props.location.state.credentialRequestId : "",
           credentialValues: {},
           credentialRequests: [],
-          credentialDefinitions: []
+          credentialDefinitions: [],
+          pairwiseConnectionsOptions: []
         }
       } else {
         this.state={
@@ -47,10 +52,11 @@ class CredentialScreen extends Component {
           credentialRequestId: "",
           credentialValues: {},
           credentialRequests: [],
-          credentialDefinitions: []
+          credentialDefinitions: [],
+          pairwiseConnectionsOptions: []
         }
       }
-      }
+    }
 
 /* POST /api/credentialoffer
  {
@@ -80,6 +86,34 @@ alert(JSON.stringify(payload))
 console.log(error);
 });
 
+}
+
+// GET wallet/default/connection
+async listPairwiseConnectionOptions(){
+  var self = this;
+  var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token")
+  }
+  await axios.get(apiBaseUrl + "wallet/default/connection", {headers: headers}).then(function(response){
+      console.log(response);
+      console.log(response.status);
+      if (response.status === 200) {
+        let pairwiseConnections = response.data.map((conn) => {
+            return(
+              {
+                  "label": conn.their_did, 
+              }
+            )
+        })
+        self.setState({
+            pairwiseConnectionsOptions: pairwiseConnections
+        })
+      }
+    }).catch(function (error) {
+    alert(error);
+    console.log(error);
+    });
 }
 
 /* GET /api/credentialrequest
@@ -138,6 +172,7 @@ async listCredentialRequests(){
 
 componentDidMount(){
   this.listCredentialRequests()
+  this.listPairwiseConnectionOptions()
 }
 
 sendCredentialClick(){
