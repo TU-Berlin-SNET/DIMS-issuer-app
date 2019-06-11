@@ -21,10 +21,7 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./IssuerBar"
-<<<<<<< HEAD
 import * as Constants from "./Constants"
-=======
->>>>>>> 02c75b410d9e88c4a115f0f443fbdc2adc64d4fa
 
 var QRCode = require('qrcode.react');
 
@@ -257,7 +254,6 @@ onboardingComponent(isOnboarded){
       <MuiThemeProvider>
       <div>
       <center>
-<<<<<<< HEAD
       
       <IssuerBar />
       <br />
@@ -271,10 +267,6 @@ onboardingComponent(isOnboarded){
                 onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
             />
             <br/>
-=======
-      <MuiThemeProvider>
-      <IssuerBar />
->>>>>>> 02c75b410d9e88c4a115f0f443fbdc2adc64d4fa
       <TextField
                 hintText="Enter app name"
                 floatingLabelText="Citizen DID"
