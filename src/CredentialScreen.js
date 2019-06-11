@@ -24,9 +24,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
+<<<<<<< HEAD
 import Select from 'react-select'
 import * as Constants from "./Constants"
 const apiBaseUrl = Constants.apiBaseUrl;
+=======
+>>>>>>> 02c75b410d9e88c4a115f0f443fbdc2adc64d4fa
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";

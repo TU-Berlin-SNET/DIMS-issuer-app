@@ -22,7 +22,10 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
+<<<<<<< HEAD
 import * as Constants from "./Constants"
+=======
+>>>>>>> 02c75b410d9e88c4a115f0f443fbdc2adc64d4fa
 
 var request = require('superagent');
 const apiBaseUrl = Constants.apiBaseUrl;
