@@ -38,7 +38,7 @@ class SchemaScreen extends Component {
   constructor(props){
     super(props);
 
-    /*this.state={
+    this.state={
       schemas: [],
       schema_name: "Italian ID Card",
       schema_version: "1.0",
@@ -46,8 +46,8 @@ class SchemaScreen extends Component {
        "Given name", "Place of birth", "Date of birth" ,"Sex"
        ,"Number of birth registration","Height","Municipality of residence",
        "Address","Issuing date","Expiration date","Nationality","Fiscal code","Signature","Validity to travel"]
-    }*/
-    this.state={
+    }
+    /*this.state={
       schemas: [],
       schema_name: "Proof of income",
       schema_version: "0.5",
@@ -60,7 +60,7 @@ class SchemaScreen extends Component {
         "Month 2", "Income month 2","Balance month 2",
         "Month 3", "Income month 3","Balance month 3"
       ]
-    }
+    }*/
   }
 
   async createSchema(event){

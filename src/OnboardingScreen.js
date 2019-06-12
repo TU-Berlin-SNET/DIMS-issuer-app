@@ -269,7 +269,7 @@ onboardingComponent(isOnboarded){
             <br/>
       <TextField
                 hintText="Enter app name"
-                floatingLabelText="Citizen DID"
+                floatingLabelText="App name"
                 defaultValue="issuer app"
                 value={this.state.app}
                 onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}

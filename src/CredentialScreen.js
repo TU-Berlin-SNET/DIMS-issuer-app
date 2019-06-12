@@ -284,7 +284,7 @@ render() {
           options={this.state.pairwiseConnectionsOptions}
           onChange={(event) => this.setState({recipientDid: event.value})}
         />
-        Select user:
+        Select credential Definition:
       <br />
       <Select
           inputId="react-select-single"
@@ -294,7 +294,7 @@ render() {
               htmlFor: 'react-select-single',
               shrink: true,
             },
-            placeholder: 'Search username for DID',
+            placeholder: 'Search for credential definition ID',
           }}
           options={this.state.credentialDefinitions}
           onChange={(event) => this.setState({credDefId: event.value})}
