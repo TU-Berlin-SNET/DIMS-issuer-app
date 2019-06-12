@@ -88,6 +88,30 @@ console.log(error);
 
 }
 
+async listCredDefs(){
+  var self = this;
+  var headers = {
+    'Authorization': localStorage.getItem("token")
+  }
+  await axios.get(apiBaseUrl + "credentialdef", {headers: headers}).then(function (response) {
+    console.log(response);
+    console.log(response.status);
+    console.log(response.data);
+    if (response.status === 200) {
+      let credDefs = response.data.map((credDef) => {
+        return(
+          {label: credDef.data.tag, value: credDef.credDefId}
+        )
+      }
+      )
+      self.setState({credentialDefinitions: credDefs})
+    }
+  }).catch(function (error) {
+    alert(error);
+    console.log(error);
+  });
+}
+
 // GET wallet/default/connection
 async listPairwiseConnectionOptions(){
   var self = this;
@@ -102,7 +126,8 @@ async listPairwiseConnectionOptions(){
         let pairwiseConnections = response.data.map((conn) => {
             return(
               {
-                  "label": conn.their_did, 
+                  value: conn.their_did,
+                  label: conn.metadata.username 
               }
             )
         })
@@ -173,6 +198,7 @@ async listCredentialRequests(){
 componentDidMount(){
   this.listCredentialRequests()
   this.listPairwiseConnectionOptions()
+  this.listCredDefs()
 }
 
 sendCredentialClick(){
@@ -194,7 +220,6 @@ setCredDefId(){
 credentialRequestId(){
 
 }
-
 
 
 /* POST 
@@ -222,6 +247,7 @@ axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function
   console.log(response.status);
   if (response.status === 201) {
     alert("credential succesfully issued")
+    window.location.reload()
   }
 }).catch(function (error) {
 alert(error);
@@ -242,6 +268,37 @@ render() {
       <div>
       Send credential offer:
       <br />
+      <div>
+        Select user:
+      <br />
+      <Select
+          inputId="react-select-single"
+          TextFieldProps={{
+            label: 'User',
+            InputLabelProps: {
+              htmlFor: 'react-select-single',
+              shrink: true,
+            },
+            placeholder: 'Search username for DID',
+          }}
+          options={this.state.pairwiseConnectionsOptions}
+          onChange={(event) => this.setState({recipientDid: event.value})}
+        />
+        Select user:
+      <br />
+      <Select
+          inputId="react-select-single"
+          TextFieldProps={{
+            label: 'User',
+            InputLabelProps: {
+              htmlFor: 'react-select-single',
+              shrink: true,
+            },
+            placeholder: 'Search username for DID',
+          }}
+          options={this.state.credentialDefinitions}
+          onChange={(event) => this.setState({credDefId: event.value})}
+        />
       <TextField
                 hintText="Set recipient DID"
                 floatingLabelText="Recipient DID"
@@ -257,6 +314,7 @@ render() {
             />
             <br />
             <RaisedButton label="Offer" primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)} />
+            </div>
       </div>
       Send credential:
       <br />
