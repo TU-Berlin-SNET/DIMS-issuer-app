@@ -56,6 +56,7 @@ class ConnectionScreen extends Component {
         this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.selectedRecipientDid}});
     }
 
+
     componentDidMount(){
         this.listPairwiseConnections()
     }

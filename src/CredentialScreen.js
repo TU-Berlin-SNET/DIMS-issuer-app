@@ -24,8 +24,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
-import Select from 'react-select'
-import * as Constants from "./Constants"
+import Select from 'react-select';
+import * as Constants from "./Constants";
 const apiBaseUrl = Constants.apiBaseUrl;
 
 //var apiBaseUrl = ""REPLACE"";
@@ -107,7 +107,7 @@ async listCredDefs(){
       self.setState({credentialDefinitions: credDefs})
     }
   }).catch(function (error) {
-    alert(error);
+    //alert(error);
     console.log(error);
   });
 }
@@ -136,7 +136,7 @@ async listPairwiseConnectionOptions(){
         })
       }
     }).catch(function (error) {
-    alert(error);
+    //alert(error);
     console.log(error);
     });
 }
@@ -189,7 +189,7 @@ async listCredentialRequests(){
       self.setState({credentialRequests: credReqs})
     }
   }).catch(function (error) {
-  alert(error);
+  //alert(error);
   console.log(error);
 })
 
@@ -199,6 +199,16 @@ componentDidMount(){
   this.listCredentialRequests()
   this.listPairwiseConnectionOptions()
   this.listCredDefs()
+  this.timer = setInterval(() => {
+    this.listCredentialRequests();
+    this.listPairwiseConnectionOptions();
+    this.listCredDefs()}, 5000
+    );
+}
+
+componentWillUnmount() {
+  clearInterval(this.timer);
+  this.timer = null;
 }
 
 sendCredentialClick(){
@@ -207,18 +217,6 @@ sendCredentialClick(){
 
 sendCredentialOfferClick(){
   this.sendCredentialOffer()
-}
-
-setRecipientDid(){
-
-}
-
-setCredDefId(){
-
-}
-
-credentialRequestId(){
-
 }
 
 
@@ -233,7 +231,6 @@ credentialRequestId(){
 }
 */
 async acceptCredentialRequestAndSendCred(){
-  var self = this;
   var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token")
@@ -355,7 +352,7 @@ render() {
                 );
               })}
               
-            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)} />
+            <RaisedButton label="Send credential" primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)} />
       </div>
       </MuiThemeProvider>
     </div>

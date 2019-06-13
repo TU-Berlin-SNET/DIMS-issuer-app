@@ -20,8 +20,10 @@ import { Link, withRouter, Redirect} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
-import IssuerBar from "./IssuerBar"
-import * as Constants from "./Constants"
+import IssuerBar from "./IssuerBar";
+import * as Constants from "./Constants";
+import * as Utils from "./Utils";
+import Select from 'react-select';
 
 var QRCode = require('qrcode.react');
 
@@ -40,12 +42,6 @@ function RenderQR(props){
 
 }
 
-/*
-Module:superagent
-superagent is used to handle post/get requests to server
-*/
-var request = require('superagent');
-
 class OnboardingScreen extends Component {
   constructor(props){
     super(props);
@@ -59,7 +55,37 @@ class OnboardingScreen extends Component {
       citizen_verkey:'',
       onboarded:true,
       printingmessage:'',
-      printButtonDisabled:false
+      printButtonDisabled:false,
+      newMyDid: "",
+      credDefId: "",
+      credentialDefinitions: []
+    }
+  }
+  
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+
+  //GET  /api/connection/:myDid
+  pollNewConnectionStatus(){
+    if(this.state.newMyDid !== "" && this.state.credDefId !== ""){
+      var self = this;
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token") 
+      }
+      axios.get(apiBaseUrl + "/api/connection/" + this.state.newMyDid, {headers: headers}).then((response) => {
+        if(response.status === 200){
+          let status = JSON.parse(response.data.acknowledged)
+          if(status === true){
+            let theirDid = response.data.theirDid;
+            Utils.sendCredentialOffer(theirDid,self.state.credDefId)
+            self.setState({newMyDid: ""})
+            //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
+          }
+        }
+      })
     }
   }
 
@@ -117,6 +143,8 @@ class OnboardingScreen extends Component {
 }
 
   componentDidMount(){
+    Utils.listCredDefs(this);
+    this.timer = setInterval(() => this.pollNewConnectionStatus(), 3000);
     if(this.state.onboarded){
     var self = this;
     var headers = {
@@ -211,18 +239,6 @@ handleConnMessage(event) {
             });
 }
 
-handleCloseClick(event,index){
-
-}
-
-handleClick(event){
-  
-}
-/*
-  Function:toggleDrawer
-  Parameters: event
-  Usage:This fxn is used to toggle drawer state
-  */
 /*
   Function:toggleDrawer
   Parameters: event
@@ -244,17 +260,12 @@ handleLogout(event){
   self.props.history.push("/");
 }
 
-onboardingComponent(isOnboarded){
-
-}
-
   render() {
     return (
       <div className="App">
       <MuiThemeProvider>
       <div>
       <center>
-      
       <IssuerBar />
       <br />
       Create connection QR code:
@@ -262,7 +273,6 @@ onboardingComponent(isOnboarded){
           <TextField
                 hintText="Enter username of citizen"
                 floatingLabelText="Citizen username"
-                defaultValue="jesse"
                 value={this.state.username}
                 onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
             />
@@ -279,6 +289,21 @@ onboardingComponent(isOnboarded){
           <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
           <br />
           </div>
+          Select credential Definition for automatic credential offer:
+      <br />
+      <Select
+          inputId="react-select-single"
+          TextFieldProps={{
+            label: 'User',
+            InputLabelProps: {
+              htmlFor: 'react-select-single',
+              shrink: true,
+            },
+            placeholder: 'Search for credential definition ID',
+          }}
+          options={this.state.credentialDefinitions}
+          onChange={(event) => this.setState({credDefId: event.value})}
+        />
           <div>
         Is the citizen already onboarded? <br />
               <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>

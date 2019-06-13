@@ -7,6 +7,8 @@ import axios from 'axios';
 import Login from './Login';
 import IssuerBar from "./IssuerBar"
 import * as Constants from "./Constants"
+import * as Utils from "./Utils"
+
 const apiBaseUrl = Constants.apiBaseUrl;
 
 //var apiBaseUrl = ""REPLACE"";
@@ -21,7 +23,7 @@ class Register extends Component {
       username:'government1',
       password:'test123test',
       wallet_name: 'govt-wallet1',
-      seed: '0000000000000000000001Government'
+      seed: Utils.generateSeed('0000000000000000000001Government'.length)
     }
   }
   componentWillReceiveProps(nextProps){
@@ -82,7 +84,7 @@ class Register extends Component {
            <TextField
              hintText="Enter your username"
              floatingLabelText="username"
-             defaultValue="government1"
+             value={this.state.username}
              onChange = {(event,newValue) => this.setState({username:newValue})}
              />
            <br/>
@@ -90,21 +92,21 @@ class Register extends Component {
              type = "password"
              hintText="Enter your Password"
              floatingLabelText="Password"
-             defaultValue="test123test"
+             value={this.state.password}
              onChange = {(event,newValue) => this.setState({password:newValue})}
              />
            <br/>
            <TextField
              hintText={"Wallet name"}
              floatingLabelText={"wallet name"}
-             defaultValue="govt-wallet1"
+             value={this.state.wallet_name}
              onChange = {(event,newValue) => this.setState({wallet_name:newValue})}
              />
            <br/>
            <TextField
              hintText="Seed"
              floatingLabelText="Seed"
-             defaultValue="0000000000000000000001Government"
+             value={this.state.seed}
              onChange = {(event,newValue) => this.setState({seed:newValue})}
              />
            <br/>
