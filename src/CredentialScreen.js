@@ -258,17 +258,20 @@ render() {
   return(
     <div className="App">
       <MuiThemeProvider>
-      <div>
       <IssuerBar />
       {this.state.credentialRequests}
       
-      <div>
-      Send credential offer:
-      <br />
-      <div>
+
+      <table className="CredentialScreenLayout">
+        <tr></tr>
+        <tr>
+          <td>
+          <div className="SendCredentialOffer">
+        <p className="blockName"  >Send credential offer:</p>
         Select user:
       <br />
       <Select
+          className="SelectCredential"
           inputId="react-select-single"
           TextFieldProps={{
             label: 'User',
@@ -283,7 +286,8 @@ render() {
         />
         Select credential Definition:
       <br />
-      <Select
+      <Select 
+	        className="SelectCredential"
           inputId="react-select-single"
           TextFieldProps={{
             label: 'User',
@@ -297,6 +301,7 @@ render() {
           onChange={(event) => this.setState({credDefId: event.value})}
         />
       <TextField
+                className = "CredTextField"
                 hintText="Set recipient DID"
                 floatingLabelText="Recipient DID"
                 defaultValue={this.state.recipientDid}
@@ -304,6 +309,7 @@ render() {
             />
             <br />
       <TextField
+                className = "CredTextField"
                 hintText="Set credential defintion ID"
                 floatingLabelText="Credential definition ID"
                 defaultValue={this.state.credDefId}
@@ -311,11 +317,17 @@ render() {
             />
             <br />
             <RaisedButton label="Offer" primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)} />
-            </div>
       </div>
-      Send credential:
-      <br />
+          </td>
+          <td></td> 
+        </tr>
+        <tr>          
+          <td></td>
+          <td>
+          <div className ="SendCredential">
+          <p className="blockName"  >Send credential</p>
       <TextField
+                className = "CredTextField"
                 hintText="Set credential request ID"
                 floatingLabelText="Credential request ID"
                 defaultValue={this.state.credentialRequestId}
@@ -323,6 +335,7 @@ render() {
             />
             <br />
       <TextField
+                className = "CredTextField"
                 hintText="Set recipient DID"
                 floatingLabelText="Recipient DID"
                 defaultValue={this.state.recipientDid}
@@ -330,6 +343,7 @@ render() {
             />
             <br />
             <TextField
+                className = "CredTextField"
                 hintText="Set credential definition ID"
                 floatingLabelText="Credential definition ID"
                 defaultValue={this.state.credDefId}
@@ -354,6 +368,9 @@ render() {
               
             <RaisedButton label="Send credential" primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)} />
       </div>
+          </td>
+        </tr>
+      </table>
       </MuiThemeProvider>
     </div>
   )
