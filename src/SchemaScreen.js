@@ -136,6 +136,7 @@ class SchemaScreen extends Component {
   }
 
   componentDidMount(){
+    document.title = "issuer app"
     this.listSchemas()
   }
 

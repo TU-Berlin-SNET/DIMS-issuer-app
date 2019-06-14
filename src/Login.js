@@ -42,6 +42,10 @@ handleDrawerClose = () => {
         this.setState({ draweropen: false });
 };
 
+componentDidMount(){
+    document.title = "issuer app"
+  }
+
 
 
     componentWillMount(){

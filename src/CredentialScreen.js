@@ -199,6 +199,7 @@ async listCredentialRequests(){
 }
 
 componentDidMount(){
+  document.title = "issuer app"
   this.listCredentialRequests()
   this.listPairwiseConnectionOptions()
   this.listCredDefs()

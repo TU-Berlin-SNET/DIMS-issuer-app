@@ -144,6 +144,7 @@ class OnboardingScreen extends Component {
 }
 
   componentDidMount(){
+    document.title = "issuer app"
     Utils.listCredDefs(this);
     this.timer = setInterval(() => this.pollNewConnectionStatus(), 5000);
     if(this.state.onboarded){

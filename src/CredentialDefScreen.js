@@ -176,6 +176,7 @@ class CredentialDefScreen extends Component {
   }
 
   componentDidMount(){
+    document.title = "issuer app"
     this.listSchemas()
     this.listCredDefs()
   }

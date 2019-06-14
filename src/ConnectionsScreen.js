@@ -60,6 +60,7 @@ class ConnectionScreen extends Component {
 
 
     componentDidMount(){
+        document.title = "issuer app"
         this.listPairwiseConnections()
     }
     // GET wallet/default/connection
