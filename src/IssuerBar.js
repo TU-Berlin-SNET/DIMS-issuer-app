@@ -42,6 +42,13 @@ handleDrawerClose = () => {
         
     }
 
+    handleLogout(){
+      console.log("logout event fired",this.props);
+      localStorage.clear();
+      var self = this;
+      self.props.history.push("/");
+    }
+
     render() {
         return (
           <MuiThemeProvider>
@@ -69,6 +76,13 @@ handleDrawerClose = () => {
               ))}
             </List>
             <Divider />
+            <List>
+            <Link to="" style={{ textDecoration: 'none' }} onClick={() => this.handleLogout()}>
+            <ListItem button key={"Logout"}>
+            Logout
+            </ListItem>
+            </Link>
+            </List>
           </Drawer>
           
       </MuiThemeProvider>

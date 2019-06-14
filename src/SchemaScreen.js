@@ -23,6 +23,7 @@ import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import * as Constants from "./Constants"
+import * as Utils from "./Utils"
 const apiBaseUrl = Constants.apiBaseUrl;
 
 //var apiBaseUrl = ""REPLACE"";
@@ -37,7 +38,7 @@ var request = require('superagent');
 class SchemaScreen extends Component {
   constructor(props){
     super(props);
-
+    Utils.checkLogin(this)
     /*this.state={
       schemas: [],
       schema_name: "Italian_ID_Card",
@@ -82,8 +83,8 @@ class SchemaScreen extends Component {
               self.listSchemas()
             }
     }).catch(function (error) {
-      alert(JSON.stringify(schema_payload))
-      alert(error);
+      //alert(JSON.stringify(schema_payload))
+      //alert(error);
       console.log(error);
   });
   }
@@ -125,7 +126,7 @@ class SchemaScreen extends Component {
         self.setState({schemas: schemas})
       }
     }).catch(function (error) {
-      alert(error);
+      //alert(error);
       console.log(error);
     });
   }

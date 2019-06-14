@@ -45,7 +45,7 @@ function RenderQR(props){
 class OnboardingScreen extends Component {
   constructor(props){
     super(props);
-
+    Utils.checkLogin(this)
     this.state={
       //TODO: change username
       username: '',
@@ -75,7 +75,8 @@ class OnboardingScreen extends Component {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem("token") 
       }
-      axios.get(apiBaseUrl + "/api/connection/" + this.state.newMyDid, {headers: headers}).then((response) => {
+      axios.get(apiBaseUrl + "connection/" + this.state.newMyDid, {headers: headers}).then((response) => {
+        console.log(response.status)
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
@@ -123,13 +124,13 @@ class OnboardingScreen extends Component {
                     self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
                   }
                 }).catch(function (error) {
-                  alert(error);
+                  //alert(error);
                   console.log(error);
               });
 
             } else if (response.status === 204) {
                 console.log("TODO: handle onboarding errors");
-                alert("TODO: handle onboarding errors")
+                //alert("TODO: handle onboarding errors")
             }
             else {
                 console.log("Onboarding is unsuccesful");
@@ -137,14 +138,14 @@ class OnboardingScreen extends Component {
             }
         })
         .catch(function (error) {
-            alert(error);
+            //alert(error);
             console.log(error);
         });
 }
 
   componentDidMount(){
     Utils.listCredDefs(this);
-    this.timer = setInterval(() => this.pollNewConnectionStatus(), 3000);
+    this.timer = setInterval(() => this.pollNewConnectionStatus(), 5000);
     if(this.state.onboarded){
     var self = this;
     var headers = {
@@ -167,7 +168,7 @@ class OnboardingScreen extends Component {
                     self.setState({connection_message: JSON.stringify(response.data.message)})
                   }
                 }).catch(function (error) {
-                  alert(error);
+                  //alert(error);
                   console.log(error);
               });
             } 
@@ -206,7 +207,7 @@ class OnboardingScreen extends Component {
                     self.setState({connection_message: JSON.stringify(response.data.message)})
                   }
                 }).catch(function (error) {
-                  alert(error);
+                  //alert(error);
                   console.log(error);
               });
             } 
@@ -231,10 +232,10 @@ handleConnMessage(event) {
                 console.log(response);
                 console.log(response.status);
                 if (response.status === 201) {
-                  self.setState({connection_message: JSON.stringify(response.data.message)})
+                  self.setState({connection_message: JSON.stringify(response.data.message), newMyDid: response.data.meta.myDid})
                 }
               }).catch(function (error) {
-                alert(error);
+                //alert(error);
                 console.log(error);
             });
 }

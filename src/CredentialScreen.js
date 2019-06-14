@@ -26,6 +26,8 @@ import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import Select from 'react-select';
 import * as Constants from "./Constants";
+import * as Utils from "./Utils"
+
 const apiBaseUrl = Constants.apiBaseUrl;
 
 //var apiBaseUrl = ""REPLACE"";
@@ -35,6 +37,7 @@ class CredentialScreen extends Component {
 
     constructor(props){
         super(props);
+        Utils.checkLogin(this)
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
@@ -78,11 +81,11 @@ async sendCredentialOffer(){
   console.log(response);
   console.log(response.status);
   if (response.status === 201) {
-    alert("credential request successfully sent")
+    alert("Credential offer successfully sent")
   }
 }).catch(function (error) {
-alert(error);
-alert(JSON.stringify(payload))
+//alert(error);
+//alert(JSON.stringify(payload))
 console.log(error);
 });
 
@@ -154,7 +157,7 @@ async listCredentialRequests(){
     console.log(response);
     console.log(response.status);
     if (response.status === 200) {
-      let credReqs = response.data.map((credReq) => {
+      let credReqs = response.data.sort(Utils.compareDates).map((credReq) => {
         //const {credentialValues} = self.state;
         var credentialValues = {}
         credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret")).map((elem) => 
@@ -243,12 +246,12 @@ axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function
   console.log(response);
   console.log(response.status);
   if (response.status === 201) {
-    alert("credential succesfully issued")
+    //alert("credential succesfully issued")
     window.location.reload()
   }
 }).catch(function (error) {
-alert(error);
-alert(JSON.stringify(payload))
+//alert(error);
+//alert(JSON.stringify(payload))
 console.log(error);
 });
 

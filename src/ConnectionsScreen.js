@@ -23,6 +23,7 @@ import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import * as Constants from "./Constants"
 import IssuerBar from "./IssuerBar"
+import * as Utils from "./Utils"
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -33,6 +34,7 @@ class ConnectionScreen extends Component {
 
     constructor(props){
         super(props);
+        Utils.checkLogin(this)
         this.state={
           selectedRecipientDid: "",
           pairwiseConnections: []

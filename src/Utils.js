@@ -21,11 +21,11 @@ export async function sendCredentialOffer(recipientDid, credDefId){
      console.log(response);
      console.log(response.status);
      if (response.status === 201) {
-       alert("credential request successfully sent")
+       alert("Credential offer successfully sent!")
      }
    }).catch(function (error) {
-   alert(error);
-   alert(JSON.stringify(payload))
+   //alert(error);
+   //alert(JSON.stringify(payload))
    console.log(error);
    });
    
@@ -49,7 +49,7 @@ export async function sendCredentialOffer(recipientDid, credDefId){
         self.setState({credentialDefinitions: credDefs})
       }
     }).catch(function (error) {
-      alert(error);
+      //alert(error);
       console.log(error);
     });
   }
@@ -63,3 +63,13 @@ export async function sendCredentialOffer(recipientDid, credDefId){
     }
     return result;
  }
+
+ export function compareDates(a,b){
+  return new Date(b.createdAt) - new Date(a.createdAt);
+}
+
+export function checkLogin(self){
+  if(localStorage.getItem('token') === null){
+    self.props.history.push("/");
+  }
+}

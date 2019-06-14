@@ -23,6 +23,7 @@ import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import * as Constants from "./Constants";
+import * as Utils from "./Utils"
 
 var request = require('superagent');
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -40,7 +41,7 @@ class CredentialDefScreen extends Component {
 */
   constructor(props){
     super(props);
-
+    Utils.checkLogin(this)
     this.state={
       schemas: [],
       credDefs: [],
@@ -112,7 +113,7 @@ class CredentialDefScreen extends Component {
         self.setState({schemas: schemas})
       }
     }).catch(function (error) {
-      alert(error);
+      //alert(error);
       console.log(error);
     });
   }
@@ -165,7 +166,7 @@ class CredentialDefScreen extends Component {
         self.setState({credDefs: credDefs})
       }
     }).catch(function (error) {
-      alert(error);
+      //alert(error);
       console.log(error);
     });
   }
