@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
+
 /*
 Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
@@ -9,6 +10,7 @@ import './App.css';
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
+
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -24,7 +26,13 @@ import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import * as Constants from "./Constants"
 import * as Utils from "./Utils"
+import { makeStyles } from '@material-ui/styles';
+
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 const apiBaseUrl = Constants.apiBaseUrl;
+
+
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
@@ -35,31 +43,20 @@ superagent is used to handle post/get requests to server
 */
 var request = require('superagent');
 
+
+
 class SchemaScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
-    /*this.state={
-      schemas: [],
-      schema_name: "Italian_ID_Card",
-      schema_version: "1.0",
-      schema_attrNames: ["Issuing municipality", "Last name", 
-       "Given name", "Place of birth", "Date of birth" ,"Sex"
-       ,"Number of birth registration","Height","Municipality of residence",
-       "Address","Issuing date","Expiration date","Nationality","Fiscal code","Signature","Validity to travel"].map((elem) => elem.replace(/\s/g, "_"))
-    }*/
+
     this.state={
       schemas: [],
-      schema_name: "Proof_of_Income",
-      schema_version: "0.5",
+      schema_name: "",
+      schema_version: "",
       newAttrName: "",
       schema_attrNames: 
       [
-        "Bank", "Last name", 
-        "First name", "Date of birth" ,
-        "Month 1", "Income month 1","Balance month 1",
-        "Month 2", "Income month 2","Balance month 2",
-        "Month 3", "Income month 3","Balance month 3"
       ].map((elem) => elem.replace(/\s/g, "_"))
     }
   }
@@ -150,69 +147,89 @@ class SchemaScreen extends Component {
   if user clicks close icon adjacent to selected file
   */
 
-  render() {
-    return (
-      <div className="App">
-      <MuiThemeProvider>
-        <div>
-          <IssuerBar />
-            <TextField
-                hintText="Enter the name of the schema"
-                floatingLabelText="Schema name"
-                defaultValue={this.state.schema_name}
-                onChange={(event, newValue) => this.setState({ schema_name: newValue })}
-            />
-            <br />
-            <TextField
+
+ toGrid() {
+  return (
+    <MuiThemeProvider>
+         <IssuerBar/>
+
+    <div  className='container'  style={{ position:'relative', gridColumnStart: '1', gridColumnEnd: '13' }}>
+
+
+        <div style={{position: 'relative',   gridColumnStart: '3', gridColumnEnd: '7' }}>
+            <TextField  style={{display: 'block', gridColumnStart: '8', gridColumnEnd: '9' }}
+                  hintText="Enter the name of the schema"
+                  floatingLabelText="Schema name"
+                  defaultValue={this.state.schema_name}
+                  onChange={(event, newValue) => this.setState({ schema_name: newValue })}
+              />
+          
+          <TextField  style={{display: 'block', gridColumnStart: '8', gridColumnEnd: '9' }}
                 hintText="Enter the version of the schema"
                 floatingLabelText="Version"
                 defaultValue={this.state.schema_version}
-                onChange={(event, newValue) => this.setState({ shchema_version: newValue })}
+                onChange={(event, newValue) => this.setState({ schema_version: newValue })}
             />
-            <br />
-            {this.state.schema_attrNames.map((attr, index) => {
-              return(
-              <div>
-                <TextField hintText="Enter the attribute name"
-                floatingLabelText={"Schema attribute " + (index + 1)}
-                value={attr}
-                onChange={(event, newValue) => { 
+        </div>
+        
+         <div  style={{position: 'relative', border: 'solid', borderColor: '#61dafb',   gridColumnStart: '3', gridColumnEnd: '7' }}>
+         Attribute
+         {this.state.schema_attrNames.map((attr, index) => {
+            return(
+            <div>
+              <TextField style={{gridColumnStart: '3', gridColumnEnd: '5' }}
+              hintText="Enter the attribute name"
+              floatingLabelText={"Schema attribute " + (index + 1)}
+              value={attr}
+              onChange={(event, newValue) => { 
+                var schema_attrNames = this.state.schema_attrNames;
+                schema_attrNames.splice(index,1,newValue);
+                this.setState({ schema_attrNames: schema_attrNames})
+                }}/>
+              <RaisedButton  style={{style, gridColumnStart: '5', gridColumnEnd: '6' }} label="Delete" primary={true} onClick={() => { 
                   var schema_attrNames = this.state.schema_attrNames;
-                  schema_attrNames.splice(index,1,newValue);
+                  schema_attrNames.splice(index,1);
                   this.setState({ schema_attrNames: schema_attrNames})
-                  }}/>
-              <RaisedButton label="Delete" primary={true} style={style} onClick={() => { 
-                    var schema_attrNames = this.state.schema_attrNames;
-                    schema_attrNames.splice(index,1);
-                    this.setState({ schema_attrNames: schema_attrNames})
-                    alert(schema_attrNames)}} />
-                    </div>)})} 
-            <br />
-            <TextField
-                hintText="Add schema atribute"
-                floatingLabelText="Attribute name"
-                onChange={
-                  (event, newValue) => 
-                  { 
-                    this.setState({ newAttrName: newValue})
-                  }
+                  alert(schema_attrNames)}} />
+            </div>)})} 
+            <RaisedButton label="Submit" primary={true} style={{style, position: 'absolute', right: '0', bottom: '-50px' ,gridColumnStart: '6', gridColumnEnd: '7' }} onClick={(event) => this.handleClickNewSchema(event)} />
+          </div>
+      
+         <div style={{gridColumnStart: '8', gridColumnEnd: '13' }}>
+          <TextField style={{display: 'block', gridColumnStart: '8', gridColumnEnd: '9' }}
+              hintText="Add schema atribute"
+              floatingLabelText="Attribute name"
+              onChange={
+                (event, newValue) => 
+                { 
+                  this.setState({ newAttrName: newValue})
                 }
-            />
-            <RaisedButton label="Add attribute" primary={true} style={style} onClick={() => 
-            {
-              var schema_attrNames = this.state.schema_attrNames;
-              schema_attrNames.push(this.state.newAttrName);
-              this.setState({ schema_attrNames: schema_attrNames})
-              alert(schema_attrNames)
-            }} />
-            <br />
-            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClickNewSchema(event)} />
+              }
+          />
+          <RaisedButton label="Add attribute" primary={true} style={{style, float:'left' , gridColumnStart: '8', gridColumnEnd: '9' }} onClick={() => 
+          {
+            var schema_attrNames = this.state.schema_attrNames;
+            schema_attrNames.push(this.state.newAttrName);
+            this.setState({ schema_attrNames: schema_attrNames})
+            alert(schema_attrNames)
+          }} />
         </div>
-        <div>
-          Schemas:
-        {this.state.schemas}
-        </div>
-    </MuiThemeProvider>
+
+   {/*   
+       <div style={{gridColumnStart: '3', gridColumnEnd: '8', position:'absolute', bottom:'-100px'}}>
+            Schemas:
+            {this.state.schemas}
+         </div>
+        */}
+      </div>
+
+</MuiThemeProvider>
+
+  );
+}
+  render() {
+    return (
+      <div className="App"> {this.toGrid()}
       </div>
     );
   }
@@ -221,4 +238,10 @@ class SchemaScreen extends Component {
 const style = {
   margin: 15,
 };
+
+
+
+
+
+
 export default withRouter(SchemaScreen);

@@ -71,3 +71,19 @@ td {
   top: -20%;
   font-size: 1.5em;
 }
+
+.root{
+width: 100%;
+}
+
+.container{
+    display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
+ 
+  }
+
+
+.issuerBar{
+width: 100%;
+}
+
