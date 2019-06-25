@@ -17,7 +17,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
+import {blue500, red500, greenA200, grey100} from 'material-ui/styles/colors';
 import { Link, withRouter, Redirect} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -26,10 +26,25 @@ import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import * as Constants from "./Constants"
 import * as Utils from "./Utils"
-import { makeStyles } from '@material-ui/styles';
-
+import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import KeyboardVoiceIcon from '@material-ui/icons/KeyboardVoice';
+import Icon from '@material-ui/core/Icon';
+import SaveIcon from '@material-ui/icons/Save';
+
+import IconButton from '@material-ui/core/IconButton';
+
+import { makeStyles } from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
+import Divider from '@material-ui/core/Divider';
+import SearchIcon from '@material-ui/icons/Search';
+
+
+import Paper from '@material-ui/core/Paper';
 const apiBaseUrl = Constants.apiBaseUrl;
 
 
@@ -43,6 +58,26 @@ superagent is used to handle post/get requests to server
 */
 var request = require('superagent');
 
+const useStyles = makeStyles({
+  root: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 400,
+  },
+  input: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  iconButton: {
+    padding: 10,
+  },
+  divider: {
+    width: 1,
+    height: 28,
+    margin: 4,
+  },
+});
 
 
 class SchemaScreen extends Component {
@@ -96,30 +131,7 @@ class SchemaScreen extends Component {
       console.log(response.status);
       console.log(response.data);
       if (response.status === 200) {
-        let schemas = response.data.map((schema) => {
-          return(
-            <div>
-              <List>
-                <ListItem>
-                {schema.name}
-                </ListItem>
-                <ListItem>
-                {schema.version}
-                </ListItem>
-                <ListItem>
-                {schema.schemaId}
-                </ListItem>
-                <ListItem>
-                  Attribute Names:
-                  <List>
-                  {schema.attrNames.map((attr) => {return(<ListItem>{attr}</ListItem>)})}
-                  </List>
-                </ListItem>
-              </List>
-            </div>
-          )
-        }
-        )
+        let schemas = <CUSTOMPAGINATIONACTIONSTABLE schemas={response.data}/>
         self.setState({schemas: schemas})
       }
     }).catch(function (error) {
@@ -147,16 +159,64 @@ class SchemaScreen extends Component {
   if user clicks close icon adjacent to selected file
   */
 
+ addAttribute(){
+  return(
+      <Paper style={ {padding: '2px 4px', display: 'flex', alignItems: 'center', width: '400'}}>
+          <InputBase style={{    marginLeft: 8, flex: 1}}
+              placeholder="Add new Attribute"
+              onChange={
+                (event) => 
+                { 
+                  this.setState({ newAttrName: event.target.value})
+                }
+              }
+          />
+         <RaisedButton label="Add attribute" primary={true} onClick={() => 
+          {
+            var schema_attrNames = this.state.schema_attrNames;
+            schema_attrNames.push(this.state.newAttrName);
+            this.setState({ schema_attrNames: schema_attrNames})
+            alert(schema_attrNames)
+          }} />
+      </Paper>
+  )}
+
+
+  currentAttribute(attr, index){
+    return(
+        <Paper style={ {padding: '2px 4px', display: 'flex', alignItems: 'center', width: '400'}}>
+              <InputBase  style={{    marginLeft: 8, flex: 1}}
+              hintText="attribute name"
+              floatingLabelText={"Schema attribute " + (index + 1)}
+              value={attr}
+              onChange={(event, newValue) => { 
+                var schema_attrNames = this.state.schema_attrNames;
+                schema_attrNames.splice(index,1,newValue);
+                this.setState({ schema_attrNames: schema_attrNames})
+                }}/>
+         <Button  variant="contained" color="secondary" label="Delete"  primary={true} onClick={() => { 
+           
+                  var schema_attrNames = this.state.schema_attrNames;
+                  schema_attrNames.splice(index,1);
+                  this.setState({ schema_attrNames: schema_attrNames})
+                  alert(schema_attrNames)}} >
+                  <DeleteIcon/>
+                  DELETE
+                  </Button>
+        </Paper>
+    )}
+
+
 
  toGrid() {
   return (
     <MuiThemeProvider>
          <IssuerBar/>
 
-    <div  className='container'  style={{ position:'relative', gridColumnStart: '1', gridColumnEnd: '13' }}>
+    <Container  className='container'  style={{style, position:'relative', gridColumnStart: '1', gridColumnEnd: '13' }}>
 
 
-        <div style={{position: 'relative',   gridColumnStart: '3', gridColumnEnd: '7' }}>
+        <div style={{  gridColumnStart: '3', gridColumnEnd: '11' }}>
             <TextField  style={{display: 'block', gridColumnStart: '8', gridColumnEnd: '9' }}
                   hintText="Enter the name of the schema"
                   floatingLabelText="Schema name"
@@ -171,57 +231,21 @@ class SchemaScreen extends Component {
                 onChange={(event, newValue) => this.setState({ schema_version: newValue })}
             />
         </div>
-        
-         <div  style={{position: 'relative', border: 'solid', borderColor: '#61dafb',   gridColumnStart: '3', gridColumnEnd: '7' }}>
-         Attribute
-         {this.state.schema_attrNames.map((attr, index) => {
-            return(
-            <div>
-              <TextField style={{gridColumnStart: '3', gridColumnEnd: '5' }}
-              hintText="Enter the attribute name"
-              floatingLabelText={"Schema attribute " + (index + 1)}
-              value={attr}
-              onChange={(event, newValue) => { 
-                var schema_attrNames = this.state.schema_attrNames;
-                schema_attrNames.splice(index,1,newValue);
-                this.setState({ schema_attrNames: schema_attrNames})
-                }}/>
-              <RaisedButton  style={{style, gridColumnStart: '5', gridColumnEnd: '6' }} label="Delete" primary={true} onClick={() => { 
-                  var schema_attrNames = this.state.schema_attrNames;
-                  schema_attrNames.splice(index,1);
-                  this.setState({ schema_attrNames: schema_attrNames})
-                  alert(schema_attrNames)}} />
-            </div>)})} 
-            <RaisedButton label="Submit" primary={true} style={{style, position: 'absolute', right: '0', bottom: '-50px' ,gridColumnStart: '6', gridColumnEnd: '7' }} onClick={(event) => this.handleClickNewSchema(event)} />
-          </div>
-      
-         <div style={{gridColumnStart: '8', gridColumnEnd: '13' }}>
-          <TextField style={{display: 'block', gridColumnStart: '8', gridColumnEnd: '9' }}
-              hintText="Add schema atribute"
-              floatingLabelText="Attribute name"
-              onChange={
-                (event, newValue) => 
-                { 
-                  this.setState({ newAttrName: newValue})
-                }
-              }
-          />
-          <RaisedButton label="Add attribute" primary={true} style={{style, float:'left' , gridColumnStart: '8', gridColumnEnd: '9' }} onClick={() => 
-          {
-            var schema_attrNames = this.state.schema_attrNames;
-            schema_attrNames.push(this.state.newAttrName);
-            this.setState({ schema_attrNames: schema_attrNames})
-            alert(schema_attrNames)
-          }} />
-        </div>
+        <div style= {{backgroundColor: '#61dafb', gridColumn: '5/8', marginTop: '3vh', borderTopLeftRadius: '15px' , borderTopRightRadius: '15px', color: 'white'}}>Attributes</div> 
+         <div  style={{position: 'relative' , backgroundColor: 'whitesmoke' , border: 'solid', borderColor: '#61dafb',   gridColumnStart: '3', gridColumnEnd: '11' }}>
+         
+         {this.addAttribute()}
 
-   {/*   
-       <div style={{gridColumnStart: '3', gridColumnEnd: '8', position:'absolute', bottom:'-100px'}}>
+         {this.state.schema_attrNames.map((attr, index) => {
+            return( this.currentAttribute(attr, index))
+            })} 
+            <RaisedButton label="Submit" primary={true} style={{position: 'absolute', right: '0', bottom: '-50px' ,gridColumnStart: '6', gridColumnEnd: '7' }} onClick={(event) => this.handleClickNewSchema(event)} />
+        </div>
+        <div style= {{position: 'relative', top: '150px' ,gridColumn: '4/9', backgroundColor: '#61dafb', left: '0', right:'0', margin:'auto', borderTopLeftRadius: '15px' , borderTopRightRadius: '15px', color: 'white'}}>
             Schemas:
             {this.state.schemas}
          </div>
-        */}
-      </div>
+      </Container>
 
 </MuiThemeProvider>
 
@@ -245,3 +269,7 @@ const style = {
 
 
 export default withRouter(SchemaScreen);
+
+
+
+
