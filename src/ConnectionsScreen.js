@@ -24,6 +24,8 @@ import axios from 'axios';
 import * as Constants from "./Constants"
 import IssuerBar from "./IssuerBar"
 import * as Utils from "./Utils"
+import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -78,6 +80,9 @@ class ConnectionScreen extends Component {
             console.log(response);
             console.log(response.status);
             if (response.status === 200) {
+
+
+                
               let pairwiseConnections = response.data.map((conn) => {
                   return(
                     {

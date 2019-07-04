@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+	width: 100%;
 }
 
 .App-logo {
@@ -32,58 +33,6 @@
   }
 }
 
-.SelectCredential { 
-	margin: auto;
-	width: 90%;
-}
-
-.SendCredentialOffer, .SendCredential {
-  border-style: solid;
-  border-color:   #61dafb;
-  width: 80%;
-  border-width: 1px;
-  margin: auto;
-  position: relative;
-  color:  #61dafb;
-}
-
-.CredTextField{
-  width: 90%!important;
-}
-
-.CredentialScreenLayout{
-  margin-top: 5%;
-  margin-bottom: 5%;
-  width: 100%;
-  flex: 1;
-}
-.CredentialScreenLayout tr{
-  flex: 1;
-}
-
-td {
-  flex:1;
-}
-
-.blockName{
-  color:   #61dafb;
-  position: absolute;
-  top: -20%;
-  font-size: 1.5em;
-}
-
-.root{
-width: 100%;
-}
-
-.container{
-    display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
- 
-  }
 
 
-.issuerBar{
-width: 100%;
-}
 

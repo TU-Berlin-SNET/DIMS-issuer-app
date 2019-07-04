@@ -21,9 +21,9 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="App">
+      <box className="App">
         {this.state.loginPage}
-      </div>
+      </box>
     );
   }
 }

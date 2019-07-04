@@ -1,19 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-
+import {useState} from 'react';
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -85,9 +88,6 @@ function createData(name, version, id, attribute) {
   return { name, version, id, attribute };
 }
 
-var rows = [
-  
-].sort((a, b) => (a.name < b.name ? -1 : 1));
 
 const useStyles2 = makeStyles(theme => ({
   root: {
@@ -102,12 +102,18 @@ const useStyles2 = makeStyles(theme => ({
   },
 }));
 
-export default function CustomPaginationActionsTable(props) {
+function createRow(data){
+  let row = new Object()
+  Object.assign(row, data)
+  rows.push(row);
+}
 
-rows= [];
-  props.schemas.map(schema =>
-    rows.push(createData(schema.name, schema.version, schema._id)));
-    console.log(rows);
+var rows = [];
+
+export default function CustomPaginationActionsTable(props) {
+  if(props.schemas.length != rows.length)
+    props.schemas.forEach(createRow);
+
 
     const classes = useStyles2();
     const [page, setPage] = React.useState(0);
@@ -127,14 +133,22 @@ rows= [];
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+              {props.showAttr.map((attribute, index) => {
+                return (                  
+                  <TableCell width='30%' align='center' children={attribute}></TableCell>)}
+                  )}
+              </TableRow>
+            </TableHead>
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-                <TableRow key={row.name}>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell align="right">{row.version}</TableCell>
-                  <TableCell align="right">{row.id}</TableCell>
+                <TableRow key={row[props.showAttr[0]]}>
+                  {props.showAttr.map((attribute, index) => {
+                    if(index==0){ return (                  
+                      <TableCell component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
+                    else{ return( <TableCell align='center' children={row[attribute]}></TableCell>)}
+                  })}
                 </TableRow>
               ))}
   
