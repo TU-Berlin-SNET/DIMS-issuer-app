@@ -128,7 +128,41 @@ export default function CustomPaginationActionsTable(props) {
     function handleChangeRowsPerPage(event) {
       setRowsPerPage(parseInt(event.target.value, 10));
     }
-  
+    if(props.schemas.length==0){
+      return(
+        <Paper className={classes.root}>
+        <div className={classes.tableWrapper}>
+          <Table className={classes.table}>
+            <TableBody>
+                <TableRow>
+                      <TableCell  align='center' >
+                        no Schemas available
+                      </TableCell>
+                </TableRow>
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  colSpan={3}
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'Rows per page' },
+                    native: true,
+                  }}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
+      </Paper>
+      )
+    }
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>

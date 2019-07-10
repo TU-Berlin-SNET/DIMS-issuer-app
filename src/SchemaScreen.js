@@ -33,43 +33,117 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import KeyboardVoiceIcon from '@material-ui/icons/KeyboardVoice';
 import AddIcon from '@material-ui/icons/Add';
-import SaveIcon from '@material-ui/icons/Save';
-
-
-import { withStyles, ThemeProvider} from '@material-ui/styles';
+import { } from '@material-ui/core/styles';
+import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import { withStyles, ThemeProvider,  } from '@material-ui/styles';
 import InputBase from '@material-ui/core/InputBase';
-import Divider from '@material-ui/core/Divider';
-import SearchIcon from '@material-ui/icons/Search';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
-import { mt} from '@material-ui/system/spacing';
 import { Typography } from '@material-ui/core';
-import { createMuiTheme } from '@material-ui/core/styles';
-import yellow from '@material-ui/core/colors/yellow';
+import { spacing } from '@material-ui/system';
+import { positions } from '@material-ui/system';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-/* const StyledButton = withStyles({
-  root: {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    borderRadius: 3,
+const theme1 = createMuiTheme({
+  palette: {
+    primary:{
+        main: 'rgb(0, 188, 212)',
+     },
+     secondary: {
+       main: 'rgb(0, 188, 212)',
+    }
+
+
+    
+},
+});
+
+
+const useStyles = makeStyles(theme1 => ({
+  headline: {
+    backgroundColor: 'rgb(0, 188, 212)',
+    color: white,
     border: 0,
+    fontSize: 24,
+    borderRadius: 3,
+    textAlign: 'center'
+  },
+  newSchemaForm: {
+    width: "30%",
+    margin: '10vh',
+  },
+  newSchemaFormContent: {
+    padding: '10px',
+  },
+  editAttributes: {
+    color:'#FFFFFF' , 
+    textAlign:'center', 
+    backgroundColor: 'rgb(0, 188, 212)', 
+    marginTop: '30px',
+    marginBottom: '30px',
+  },
+  SchemaTable: {
+    marginBottom: "5vh",
+    padding: "10px" , 
+    width: "50%", 
+    textAlign:'center',
+    backgroundColor: 'rgb(0, 188, 212)', 
+    borderTopLeftRadius: '15px' , 
+    borderTopRightRadius: '15px',
     color: 'white',
-    height: 48,
-    padding: '0 30px',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   },
-  label: {
-    textTransform: 'capitalize',
-  },
-})(Button);
+}));
 
-function ClassesShorthand() {
-  return <StyledButton>classes shorthand</StyledButton>;
+function NewSchema(props) {
+  const classes = useStyles(theme1);
+
+  return (
+    <ThemeProvider theme={theme1}>
+    
+    <Paper className={classes.newSchemaForm}>
+      <Box fullWidth className={classes.headline}>Add a schema</Box>
+      <Box className={classes.newSchemaFormContent} >
+        <Box display='flex' flexDirection='column' width="50%" >
+          <TextField  fullWidth 
+            hintText="Enter the name of the schema"
+            floatingLabelText="Schema name"
+            defaultValue={props.this.state.schema_name}
+            onChange={(event, newValue) => this.setState({ schema_name: newValue })}
+          />  
+          <TextField fullWidth 
+            hintText="Enter the version of the schema"
+            floatingLabelText="Version"
+            defaultValue={props.this.state.schema_version}
+            onChange={(event, newValue) => this.setState({ schema_version: newValue })}
+          />
+        </Box> 
+        <Paper className={classes.editAttributes}>
+        attributes
+          <Box >
+            {props.this.addAttribute()}
+            {props.this.state.schema_attrNames.map((attr, index) => {
+                return( props.this.currentAttribute(attr, index))
+                })} 
+          </Box>
+        </Paper>
+    </Box> 
+    <RaisedButton label="Submit" primary={true} onClick={(event) => this.handleClickNewSchema(event)} />
+  </Paper>
+  </ThemeProvider>
+  );
 }
-*/
 
+function SchemaTable(props) {
+  const classes = useStyles();
+  return(
+  <Paper  className={classes.SchemaTable}>
+  Schemas:
+  {props.this.state.schemas}
+  </Paper>
+  );
+}
 
 
 //var apiBaseUrl = ""REPLACE"";
@@ -88,7 +162,7 @@ class SchemaScreen extends Component {
     Utils.checkLogin(this)
 
     this.state={
-      schemas: [],
+      schemas: <CUSTOMPAGINATIONACTIONSTABLE schemas={[]} showAttr={["name","version", "_id"]}/>,
       schema_name: "",
       schema_version: "",
       newAttrName: "",
@@ -167,7 +241,7 @@ class SchemaScreen extends Component {
   return(
     <Paper style={ {padding: '2px 4px', display: 'flex', alignItems: 'center'}}>
       <InputBase id="attributeNameInput" style={{    marginLeft: 8, flex: 1}}
-          placeholder="Add new Attribute"
+          placeholder="Add a new Attribute"
           onChange={
             (event) => 
             { 
@@ -191,17 +265,11 @@ class SchemaScreen extends Component {
 
   currentAttribute(attr, index){
     return(
-        <Paper style={ {padding: '2px 4px', display: 'flex', alignItems: 'center'}}>
-          <InputBase  style={{    marginLeft: 8, flex: 1}}
-            hintText="attribute name"
-            floatingLabelText={"Schema attribute " + (index + 1)}
-            value={attr}
-            onChange={(event) => { 
-              var schema_attrNames = this.state.schema_attrNames;
-              schema_attrNames.splice(index,1, event.target.value);
-              this.setState({ schema_attrNames: schema_attrNames})
-            }}/>
-          <Button align='right' variant="contained" color="secondary" label="Delete"  primary={true} onClick={() => {           
+        <Paper position="relative" style={ {marginTop: '10px', padding: '2px 4px', display: 'flex', alignItems: 'center'}}>
+          <Box style={{    marginLeft: 8, flex: 1}}>
+          {attr}
+          </Box>
+          <Button variant="contained" color="secondary" label="Delete"  primary={true} onClick={() => {           
             var schema_attrNames = this.state.schema_attrNames;
             schema_attrNames.splice(index,1);
             this.setState({ schema_attrNames: schema_attrNames})
@@ -217,43 +285,11 @@ class SchemaScreen extends Component {
 
   render() {
     return (
-      <MuiThemeProvider >
-        <IssuerBar/>
-          <Box display='flex' padding='5' flexDirection='column'alignItems='center'>
-            <Box mb={5} width="50%">
-
-              <Box display='flex' flexDirection='column' color='white' width="50%" >
-                <TextField  fullWidth 
-                  hintText="Enter the name of the schema"
-                  floatingLabelText="Schema name"
-                  defaultValue={this.state.schema_name}
-                  onChange={(event, newValue) => this.setState({ schema_name: newValue })}
-                />  
-                <TextField fullWidth 
-                  hintText="Enter the version of the schema"
-                  floatingLabelText="Version"
-                  defaultValue={this.state.schema_version}
-                  onChange={(event, newValue) => this.setState({ schema_version: newValue })}
-                />
-              </Box> 
-              <Paper  style= {{ color:'#FFFFFF' , textAlign:'center', backgroundColor: '#61dafb', borderTopLeftRadius: '15px' , borderTopRightRadius: '15px'}}>
-              Attributes
-                <Box  style={{  backgroundColor: 'whitesmoke' , border: 'solid', borderColor: '#61dafb' }}>
-
-                  {this.addAttribute()}
-                  {this.state.schema_attrNames.map((attr, index) => {
-                      return( this.currentAttribute(attr, index))
-                      })} 
-                </Box>
-              </Paper> 
-              <RaisedButton label="Submit" primary={true} m='auto' style={{ bottom:'-40px'}} onClick={(event) => this.handleClickNewSchema(event)} />
-            </Box>
-            <Box mt={5} width='50%' >
-            <Paper  style= {{ textAlign:'center', backgroundColor: '#61dafb', borderTopLeftRadius: '15px' , borderTopRightRadius: '15px', color: 'white'}}>
-              Schemas:
-              {this.state.schemas}
-          </Paper>
-          </Box>
+      <MuiThemeProvider>
+        <IssuerBar/>   
+        <Box display='flex' padding='5' flexDirection='column' alignItems='center'>
+          <NewSchema this={this}/>
+          <SchemaTable this={this}/>
         </Box>
       </MuiThemeProvider> 
     );
