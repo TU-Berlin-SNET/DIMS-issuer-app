@@ -16,7 +16,8 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import {useState} from 'react';
+import MoreHoriz from '@material-ui/icons/MoreHoriz';
+import AlertDialog from './alertDialog.js'
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -84,10 +85,6 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(name, version, id, attribute) {
-  return { name, version, id, attribute };
-}
-
 
 const useStyles2 = makeStyles(theme => ({
   root: {
@@ -109,10 +106,21 @@ function createRow(data){
 }
 
 var rows = [];
+var moreAttributesNames= []
+
+Array.prototype.diff = function(a) {
+  return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
 
 export default function CustomPaginationActionsTable(props) {
-  if(props.schemas.length != rows.length)
-    props.schemas.forEach(createRow);
+  if(props.schemas.length != rows.length){
+      rows = props.schemas
+  }
+
+  if(rows.length!=0)
+    moreAttributesNames = Object.keys(rows[0]).filter(x => !props.showAttr.includes(x));
+
+      
 
 
     const classes = useStyles2();
@@ -171,8 +179,11 @@ export default function CustomPaginationActionsTable(props) {
               <TableRow>
               {props.showAttr.map((attribute, index) => {
                 return (                  
-                  <TableCell width='30%' align='center' children={attribute}></TableCell>)}
-                  )}
+                  <TableCell width='30%' align='center' children={attribute}></TableCell>
+                  )
+                }
+              )}
+              <TableCell width='30%' align='center'> more Attributes</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -181,8 +192,15 @@ export default function CustomPaginationActionsTable(props) {
                   {props.showAttr.map((attribute, index) => {
                     if(index==0){ return (                  
                       <TableCell component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
-                    else{ return( <TableCell align='center' children={row[attribute]}></TableCell>)}
+                    else{ 
+                      return( 
+                      <TableCell align='center' children={row[attribute]}></TableCell>
+                      )
+                    }
                   })}
+                  <TableCell>      
+                    <AlertDialog row={row} attrNames={moreAttributesNames} />
+                  </TableCell>
                 </TableRow>
               ))}
   

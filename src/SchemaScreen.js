@@ -87,7 +87,7 @@ const useStyles = makeStyles(theme1 => ({
   SchemaTable: {
     marginBottom: "5vh",
     padding: "10px" , 
-    width: "50%", 
+    width: "60%", 
     textAlign:'center',
     backgroundColor: 'rgb(0, 188, 212)', 
     borderTopLeftRadius: '15px' , 
@@ -162,7 +162,7 @@ class SchemaScreen extends Component {
     Utils.checkLogin(this)
 
     this.state={
-      schemas: <CUSTOMPAGINATIONACTIONSTABLE schemas={[]} showAttr={["name","version", "_id"]}/>,
+      schemas: <CUSTOMPAGINATIONACTIONSTABLE schemas={[]} showAttr={["name","version", "schemaId"]}/>,
       schema_name: "",
       schema_version: "",
       newAttrName: "",
@@ -207,7 +207,7 @@ class SchemaScreen extends Component {
       console.log(response.status);
       console.log(response.data);
       if (response.status === 200) {
-        let schemas = <CUSTOMPAGINATIONACTIONSTABLE schemas={response.data} showAttr={["name","version", "_id"]}/>
+        let schemas = <CUSTOMPAGINATIONACTIONSTABLE schemas={response.data} showAttr={["name","version", "schemaId"]}/>
         self.setState({schemas: schemas})
       }
     }).catch(function (error) {
