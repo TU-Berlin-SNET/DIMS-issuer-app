@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 
-import { Link, withRouter, Redirect} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 
 import Login from './Login';
 import Register from './Register';

@@ -16,7 +16,6 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import AlertDialog from './alertDialog.js'
 
 const useStyles1 = makeStyles(theme => ({
@@ -99,25 +98,16 @@ const useStyles2 = makeStyles(theme => ({
   },
 }));
 
-function createRow(data){
-  let row = new Object()
-  Object.assign(row, data)
-  rows.push(row);
-}
-
 var rows = [];
 var moreAttributesNames= []
 
-Array.prototype.diff = function(a) {
-  return this.filter(function(i) {return a.indexOf(i) < 0;});
-};
 
 export default function CustomPaginationActionsTable(props) {
-  if(props.schemas.length != rows.length){
+  if(props.schemas.length !== rows.length){
       rows = props.schemas
   }
 
-  if(rows.length!=0)
+  if(rows.length!==0)
     moreAttributesNames = Object.keys(rows[0]).filter(x => !props.showAttr.includes(x));
 
       
@@ -136,7 +126,7 @@ export default function CustomPaginationActionsTable(props) {
     function handleChangeRowsPerPage(event) {
       setRowsPerPage(parseInt(event.target.value, 10));
     }
-    if(props.schemas.length==0){
+    if(props.schemas.length===0){
       return(
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -177,9 +167,9 @@ export default function CustomPaginationActionsTable(props) {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-              {props.showAttr.map((attribute, index) => {
+              {props.showAttr.map((attribute, i) => {
                 return (                  
-                  <TableCell width='30%' align='center' children={attribute}></TableCell>
+                  <TableCell key={i} width='30%' align='center' children={attribute}></TableCell>
                   )
                 }
               )}
@@ -189,12 +179,12 @@ export default function CustomPaginationActionsTable(props) {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
                 <TableRow key={row[props.showAttr[0]]}>
-                  {props.showAttr.map((attribute, index) => {
-                    if(index==0){ return (                  
-                      <TableCell component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
+                  {props.showAttr.map((attribute, i) => {
+                    if(i===0){ return (                  
+                      <TableCell key={i} component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
                     else{ 
                       return( 
-                      <TableCell align='center' children={row[attribute]}></TableCell>
+                      <TableCell key={i} align='center' children={row[attribute]}></TableCell>
                       )
                     }
                   })}

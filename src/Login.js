@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import AppBar from 'material-ui/AppBar';
-import Drawer from 'material-ui/Drawer';
-import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
-import MenuIcon from 'material-ui/Menu';
-import List from 'material-ui/List';
-import ListItem from 'material-ui/List/ListItem';
-import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import Divider from 'material-ui/Divider';
-import Toolbar from 'material-ui/Toolbar';
-import OnboardingScreen from './OnboardingScreen';
 import axios from 'axios';
-import { Link, withRouter, Redirect} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import IssuerBar from "./IssuerBar"
 import * as Constants from "./Constants"
 const apiBaseUrl = Constants.apiBaseUrl;

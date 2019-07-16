@@ -1,5 +1,4 @@
-import React, { Component, Children} from 'react';
-import ReactDOM from 'react-dom';
+import React, { Component} from 'react';
 /*
 Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
@@ -11,17 +10,11 @@ Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import AppBar from 'material-ui/AppBar';
-import RaisedButton from 'material-ui/RaisedButton';
-import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
-import FontIcon from 'material-ui/FontIcon';
-import {blue500, red500, greenA200, grey100, white} from 'material-ui/styles/colors';
-import { Link, withRouter, Redirect} from "react-router-dom";
+
+import {white} from 'material-ui/styles/colors';
+import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from './IssuerBar';
 import * as Constants from "./Constants"
@@ -30,19 +23,12 @@ import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import KeyboardVoiceIcon from '@material-ui/icons/KeyboardVoice';
 import AddIcon from '@material-ui/icons/Add';
-import { } from '@material-ui/core/styles';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
-import { withStyles, ThemeProvider,  } from '@material-ui/styles';
 import InputBase from '@material-ui/core/InputBase';
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
-import { Typography } from '@material-ui/core';
-import { spacing } from '@material-ui/system';
-import { positions } from '@material-ui/system';
+import Typography from '@material-ui/core/Typography';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -71,13 +57,12 @@ const useStyles = makeStyles(theme1 => ({
     textAlign: 'center'
   },
   newSchemaForm: {
-    width: "30%",
     margin: '10vh',
   },
   newSchemaFormContent: {
     padding: '10px',
   },
-  editAttributes: {
+  schemaList: {
     color:'#FFFFFF' , 
     textAlign:'center', 
     backgroundColor: 'rgb(0, 188, 212)', 
@@ -85,14 +70,16 @@ const useStyles = makeStyles(theme1 => ({
     marginBottom: '30px',
   },
   SchemaTable: {
-    marginBottom: "5vh",
+    margin: '10vh',
     padding: "10px" , 
-    width: "60%", 
     textAlign:'center',
     backgroundColor: 'rgb(0, 188, 212)', 
     borderTopLeftRadius: '15px' , 
     borderTopRightRadius: '15px',
     color: 'white',
+  },
+  grid:{
+    width: '100%',
   },
 }));
 
@@ -100,27 +87,38 @@ function NewSchema(props) {
   const classes = useStyles(theme1);
 
   return (
-    <ThemeProvider theme={theme1}>
-    
+    <div className={classes.grid}>
+    <Grid item xs={12} sm={10} md={8} lg={6} xl={4} style={{margin:"auto"}}>
     <Paper className={classes.newSchemaForm}>
-      <Box fullWidth className={classes.headline}>Add a schema</Box>
+      <Box className={classes.headline}>              
+        <Typography variant="h5">
+            Add a Schema
+        </Typography>
+        </Box>
       <Box className={classes.newSchemaFormContent} >
-        <Box display='flex' flexDirection='column' width="50%" >
-          <TextField  fullWidth 
+
+        <Grid item xs={8}>
+          <TextField id="schemaNameInput" fullWidth 
             hintText="Enter the name of the schema"
             floatingLabelText="Schema name"
             defaultValue={props.this.state.schema_name}
-            onChange={(event, newValue) => this.setState({ schema_name: newValue })}
+            onChange={(event, newValue) => props.this.setState({ schema_name: newValue })}
           />  
-          <TextField fullWidth 
+          </Grid>
+          <Grid item xs={8}>
+          <TextField id="versionInput" fullWidth 
             hintText="Enter the version of the schema"
             floatingLabelText="Version"
             defaultValue={props.this.state.schema_version}
-            onChange={(event, newValue) => this.setState({ schema_version: newValue })}
+            onChange={(event, newValue) => props.this.setState({ schema_version: newValue })}
           />
-        </Box> 
-        <Paper className={classes.editAttributes}>
-        attributes
+          </Grid>
+        
+        
+        <Paper className={classes.schemaList}>
+        <Typography variant="h6">
+            Attributes
+        </Typography>
           <Box >
             {props.this.addAttribute()}
             {props.this.state.schema_attrNames.map((attr, index) => {
@@ -129,19 +127,28 @@ function NewSchema(props) {
           </Box>
         </Paper>
     </Box> 
-    <RaisedButton label="Submit" primary={true} onClick={(event) => this.handleClickNewSchema(event)} />
+    <Button variant='contained' label="Submit"  style={{backgroundColor :'rgb(0, 188, 212)' , color:'white'}} onClick={(event) => props.this.handleClickNewSchema(event)} >
+      Submit
+    </Button>
   </Paper>
-  </ThemeProvider>
+  </Grid>
+  </div>
   );
 }
 
 function SchemaTable(props) {
   const classes = useStyles();
   return(
-  <Paper  className={classes.SchemaTable}>
-  Schemas:
-  {props.this.state.schemas}
-  </Paper>
+  <div className={classes.grid}>
+    <Grid item xs={12} md={10} lg={8} xl={6} style={{margin:"auto"}}>
+        <Paper  className={classes.SchemaTable}>
+        <Typography variant="h6">
+            Schemas
+        </Typography>
+        {props.this.state.schemas}
+        </Paper>
+    </Grid>
+  </div>
   );
 }
 
@@ -153,7 +160,7 @@ function SchemaTable(props) {
 Module:superagent
 superagent is used to handle post/get requests to server
 */
-var request = require('superagent');
+//var request = require('superagent');
 
 
 class SchemaScreen extends Component {
@@ -203,12 +210,12 @@ class SchemaScreen extends Component {
       'Authorization': localStorage.getItem("token")
     }
     await axios.get(apiBaseUrl + "indyschema", {headers: headers}).then(function (response) {
-      console.log(response);
-      console.log(response.status);
-      console.log(response.data);
       if (response.status === 200) {
         let schemas = <CUSTOMPAGINATIONACTIONSTABLE schemas={response.data} showAttr={["name","version", "schemaId"]}/>
-        self.setState({schemas: schemas})
+        self.setState({schemas: schemas});
+        self.setState({schema_attrNames: []});
+        document.getElementById('schemaNameInput').value="";
+        document.getElementById('versionInput').value=""
       }
     }).catch(function (error) {
       //alert(error);
@@ -249,7 +256,7 @@ class SchemaScreen extends Component {
             }
           }
       />
-      <Button variant="contained" label="Add Atribute" color='primary' primary={true} onClick={(event) =>  {
+      <Button variant="contained" label="Add Atribute"  style={{backgroundColor :'rgb(0, 188, 212)' , color:'white'}} onClick={(event) =>  {
         var schema_attrNames = this.state.schema_attrNames;
         schema_attrNames.push(this.state.newAttrName);
         this.setState({ schema_attrNames: schema_attrNames}
@@ -269,7 +276,7 @@ class SchemaScreen extends Component {
           <Box style={{    marginLeft: 8, flex: 1}}>
           {attr}
           </Box>
-          <Button variant="contained" color="secondary" label="Delete"  primary={true} onClick={() => {           
+          <Button variant="contained" color="secondary" label="Delete"  onClick={() => {           
             var schema_attrNames = this.state.schema_attrNames;
             schema_attrNames.splice(index,1);
             this.setState({ schema_attrNames: schema_attrNames})
@@ -286,18 +293,17 @@ class SchemaScreen extends Component {
   render() {
     return (
       <MuiThemeProvider>
+        <Box>
         <IssuerBar/>   
         <Box display='flex' padding='5' flexDirection='column' alignItems='center'>
           <NewSchema this={this}/>
           <SchemaTable this={this}/>
         </Box>
+        </Box>
       </MuiThemeProvider> 
     );
   }
 }
-const style = {
-  margin: 15,
-};
 
 
 

@@ -9,22 +9,15 @@ import './App.css';
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import AppBar from 'material-ui/AppBar';
+
 import RaisedButton from 'material-ui/RaisedButton';
-import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
-import FontIcon from 'material-ui/FontIcon';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-import { Link, withRouter, Redirect} from "react-router-dom";
-import TextField from 'material-ui/TextField';
+import {withRouter} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import * as Constants from "./Constants"
 import IssuerBar from "./IssuerBar"
 import * as Utils from "./Utils"
-import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -72,10 +65,15 @@ class ConnectionScreen extends Component {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem("token")
         }
+        /* not used??
+
         var payload = {
             'credentialRequestId': this.state.credentialRequestId,
             'values': this.state.credentialValues
         }
+
+        */
+       
         await axios.get(apiBaseUrl + "wallet/default/connection", {headers: headers}).then(function(response){
             console.log(response);
             console.log(response.status);

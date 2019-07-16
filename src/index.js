@@ -9,7 +9,7 @@ import CredentialDefScreen from './CredentialDefScreen';
 import LandingScreen from './LandingScreen';
 import CredentialScreen from './CredentialScreen';
 import ConnectionsScreen from './ConnectionsScreen';
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
+import { Route,  BrowserRouter as Router } from 'react-router-dom';
 
 const routing = (
     <Router>

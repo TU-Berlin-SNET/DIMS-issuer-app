@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import Loginscreen from './Loginscreen'
-import { Link, withRouter } from "react-router-dom";
+import {withRouter } from "react-router-dom";
 import './App.css';
-
+import Box from '@material-ui/core/Box'
 
 class App extends Component {
   constructor(props){
@@ -21,13 +20,10 @@ class App extends Component {
   }
   render() {
     return (
-      <box className="App">
+      <Box className="App">
         {this.state.loginPage}
-      </box>
+      </Box>
     );
   }
 }
-const style = {
-  margin: 15,
-};
 export default withRouter(App);

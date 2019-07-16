@@ -9,16 +9,9 @@ import './App.css';
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import IconButton from 'material-ui/IconButton';
+
 import RaisedButton from 'material-ui/RaisedButton';
-import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
-import FontIcon from 'material-ui/FontIcon';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-import { Link, withRouter, Redirect} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
@@ -68,7 +61,6 @@ class CredentialScreen extends Component {
 }
 */
 async sendCredentialOffer(){
- var self = this;
  var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token") 
@@ -161,7 +153,7 @@ async listCredentialRequests(){
         //const {credentialValues} = self.state;
         var credentialValues = {}
         credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret")).map((elem) => 
-          {credentialValues[elem[0]] = ""})
+          {return credentialValues[elem[0]] = ""})
         return(
           <div>
             Credential requests:
