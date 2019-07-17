@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import OnboardingScreen from './OnboardingScreen';
-import SchemaScreen from './SchemaScreen';
+import SchemasScreen from './SchemasScreen';
+import addASchemaScreen from './addASchemaScreen';
 import CredentialDefScreen from './CredentialDefScreen';
 import LandingScreen from './LandingScreen';
 import CredentialScreen from './CredentialScreen';
@@ -19,7 +20,8 @@ const routing = (
         <Route path="/onboarding" component={OnboardingScreen} />
         <Route path="/connections" component={ConnectionsScreen} />
         <Route path="/credentialdef" component={CredentialDefScreen} />
-        <Route path="/schema" component={SchemaScreen} />
+        <Route path="/schemas" component={SchemasScreen} />
+        <Route path="/addASchema" component={addASchemaScreen} />
         <Route path="/credential" component={CredentialScreen} />
       </div>
     </Router>

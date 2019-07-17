@@ -103,8 +103,8 @@ var moreAttributesNames= []
 
 
 export default function CustomPaginationActionsTable(props) {
-  if(props.schemas.length !== rows.length){
-      rows = props.schemas
+  if(props.data.length !== rows.length){
+      rows = props.data
   }
 
   if(rows.length!==0)
@@ -126,7 +126,7 @@ export default function CustomPaginationActionsTable(props) {
     function handleChangeRowsPerPage(event) {
       setRowsPerPage(parseInt(event.target.value, 10));
     }
-    if(props.schemas.length===0){
+    if(props.data.length===0){
       return(
         <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -134,7 +134,7 @@ export default function CustomPaginationActionsTable(props) {
             <TableBody>
                 <TableRow>
                       <TableCell  align='center' >
-                        no Schemas available
+                        no ... available
                       </TableCell>
                 </TableRow>
             </TableBody>

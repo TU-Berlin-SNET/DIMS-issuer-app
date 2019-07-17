@@ -18,6 +18,7 @@ import axios from 'axios';
 import * as Constants from "./Constants"
 import IssuerBar from "./IssuerBar"
 import * as Utils from "./Utils"
+import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -79,10 +80,11 @@ class ConnectionScreen extends Component {
             console.log(response.status);
             if (response.status === 200) {
 
-
+            let data= []
                 
-              let pairwiseConnections = response.data.map((conn) => {
-                  return(
+              let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE data={data} showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
+              response.data.map((conn) => {
+                  data.push(
                     {
                         "my_did": conn.my_did, 
                         "their_did": conn.their_did, 
@@ -119,19 +121,9 @@ class ConnectionScreen extends Component {
         <br />
         Pairwise connections:
         <br />
-        <List>
-        {this.state.pairwiseConnections.map((connection) => {return(
-            <ListItem onClick={() => this.setState({selectedRecipientDid: connection.their_did})} >
-                Username: {connection.theirUsername}
-                <br />
-                DID: {connection.their_did}
-                <br />
-                Endpoint DID: {connection.theirEndpointDid}
-                <br />
-            </ListItem>
-                );
-              })}
-        </List>
+
+        
+        {this.state.pairwiseConnections}
         </div>
         </MuiThemeProvider>
       </div>

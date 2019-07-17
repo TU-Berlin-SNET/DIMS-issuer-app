@@ -140,7 +140,7 @@ function SchemaTable(props) {
   const classes = useStyles();
   return(
   <div className={classes.grid}>
-    <Grid item xs={12} md={10} lg={8} xl={6} style={{margin:"auto"}}>
+    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
         <Paper  className={classes.SchemaTable}>
         <Typography variant="h6">
             Schemas
@@ -295,12 +295,13 @@ class SchemaScreen extends Component {
       <MuiThemeProvider>
         <Box>
         <IssuerBar/>   
-        <Box display='flex' padding='5' flexDirection='column' alignItems='center'>
           <NewSchema this={this}/>
           <SchemaTable this={this}/>
         </Box>
-        </Box>
       </MuiThemeProvider> 
+                <SchemaTable this={this}/>
+                </Box>
+              </MuiThemeProvider> 
     );
   }
 }

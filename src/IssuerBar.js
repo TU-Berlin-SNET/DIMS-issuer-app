@@ -62,7 +62,7 @@ handleDrawerClose = () => {
             <Divider />
             <List>
               {
-                [['Home',""], ['Onboarding',"onboarding"], ['Credential',"credential"],['Cred. definition',"credentialdef"], ['Schema',"schema"], ['Connections',"connections"]].map((item, i) => (
+                [['Home',""], ['Onboarding',"onboarding"], ['Credential',"credential"],['Cred. definition',"credentialdef"], ['Schemas',"schemas"], ['Connections',"connections"]].map((item, i) => (
                 <Link key={i} to={item[1]} style={{ textDecoration: 'none' }}>
                 <ListItem key={item[0]}>
                   {item[0]}
