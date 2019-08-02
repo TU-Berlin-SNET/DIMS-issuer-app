@@ -4,7 +4,7 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './App.css';
+import './../App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app

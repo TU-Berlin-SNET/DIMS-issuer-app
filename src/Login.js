@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import axios from 'axios';
 import {withRouter} from "react-router-dom";
-import IssuerBar from "./IssuerBar"
+import IssuerBar from "./components/IssuerBar"
 import * as Constants from "./Constants"
 const apiBaseUrl = Constants.apiBaseUrl;
 

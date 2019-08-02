@@ -4,7 +4,7 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './App.css';
+import './../App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
@@ -24,9 +24,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import Select from 'react-select'
-import * as Constants from "./Constants"
-import * as Utils from "./Utils"
-import IssuerBar from "./IssuerBar"
+import IssuerBar from "./../components/IssuerBar";
+import * as Constants from "./../Constants";
+import * as Utils from "./../Utils";
 const apiBaseUrl = Constants.apiBaseUrl;
 
 class ProofScreen extends Component {

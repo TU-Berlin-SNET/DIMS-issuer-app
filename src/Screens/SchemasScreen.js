@@ -4,7 +4,7 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './App.css';
+import './../App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
@@ -16,10 +16,10 @@ import {withRouter, Link} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
-import IssuerBar from './IssuerBar';
-import * as Constants from "./Constants"
-import * as Utils from "./Utils"
-import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
+import IssuerBar from "./../components/IssuerBar";
+import * as Constants from "./../Constants";
+import * as Utils from "./../Utils";
+import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';

@@ -16,7 +16,7 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import AlertDialog from './alertDialog.js'
+import MoreAttributes from './moreAttributesDialog.js'
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -199,7 +199,7 @@ export default function CustomPaginationActionsTable(props) {
                     }
                   })}
                   <TableCell>      
-                    <AlertDialog row={row} attrNames={moreAttributesNames} />
+                    <MoreAttributes row={row} attrNames={moreAttributesNames} />
                   </TableCell>
                 </TableRow>
                 )

@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import OnboardingScreen from './OnboardingScreen';
-import SchemasScreen from './SchemasScreen';
-import addASchemaScreen from './addASchemaScreen';
-import CredentialDefScreen from './CredentialDefScreen';
-import LandingScreen from './LandingScreen';
-import CredentialScreen from './CredentialScreen';
-import ConnectionsScreen from './ConnectionsScreen';
-import ProofScreen from './ProofScreen'
+import OnboardingScreen from './Screens/OnboardingScreen';
+import SchemasScreen from './Screens/SchemasScreen';
+import addASchemaScreen from './Screens/addASchemaScreen';
+import CredentialDefScreen from './Screens/CredentialDefScreen';
+import LandingScreen from './Screens/LandingScreen';
+import CredentialScreen from './Screens/CredentialScreen';
+import ConnectionsScreen from './Screens/ConnectionsScreen';
+import ProofScreen from './Screens/ProofScreen'
 import { Route,  BrowserRouter as Router } from 'react-router-dom';
 
 const routing = (
