@@ -103,6 +103,7 @@ var moreAttributesNames= []
 
 
 export default function CustomPaginationActionsTable(props) {
+
   if(props.data.length !== rows.length){
       rows = props.data
   }
@@ -110,15 +111,18 @@ export default function CustomPaginationActionsTable(props) {
   if(rows.length!==0)
     moreAttributesNames = Object.keys(rows[0]).filter(x => !props.showAttr.includes(x));
 
-      
-
-
+    const [selected, setSelected] = React.useState([]);
     const classes = useStyles2();
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);  
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage); 
+    const isSelected = row => row === selected;
+
+    function handleClick(event, row) {
+      setSelected(row);
+      props.onEdit(event, row)
+      }
+    
     function handleChangePage(event, newPage) {
       setPage(newPage);
     }
@@ -128,7 +132,7 @@ export default function CustomPaginationActionsTable(props) {
     }
     if(props.data.length===0){
       return(
-        <Paper className={classes.root}>
+        <Paper className={classes.root}>  
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
@@ -177,8 +181,14 @@ export default function CustomPaginationActionsTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-                <TableRow key={row[props.showAttr[0]]}>
+              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                const isItemSelected = isSelected(row);
+                return(
+                <TableRow key={row[props.showAttr[0]]} 
+                  hover
+                  onClick={(event)=>handleClick(event,row )}
+                  selected= {isItemSelected}
+                >
                   {props.showAttr.map((attribute, i) => {
                     if(i===0){ return (                  
                       <TableCell key={i} component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
@@ -192,7 +202,8 @@ export default function CustomPaginationActionsTable(props) {
                     <AlertDialog row={row} attrNames={moreAttributesNames} />
                   </TableCell>
                 </TableRow>
-              ))}
+                )
+              })}
   
               {emptyRows > 0 && (
                 <TableRow style={{ height: 48 * emptyRows }}>

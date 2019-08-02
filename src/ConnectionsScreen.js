@@ -19,9 +19,48 @@ import * as Constants from "./Constants"
 import IssuerBar from "./IssuerBar"
 import * as Utils from "./Utils"
 import CUSTOMPAGINATIONACTIONSTABLE from "./tablepagination.js"
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
+
+const useStyles = makeStyles(theme => ({
+    ConnectionTable: {
+      margin: '10vh',
+      padding: "10px" , 
+      textAlign:'center',
+      backgroundColor: 'rgb(0, 188, 212)', 
+      borderTopLeftRadius: '15px' , 
+      borderTopRightRadius: '15px',
+      color: 'white',
+    },
+    grid:{
+      width: '100%',
+    },
+  }));
+
+function SchemaTable(props) {
+    const classes = useStyles();
+    return(
+        <div className={classes.grid}>
+        <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
+            <Paper  className={classes.ConnectionTable}>
+            <Box position="relative" >
+                <Typography  variant="h6">
+                Pairwise Connections
+                </Typography>
+            </Box>
+            {props.this.state.pairwiseConnections}
+            </Paper>
+        </Grid>
+        </div>
+    );
+}
+        
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
@@ -33,7 +72,8 @@ class ConnectionScreen extends Component {
         Utils.checkLogin(this)
         this.state={
           selectedRecipientDid: "",
-          pairwiseConnections: []
+          pairwiseConnections: [],
+          selected: ""
         }
       }
 
@@ -51,7 +91,7 @@ class ConnectionScreen extends Component {
 */
 
     handleGoToIssuingClick(){
-        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.selectedRecipientDid}});
+        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.selected.their_did}});
     }
 
 
@@ -59,6 +99,11 @@ class ConnectionScreen extends Component {
         document.title = "issuer app"
         this.listPairwiseConnections()
     }
+
+    handleEdit(event, selected){ //Fuction 
+      this.setState({ selected: selected}); 
+   } 
+   
     // GET wallet/default/connection
     async listPairwiseConnections(){
         var self = this;
@@ -81,8 +126,8 @@ class ConnectionScreen extends Component {
             if (response.status === 200) {
 
             let data= []
-                
-              let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE data={data} showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
+                let selected;
+              let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={data} showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
               response.data.map((conn) => {
                   data.push(
                     {
@@ -104,26 +149,25 @@ class ConnectionScreen extends Component {
           console.log(error);
           });
     }
-
+    
     render(){
       return(
         <div className="App">
         <MuiThemeProvider>
         <IssuerBar />
             <div>
-                Selected recipient: {this.state.selectedRecipientDid}
+                Selected recipient: {this.state.selected.their_did}
                 <RaisedButton label="Issue credential" 
                 primary={true} style={style} 
                 onClick={() => this.handleGoToIssuingClick()} 
                 />
             </div>
         <div>
-        <br />
-        Pairwise connections:
-        <br />
+        <SchemaTable this={this}/>
 
-        
-        {this.state.pairwiseConnections}
+
+
+
         </div>
         </MuiThemeProvider>
       </div>
