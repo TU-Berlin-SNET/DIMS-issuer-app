@@ -63,7 +63,7 @@ function SchemaTable(props) {
             </Link>
           </Box>
         </Box>
-        {props.this.state.schemas}
+          {props.this.state.schemas}
         </Paper>
     </Grid>
   </div>
