@@ -134,7 +134,7 @@ function SchemaTable(props) {
   let self = props.this;
   return(
   <div className={classes.grid}>
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
+    <Grid item xs={10} md={8} xl={6} style={{margin:"auto"}}>
       <Box position="relative">
         <Paper  className={classes.card}>
           <Progressbar this={self} />
