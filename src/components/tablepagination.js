@@ -173,11 +173,11 @@ export default function CustomPaginationActionsTable(props) {
               <TableRow>
               {props.showAttr.map((attribute, i) => {
                 return (                  
-                  <TableCell key={i} width='30%' align='center' children={attribute}></TableCell>
+                  <TableCell key={i} align='center' children={attribute}></TableCell>
                   )
                 }
               )}
-              <TableCell width='30%' align='center'> more Attributes</TableCell>
+              <TableCell align='center'> more Attributes</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -191,14 +191,14 @@ export default function CustomPaginationActionsTable(props) {
                 >
                   {props.showAttr.map((attribute, i) => {
                     if(i===0){ return (                  
-                      <TableCell key={i} component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
+                      <TableCell key={i} align='center'  component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
                     else{ 
                       return( 
                       <TableCell key={i} align='center' children={row[attribute]}></TableCell>
                       )
                     }
                   })}
-                  <TableCell>      
+                  <TableCell align='center' >      
                     <MoreAttributes row={row} attrNames={moreAttributesNames} />
                   </TableCell>
                 </TableRow>

@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import List from '@material-ui/core/List';
+import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -28,7 +29,10 @@ function Sublist(props){
   let row = props.row
   let attribute = props.attribute
 
-  if(typeof row[attribute] !== 'object'){
+
+  if(row[attribute] === null)
+    return null
+  if(typeof row[attribute] !== 'object' ){
     return(
       <List  >
         <ListSubheader disableSticky>{attribute}</ListSubheader>
@@ -56,6 +60,7 @@ function Sublist(props){
 
 
 export default function AlertDialog(props) {
+  console.log(props)
   const [open, setOpen] = React.useState(false);
   let row = []
   row =props.row;
@@ -71,7 +76,7 @@ export default function AlertDialog(props) {
 
 
   return (
-    <div>
+    <Box>
       <IconButton onClick={handleClickOpen}>
         <MoreHoriz />
       </IconButton>
@@ -95,7 +100,7 @@ export default function AlertDialog(props) {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }
 

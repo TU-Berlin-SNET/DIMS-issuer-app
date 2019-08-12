@@ -25,7 +25,6 @@ import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -58,7 +57,10 @@ function SchemaTable(props) {
               Schemas
           </Typography>
           <Box position="absolute" top={0} right={0}>
-            <Link  to={"addASchema"}>
+            <Link  to={{
+              pathname: "addASchema",
+              state: {selected: props.this.state.selected},
+              }}>
               <AddIcon fontSize="large" />
             </Link>
           </Box>

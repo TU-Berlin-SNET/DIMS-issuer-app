@@ -90,7 +90,7 @@ class ConnectionScreen extends Component {
 */
 
     handleGoToIssuingClick(){
-        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.selected.their_did}});
+        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.fconole.their_did}});
     }
 
 
@@ -120,8 +120,6 @@ class ConnectionScreen extends Component {
         */
        
         await axios.get(apiBaseUrl + "wallet/default/connection", {headers: headers}).then(function(response){
-            console.log(response);
-            console.log(response.status);
             if (response.status === 200) {
 
             let data= []

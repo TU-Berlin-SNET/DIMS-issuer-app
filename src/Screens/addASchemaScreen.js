@@ -73,8 +73,11 @@ const useStyles = makeStyles(theme1 => ({
 
 function NewSchema(props) {
   const classes = useStyles(theme1);
-
+  // selected = the selected shema from the Schema Screen 
+  let selected = (props.this.props.location.state.selected);
+  console.log(selected);
   return (
+   
     <div className={classes.grid}>
     <Grid item xs={12} sm={10} md={8} lg={6} xl={4} style={{margin:"auto"}}>
     <Paper className={classes.newSchemaForm}>

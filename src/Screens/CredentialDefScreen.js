@@ -11,7 +11,7 @@ Material-UI is used for designing ui of the app
 */
 
 import RaisedButton from 'material-ui/RaisedButton';
-import {withRouter} from "react-router-dom";
+import {withRouter, Link} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List'
@@ -19,12 +19,52 @@ import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
+import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import AddIcon from '@material-ui/icons/Add';
+import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
 
 // var request = require('superagent');
 const apiBaseUrl = Constants.apiBaseUrl;
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
+
+const useStyles = makeStyles(theme => ({
+ CredentialDefTable: {
+    margin: '10vh',
+    padding: "10px" , 
+    textAlign:'center',
+    backgroundColor: 'rgb(0, 188, 212)', 
+    borderTopLeftRadius: '15px' , 
+    borderTopRightRadius: '15px',
+    color: 'white',
+  },
+  grid:{
+    width: '100%',
+  },
+}));
+
+function CredentialDefTable(props) {
+  const classes = useStyles();
+  return(
+  <div className={classes.grid}>
+    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
+        <Paper  className={classes.CredentialDefTable}>
+        <Box position="relative" >
+          <Typography  variant="h6">
+            Credential Defintions 
+          </Typography>
+        </Box>
+          {props.this.state.credDefs}
+        </Paper>
+    </Grid>
+  </div>
+  );
+}
 
 class CredentialDefScreen extends Component {
 /*
@@ -38,11 +78,11 @@ class CredentialDefScreen extends Component {
     super(props);
     Utils.checkLogin(this)
     this.state={
-      schemas: [],
-      credDefs: [],
+      credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={["wallet"]}/>,
       schemaId: "Click on the schema to select ID",
       tag: "Add your tag",
-      supportRevocation: false
+      supportRevocation: false,
+      selected: "",
     }
   }
   
@@ -71,47 +111,6 @@ class CredentialDefScreen extends Component {
   });
   }
   
-  async listSchemas(){
-    var self = this;
-    var headers = {
-      'Authorization': localStorage.getItem("token")
-    }
-    await axios.get(apiBaseUrl + "indyschema", {headers: headers}).then(function (response) {
-      console.log(response);
-      console.log(response.status);
-      console.log(response.data);
-      if (response.status === 200) {
-        let schemas = response.data.map((schema) => {
-          return(
-            <div>
-              <List onClick={() => self.setState({schemaId: schema.schemaId})}>
-                <ListItem>
-                {schema.name}
-                </ListItem>
-                <ListItem>
-                {schema.version}
-                </ListItem>
-                <ListItem>
-                {schema.schemaId}
-                </ListItem>
-                <ListItem>
-                  Attribute Names:
-                  <List>
-                  {schema.attrNames.map((attr) => {return(<ListItem>{attr}</ListItem>)})}
-                  </List>
-                </ListItem>
-              </List>
-            </div>
-          )
-        }
-        )
-        self.setState({schemas: schemas})
-      }
-    }).catch(function (error) {
-      //alert(error);
-      console.log(error);
-    });
-  }
   handleGoToIssuingClick(credDefId){
     this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
   }
@@ -126,38 +125,7 @@ class CredentialDefScreen extends Component {
       console.log(response.status);
       console.log(response.data);
       if (response.status === 200) {
-        let credDefs = response.data.map((credDef) => {
-          return(
-            <div>
-              <List>
-                <ListItem>
-                {credDef.credDefId}
-                <RaisedButton label="Issue credential" 
-                primary={true} style={style} 
-                onClick={() => self.handleGoToIssuingClick(credDef.credDefId)} 
-                />
-                </ListItem>
-                <ListItem>
-                {credDef.wallet}
-                </ListItem>
-                <ListItem>
-                {credDef.data.ver}
-                </ListItem>
-                <ListItem>
-                {credDef.data.schemaId}
-                </ListItem>
-                <ListItem>
-                  Attributes:
-                  <List>
-                  {Object.keys(credDef.data.value.primary.r).map((key) => 
-                    {return(<ListItem>{"key: " + key + " value: " + credDef.data.value.primary.r[key]}</ListItem>)})}
-                  </List>
-                </ListItem>
-              </List>
-            </div>
-          )
-        }
-        )
+    let credDefs = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["wallet"]}/>
         self.setState({credDefs: credDefs})
       }
     }).catch(function (error) {
@@ -166,13 +134,16 @@ class CredentialDefScreen extends Component {
     });
   }
 
+  handleEdit(event, selected){ //Fuction 
+    this.setState({ selected: selected}); 
+ } 
+
   componentWillMount(){
 
   }
 
   componentDidMount(){
     document.title = "issuer app"
-    this.listSchemas()
     this.listCredDefs()
   }
 
@@ -214,14 +185,8 @@ class CredentialDefScreen extends Component {
             <br />
             <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClickNewSchema(event)} />
         </div>
-        <div>
-          Schemas:
-        {this.state.schemas}
-        </div>
-        <div>
-          Credential Definitions:
-        {this.state.credDefs}
-        </div>
+
+          <CredentialDefTable this={this}/>
     </MuiThemeProvider>
       </div>
     );
