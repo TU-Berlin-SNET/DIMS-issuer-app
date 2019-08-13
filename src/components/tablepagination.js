@@ -108,9 +108,6 @@ export default function CustomPaginationActionsTable(props) {
       rows = props.data
   }
 
-  if(rows.length!==0)
-    moreAttributesNames = Object.keys(rows[0]).filter(x => !props.showAttr.includes(x));
-
     const [selected, setSelected] = React.useState([]);
     const classes = useStyles2();
     const [page, setPage] = React.useState(0);
@@ -182,6 +179,8 @@ export default function CustomPaginationActionsTable(props) {
             </TableHead>
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                        console.log("oldRow")
+                                        console.log(row)
                 const isItemSelected = isSelected(row);
                 return(
                 <TableRow key={row[props.showAttr[0]]} 
@@ -190,8 +189,20 @@ export default function CustomPaginationActionsTable(props) {
                   selected= {isItemSelected}
                 >
                   {props.showAttr.map((attribute, i) => {
+                 if(attribute.includes('.')){
+                      let pathToAttribute = attribute.split(".")
+                      var lengthOfPath = pathToAttribute.length - 1
+                      let currentAttribute = attribute
+                      let newRow = row
+                      for(var i=0; i<lengthOfPath; i++){
+                        currentAttribute = pathToAttribute[i]
+                        newRow = newRow[currentAttribute]
+                      }
+                      currentAttribute = pathToAttribute[lengthOfPath]
+                      return( <TableCell key={i} align='center' children={newRow[currentAttribute]}></TableCell>)
+                    } 
                     if(i===0){ return (                  
-                      <TableCell key={i} align='center'  component="th" scope="row" children={row[props.showAttr[0]]}></TableCell>)}
+                      <TableCell key={i} align='center'  component="th" scope="row" children={row[attribute]}></TableCell>)}
                     else{ 
                       return( 
                       <TableCell key={i} align='center' children={row[attribute]}></TableCell>
@@ -199,7 +210,7 @@ export default function CustomPaginationActionsTable(props) {
                     }
                   })}
                   <TableCell align='center' >      
-                    <MoreAttributes row={row} attrNames={moreAttributesNames} />
+                    <MoreAttributes row={row} />
                   </TableCell>
                 </TableRow>
                 )

@@ -125,7 +125,7 @@ class CredentialDefScreen extends Component {
       console.log(response.status);
       console.log(response.data);
       if (response.status === 200) {
-    let credDefs = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["wallet"]}/>
+    let credDefs = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["wallet", "credDefId", "data.ver"]}/>
         self.setState({credDefs: credDefs})
       }
     }).catch(function (error) {

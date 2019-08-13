@@ -12,6 +12,7 @@ import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader';
+import ReactJson from 'react-json-view'
 
 
 const useStyles = makeStyles(theme => ({
@@ -21,49 +22,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-function Sublist(props){
-
-  const classes = useStyles();
-
-  let row = props.row
-  let attribute = props.attribute
-
-
-  if(row[attribute] === null)
-    return null
-  if(typeof row[attribute] !== 'object' ){
-    return(
-      <List  >
-        <ListSubheader disableSticky>{attribute}</ListSubheader>
-        <ListItem divider={true}>
-          <ListItemText >{row[attribute]}</ListItemText>
-        </ListItem>
-      </List>
-    )
-  }
-  else{
-    return( <List>
-       <ListSubheader disableSticky>{attribute}</ListSubheader> 
-        {Object.keys(row[attribute]).map(function(key,i){
-          return(
-            <List className={classes.subList} key={i}>
-            <Sublist row={row[attribute]} attribute={key} />
-            </List>
-          )
-        })}
-      </List>
-
-    )
-  }
-}
-
-
 export default function AlertDialog(props) {
-  console.log(props)
   const [open, setOpen] = React.useState(false);
-  let row = []
-  row =props.row;
+  let row =props;
+  console.log(row)
   function handleClickOpen() {
     setOpen(true);
   }
@@ -88,11 +50,7 @@ export default function AlertDialog(props) {
       >
         <DialogTitle id="alert-dialog-title">{"Attributes"}</DialogTitle>
         <DialogContent>
-        <List component="nav" aria-label="Main mailbox folders">
-          {props.attrNames.map(function(attribute, i) {
-            return <Sublist row={row} attribute={attribute} key={i}/>
-          })}
-        </List>
+        <ReactJson src={row.row} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
