@@ -10,7 +10,7 @@ Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 import {withRouter} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
@@ -23,16 +23,16 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
 const useStyles = makeStyles(theme => ({
     ConnectionTable: {
-      margin: '10vh',
+      margin: '15vh',
       padding: "10px" , 
       textAlign:'center',
-      backgroundColor: 'rgb(0, 188, 212)', 
       borderTopLeftRadius: '15px' , 
       borderTopRightRadius: '15px',
       color: 'white',
@@ -47,14 +47,14 @@ function SchemaTable(props) {
     return(
         <div className={classes.grid}>
         <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-            <Paper  className={classes.ConnectionTable}>
+            <Container  className={classes.ConnectionTable}>
             <Box position="relative" >
                 <Typography  variant="h6">
                 Pairwise Connections
                 </Typography>
             </Box>
             {props.this.state.pairwiseConnections}
-            </Paper>
+            </Container>
         </Grid>
         </div>
     );
@@ -123,7 +123,6 @@ class ConnectionScreen extends Component {
             if (response.status === 200) {
 
             let data= []
-                let selected;
               let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={data} showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
               response.data.map((conn) => {
                   data.push(
@@ -142,7 +141,6 @@ class ConnectionScreen extends Component {
               })
             }
           }).catch(function (error) {
-          alert(error);
           console.log(error);
           });
     }
@@ -151,13 +149,10 @@ class ConnectionScreen extends Component {
       return(
         <div className="App">
         <MuiThemeProvider>
-        <IssuerBar />
+        <IssuerBar actualTab={5}/>
             <div>
                 Selected recipient: {this.state.selected.their_did}
-                <RaisedButton label="Issue credential" 
-                primary={true} style={style} 
-                onClick={() => this.handleGoToIssuingClick()} 
-                />
+                <Button variant='contained' color='primary' onClick={() => this.handleGoToIssuingClick()} >Issue credential</Button>
             </div>
         <div>
         <SchemaTable this={this}/>

@@ -22,15 +22,12 @@ import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -40,11 +37,10 @@ const apiBaseUrl = Constants.apiBaseUrl;
 
 
 const useStyles = makeStyles(theme => ({
-  SchemaTable: {
-    margin: '10vh',
+  CredentialTable: {
+    margin: '15vh',
     padding: "10px" , 
     textAlign:'center',
-    backgroundColor: 'rgb(0, 188, 212)', 
     borderTopLeftRadius: '15px' , 
     borderTopRightRadius: '15px',
     color: 'white',
@@ -54,24 +50,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SchemaTable(props) {
+function CredentialTable(props) {
   const classes = useStyles();
   return(
   <div className={classes.grid}>
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Paper  className={classes.SchemaTable}>
+        <Container className={classes.CredentialTable}>
         <Box position="relative" >
           <Typography  variant="h6">
-              Schemas
+              Credentials
           </Typography>
-          <Box position="absolute" top={0} right={0}>
-            <Link  to={"addASchema"}>
-              <AddIcon fontSize="large" />
-            </Link>
-          </Box>
         </Box>
           {props.this.state.credentialRequests}
-        </Paper>
+        </Container>
     </Grid>
   </div>
   );
@@ -235,8 +226,12 @@ async listCredentialRequests(){
         )
       })
       */
-     let credReqs = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["recipientDid","senderDid", "id"]}/>
-      self.setState({credentialRequests: credReqs})
+     let credReqs = <CUSTOMPAGINATIONACTIONSTABLE 
+     onEdit={(event, selected) => self.handleEdit(event, selected)} 
+     data={response.data} 
+     showAttr={["recipientDid","senderDid", "id"]}/>
+     
+     self.setState({credentialRequests: credReqs})
     }
   }).catch(function (error) {
   //alert(error);
@@ -314,8 +309,8 @@ render() {
   return(
     <div className="App">
       <MuiThemeProvider>
-      <IssuerBar />
-      <SchemaTable this={this}/>
+      <IssuerBar actualTab={1} />
+      <CredentialTable this={this}/>
       
 
       <table className="CredentialScreenLayout">

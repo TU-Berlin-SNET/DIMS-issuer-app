@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 import {withRouter} from "react-router-dom";
 import Login from './../Login';
 import Register from './../Register';
+import Box from '@material-ui/core/Box'
 
 const style = {
   margin: 15,
@@ -15,13 +16,11 @@ class Loginscreen extends Component {
     this.handler = this.authHandler.bind(this)
     var loginButtons=[];
     loginButtons.push(
-      <div>
-       <MuiThemeProvider>
-       <div>
-          <RaisedButton label={"Register as Issuer"} primary={true} style={style} onClick={(event) => this.handleClick(event,'issuer')}/>
-      </div>
-      </MuiThemeProvider>
-      </div>
+      <MuiThemeProvider>
+      <Box position='absolute' left='0' right='0' top='50%' >
+          <Button  variant = 'contained' color='primary'  onClick={(event) => this.handleClick(event,'issuer')}>Register as Issuer</Button>
+    </Box>
+    </MuiThemeProvider>
     )
     this.state={
       username:'',
@@ -63,11 +62,9 @@ class Loginscreen extends Component {
       let loginButtons=[];
       loginButtons.push(
         <div key="login-button">
-        <MuiThemeProvider>
           <div>
-             <RaisedButton label={"Login"} primary={true} style={style} onClick={(event) => this.handleClick(event,userRole)}/>
+             <Button label={"Login"} color='primary'  onClick={(event) => this.handleClick(event,userRole)}/>
          </div>
-         </MuiThemeProvider>
         </div>
       )
       this.setState({
@@ -80,12 +77,9 @@ class Loginscreen extends Component {
     else{
       let loginscreen=[],loginButtons=[];
       loginButtons.push(
-        <div>
-         <MuiThemeProvider>
+
          <div>
-            <RaisedButton label={"Register as an Issuer"} primary={true} style={style} onClick={(event) => this.handleClick(event,'issuer')}/>
-        </div>
-        </MuiThemeProvider>
+            <Button label={"Register as an Issuer"}  onClick={(event) => this.handleClick(event,'issuer')}/>
         </div>
       )
       loginscreen.push(<Login parentContext={this} appContext={this.props.appContext} />);
@@ -100,13 +94,13 @@ class Loginscreen extends Component {
   }
   render() {
     return (
-      <div className="loginscreen" key="loginscreen">
-        {this.state.loginscreen}
-        <div>
-          {this.state.loginmessage}
-          {this.state.loginButtons}
-        </div>
-      </div>
+      <Box  position='relative' height='100vh' className="loginscreen" key="loginscreen">
+          {this.state.loginscreen}
+          <Box position='absolute' left= '0' right= '0' top='50%' >
+          <Box mb='5vh'>{this.state.loginmessage}</Box>
+          <Box>{this.state.loginButtons}</Box>
+          </Box>
+      </Box>
     );
   }
 }

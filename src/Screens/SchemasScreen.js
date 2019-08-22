@@ -24,19 +24,18 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
-import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
 const useStyles = makeStyles(theme => ({
   SchemaTable: {
-    margin: '10vh',
+    margin: '15vh',
     padding: "10px" , 
     textAlign:'center',
-    backgroundColor: 'rgb(0, 188, 212)', 
     borderTopLeftRadius: '15px' , 
     borderTopRightRadius: '15px',
     color: 'white',
@@ -51,7 +50,7 @@ function SchemaTable(props) {
   return(
   <div className={classes.grid}>
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Paper  className={classes.SchemaTable}>
+        <Container className={classes.SchemaTable}>
         <Box position="relative" >
           <Typography  variant="h6">
               Schemas
@@ -66,7 +65,7 @@ function SchemaTable(props) {
           </Box>
         </Box>
           {props.this.state.schemas}
-        </Paper>
+        </Container>
     </Grid>
   </div>
   );
@@ -132,7 +131,7 @@ class SchemaScreen extends Component {
     return (
       <MuiThemeProvider>
         <Box>
-          <IssuerBar/>   
+          <IssuerBar actualTab={4}/>   
           <SchemaTable this={this}/>
         </Box>
       </MuiThemeProvider> 

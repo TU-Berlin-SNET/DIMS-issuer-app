@@ -27,13 +27,55 @@ import Select from 'react-select'
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
+import Container from '@material-ui/core/Container';
+
+
+import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
+import Grid from '@material-ui/core/Grid';
+import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
 const apiBaseUrl = Constants.apiBaseUrl;
+
+const useStyles = makeStyles(theme => ({
+  CredentialTable: {
+    margin: '15vh',
+    padding: "10px" , 
+    textAlign:'center',
+    borderTopLeftRadius: '15px' , 
+    borderTopRightRadius: '15px',
+    color: 'white',
+  },
+  grid:{
+    width: '100%',
+  },
+}));
+
+function CredentialTable(props) {
+  const classes = useStyles();
+  return(
+  <div className={classes.grid}>
+    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
+        <Container  className={classes.CredentialTable}>
+        <Box position="relative" >
+          <Typography  variant="h6">
+              Proofs
+          </Typography>
+        </Box>
+          {props.this.state.proofs}
+        </Container>
+    </Grid>
+  </div>
+  );
+}
 
 class ProofScreen extends Component {
 
     constructor(props){
         super(props);
-  //      Utils.redirectToLogin(this)
+        Utils.checkLogin(this)
         let proofOfIncome = [
           ["Bank"], ["Last name"], ["First name"], ["Date of birth"] ,
           ["Month 1"], ["Income month 1"],["Balance month 1"],
@@ -55,7 +97,8 @@ class ProofScreen extends Component {
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: []
+          proofs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+          
         }
       } else {
         this.state={
@@ -171,10 +214,15 @@ async listProofs(){
   'Authorization': localStorage.getItem("token") 
  }
  await axios.get(apiBaseUrl + 'proof' , {headers: headers}).then(function (response) {
-    console.log(response);
-    console.log(response.status);
     if (response.status === 200) {
-      let proofs = <List>{response.data.sort(Utils.compareDates).map((proof) => {if(proof.status === "received"){
+      let proofs = <CUSTOMPAGINATIONACTIONSTABLE 
+      onEdit={(event, selected) => self.handleEdit(event, selected)} 
+      data={response.data} 
+      showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}/>
+      self.setState({proofs: proofs})
+    }
+      /*{
+     let proofs = <List>{response.data.sort(Utils.compareDates).map((proof) => {if(proof.status === "received"){
         return(
           <ListItem>
           <div>
@@ -240,9 +288,14 @@ async listProofs(){
           </div>
           </ListItem>
         )}
-      })}</List>
-      self.setState({proofs: proofs})
-    }
+      })}</List> 
+/*      response.data.sort(Utils.compareDates).map((proof) => {
+        if(proof.status === "received") receivedProofs.push(proof)
+        else pendingProofs.push(proof)
+      }) */
+
+   //   self.setState({proofs: proofs})
+   // }
   }).catch(function (error) {
   //alert(error);
   console.log(error);
@@ -305,6 +358,10 @@ sendCredentialOfferClick(){
   this.sendCredentialOffer()
 }
 
+handleEdit(event, selected){ //Fuction 
+  this.setState({ selected: selected}); 
+} 
+
 /* POST 
 {
 	"credentialRequestId": "5c7071b8db4eb00010a3779d",
@@ -321,8 +378,10 @@ render() {
     <div className="App">
       <MuiThemeProvider>
       <div>
-      <IssuerBar />
-          <div>
+      <IssuerBar actualTab={3}/>
+      <CredentialTable this={this}/>
+      
+       {/*   <div>
       Send proof request:
       <br />
       <TextField
@@ -372,10 +431,10 @@ render() {
                     </List>
             <br />
             <RaisedButton label="Send proof request" primary={true} style={style} onClick={(event) => this.sendProofRequestClick(event)} />
-      </div>
-      {this.state.proofs}
-      
-      <div>
+      </div>     
+                  */}
+
+    {/* <div>
       Verify Proof received from DID {this.state.recipientDid}:
       <br />
       <TextField
@@ -386,11 +445,13 @@ render() {
             />
             <br />
             <RaisedButton label="Verify proof" primary={true} style={style} onClick={(event) => this.verifyProofClick(event)} />
-      </div>
+      </div>    
+      */}
       
       </div>
       </MuiThemeProvider>
     </div>
+
   )
 }
 

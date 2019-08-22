@@ -1,0 +1,58 @@
+import { createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+    overrides:{
+        MuiAppBar:{
+            colorPrimary: {
+              backgroundColor:  '#6980FF',
+            },
+            colorDefault: {
+                backgroundColor :'#A0A0A0'
+            },
+        },
+        MuiTab: {
+          textColorPrimary: '#FFF',
+          colorPrimary: '#FFF',
+          textColorSecondary: '#FFF',
+          colorDefault: '#FFF'
+        },
+        MuiLink:{
+          colorPrimary:'#FFFFFF',
+            textColorPrimary: '#FFFFFF'
+        },
+        MuiContainer: {
+          root:{
+                      backgroundColor: '#6980FF',
+          colorDefault:{
+          backgroundColor: '#6980FF',
+          }
+
+          }
+
+        }
+
+    },
+  typography: {
+    useNextVariants: true,
+    colorPrimary: '#FFFFFF',
+  },
+  palette: {
+    primary: {
+      light: '#63ccff',
+      main: '#6980ff',
+      dark: '#006db3',
+      contrastText: '#FFF',
+
+    },
+    secondary:{
+        main: '#FF7C7C',
+        light: '#000000',
+        contrastText:' #FFFFFF'
+    },
+    colorDefault:{
+      main: '#FF0000'
+    }
+  },
+});
+
+export default theme;

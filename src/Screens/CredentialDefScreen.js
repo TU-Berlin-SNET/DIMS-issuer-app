@@ -26,6 +26,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
 
 // var request = require('superagent');
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -35,10 +36,9 @@ const apiBaseUrl = Constants.apiBaseUrl;
 
 const useStyles = makeStyles(theme => ({
  CredentialDefTable: {
-    margin: '10vh',
+    margin: '15vh',
     padding: "10px" , 
-    textAlign:'center',
-    backgroundColor: 'rgb(0, 188, 212)', 
+    textAlign:'center', 
     borderTopLeftRadius: '15px' , 
     borderTopRightRadius: '15px',
     color: 'white',
@@ -53,14 +53,14 @@ function CredentialDefTable(props) {
   return(
   <div className={classes.grid}>
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Paper  className={classes.CredentialDefTable}>
+        <Container  className={classes.CredentialDefTable}>
         <Box position="relative" >
           <Typography  variant="h6">
             Credential Defintions 
           </Typography>
         </Box>
           {props.this.state.credDefs}
-        </Paper>
+        </Container>
     </Grid>
   </div>
   );
@@ -161,8 +161,10 @@ class CredentialDefScreen extends Component {
     return (
       <div className="App">
       <MuiThemeProvider>
+
         <div>
-          <IssuerBar />
+          <IssuerBar actualTab={2} />
+           {/* 
             <TextField
                 hintText="Enter the schema id or click on the schema to select it"
                 floatingLabelText="Schema id"
@@ -184,6 +186,8 @@ class CredentialDefScreen extends Component {
               </select>
             <br />
             <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClickNewSchema(event)} />
+
+            */}
         </div>
 
           <CredentialDefTable this={this}/>

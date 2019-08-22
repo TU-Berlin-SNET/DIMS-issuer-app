@@ -6,10 +6,42 @@ import axios from 'axios';
 import {withRouter} from "react-router-dom";
 import IssuerBar from "./components/IssuerBar"
 import * as Constants from "./Constants"
+import { Button } from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box'
+
+
+
 const apiBaseUrl = Constants.apiBaseUrl;
+
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
+
+function LoginForm(props) {
+
+    return(
+        <Box position='absolute'  left='0' right='0' bottom='50%'>           
+        <Box>
+     <TextField
+         hintText="Enter your Username"
+         floatingLabelText="Username"
+         onChange={(event, newValue) => props.this.setState({ username: newValue })}
+     />
+     </Box>
+     <Box>
+     <TextField
+         type="password"
+         hintText="Enter your Password"
+         floatingLabelText="Password"
+         onChange={(event, newValue) => props.this.setState({ password: newValue })}
+     />
+     </Box>
+     <RaisedButton label="Submit"  onClick={(event) => props.this.handleLoginClick(event)} />
+     </Box>
+    );
+  }
+  
 
 
 class Login extends Component {
@@ -80,27 +112,12 @@ componentDidMount(){
     }
     render() {
         return (
-          <MuiThemeProvider>
-          <div>
-              <IssuerBar />
-              <TextField
-                  hintText="Enter your Username"
-                  floatingLabelText="Username"
-                  onChange={(event, newValue) => this.setState({ username: newValue })}
-              />
-              <br />
-              <TextField
-                  type="password"
-                  hintText="Enter your Password"
-                  floatingLabelText="Password"
-                  onChange={(event, newValue) => this.setState({ password: newValue })}
-              />
-              <br />
-              <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleLoginClick(event)} />
-          </div>
-          
-      </MuiThemeProvider>
-            
+            <MuiThemeProvider >
+                <IssuerBar />        
+                <LoginForm this={this}/>
+            </MuiThemeProvider> 
+
+    
         );
     }
 }

@@ -1,24 +1,73 @@
 import React, { Component } from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import List from 'material-ui/List';
 import ListItem from 'material-ui/List/ListItem';
-import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { Link, withRouter} from "react-router-dom";
 import Box from '@material-ui/core/Box';
+import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import { Button } from '@material-ui/core';
+import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import DIMSLogo from'./DIMSLogo';
+
+const useStyles = makeStyles({
+  root: {
+    flexGrow: 1,
+  },
+});
+
+function StyledAppBar(props) {
+  const classes = useStyles();
+  const [value, setValue] = React.useState(0);
+
+
+  return (
+    <Box>
+
+    <AppBar position='relative' color='primary'>
+      <Box position= 'absolute'  left='3vw'>
+    <  DIMSLogo />
+    </Box>
+      <Tabs
+        value={props.actualTab}
+        indicatorColor="none"
+        centered
+      >
+        <Tab  component={Link}  label={'Onboarding'}  to={'onboarding'} />
+        <Tab  component={Link}  label={'Credential'}    to={'credential'} />
+        <Tab  component={Link}   label={'Cred. definition'}  to={'credentialdef'} />
+        <Tab  component={Link}   label={'Proofs'}  to={'proofs'} />
+        <Tab  component={Link}   label={'Schemas'}  to={'schemas'} />
+        <Tab  component={Link}   label={'Connections'}  to={'connections'} />
+          </Tabs>
+          <Box  position= 'absolute'  top ='20%' right='1vw' >
+              {props.loginComponent}
+              </Box>
+    </AppBar>
+    </Box>
+  );
+}
+
+
+
 
 class IssuerBar extends Component {
     constructor(props) {
         super(props);
-        
-        var localloginComponent=[];
+        console.log(props)
         this.state = {
             username: '',
             password: '',
-            loginComponent:localloginComponent,
+            loginComponent: <Link underline='none' style= {{color: '#FFFFFF' }}   to={''}>Login</Link>,
             draweropen: false
         }
 }
@@ -44,45 +93,14 @@ handleDrawerClose = () => {
     }
 
     render() {
+
         return (
-          <MuiThemeProvider>
-            <Box>
-              <AppBar title="Issuer App" onLeftIconButtonClick={() => this.handleDrawerOpen()}>
-            </AppBar>
-              <Drawer
-            variant="persistent"
-            anchor="left"
-            open={this.state.draweropen}
-          >
-            <div>
-              <IconButton onClick={this.handleDrawerClose}>
-                {<ChevronLeftIcon />}
-              </IconButton>
-            </div>
-            <Divider />
-            <List>
-              {
-                [['Home',""], ['Onboarding',"onboarding"], ['Credential',"credential"],['Cred. definition',"credentialdef"],["Proofs", "proofs"], ['Schemas',"schemas"], ['Connections',"connections"]].map((item, i) => (
-                <Link key={i} to={item[1]} style={{ textDecoration: 'none' }}>
-                <ListItem key={item[0]}>
-                  {item[0]}
-                </ListItem>
-                </Link>
-              ))}
-            </List>
-            <Divider />
-            <List>
-            <Link to="" style={{ textDecoration: 'none' }} onClick={() => this.handleLogout()}>
-            <ListItem key={"Logout"}>
-            Logout
-            </ListItem>
-            </Link>
-            </List>
-          </Drawer>
+            <Box >
+              <StyledAppBar zIndex='appBar' actualTab = {this.props.actualTab} loginComponent={this.state.loginComponent} />
           </Box>
-      </MuiThemeProvider>
-            
         );
     }
 }
-export default withRouter(IssuerBar);
+
+
+export default withStyles({ withTheme: true })(IssuerBar);

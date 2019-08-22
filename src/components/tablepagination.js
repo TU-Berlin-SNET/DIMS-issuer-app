@@ -104,9 +104,9 @@ var moreAttributesNames= []
 
 export default function CustomPaginationActionsTable(props) {
 
-  if(props.data.length !== rows.length){
+  //if(props.data.length !== rows.length){
       rows = props.data
-  }
+  //}
 
     const [selected, setSelected] = React.useState([]);
     const classes = useStyles2();
@@ -162,7 +162,8 @@ export default function CustomPaginationActionsTable(props) {
       </Paper>
       )
     }
-    return (
+    else {
+      return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
@@ -196,7 +197,9 @@ export default function CustomPaginationActionsTable(props) {
                       let newRow = row
                       for(var i=0; i<lengthOfPath; i++){
                         currentAttribute = pathToAttribute[i]
-                        newRow = newRow[currentAttribute]
+                        if(newRow[currentAttribute] !== null)
+                          newRow = newRow[currentAttribute]
+                        else return <TableCell key={i} align='center' children={null}></TableCell>
                       }
                       currentAttribute = pathToAttribute[lengthOfPath]
                       return( <TableCell key={i} align='center' children={newRow[currentAttribute]}></TableCell>)
@@ -244,4 +247,5 @@ export default function CustomPaginationActionsTable(props) {
         </div>
       </Paper>
     );
+    }
   }

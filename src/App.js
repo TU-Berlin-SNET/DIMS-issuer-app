@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
-import Loginscreen from './Screens/Loginscreen'
+import Loginscreen from './Screens/LoginScreen'
 import {withRouter } from "react-router-dom";
-import './App.css';
+
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+
 import Box from '@material-ui/core/Box'
+
+
+
 
 class App extends Component {
   constructor(props){
@@ -20,9 +26,11 @@ class App extends Component {
   }
   render() {
     return (
+      <MuiThemeProvider>
       <Box className="App">
         {this.state.loginPage}
       </Box>
+      </MuiThemeProvider>
     );
   }
 }

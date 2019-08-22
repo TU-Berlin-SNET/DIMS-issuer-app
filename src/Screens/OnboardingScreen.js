@@ -96,78 +96,8 @@ function RenderQR(props){
   }
 }
 
-function Progressbar(props){
-  const classes = useStyles();
-  let self = props.this;
-  return(
-    <Box className={classes.progressBar}>
-      <Box position="absolute" left="10%">
-        <Circle    active='true'></Circle>
-        <Box  position= 'absolute' top={5} left = '120%'>
-          <Typography color= 'textSecondary'>Register</Typography>
-        </Box>
-      </Box>
-      <Box position="absolute" left="35%">
-        <Circle    active='false'></Circle>
-        <Box  position= 'absolute' top={5} left = '120%'>
-          <Typography color= 'textSecondary' noWrap>Send Connection Offer</Typography>
-        </Box>
-      </Box>
-      <Box position="absolute" left="60%">
-        <Circle    active='false'></Circle>
-        <Box  position= 'absolute' top={5} left = '120%'>
-          <Typography color= 'textSecondary' noWrap>Onboard User</Typography>
-        </Box>
-      </Box>
-      <Box position="absolute" left="85%">
-        <Circle    active='false'></Circle>
-        <Box  position= 'absolute' top={5} left = '120%'>
-          <Typography color= 'textSecondary'>Finish</Typography>
-        </Box>
-      </Box>
-    </Box>
-    );
-}
 
-function SchemaTable(props) {
-  const classes = useStyles();
-  let self = props.this;
-  return(
-  <div className={classes.grid}>
-    <Grid item xs={10} md={8} xl={6} style={{margin:"auto"}}>
-      <Box position="relative">
-        <Paper  className={classes.card}>
-          <Progressbar this={self} />
-          <Box position='absolute' bottom="50%" right={0} left={0}>
-            <Box>
-              <TextField
-                    hintText="Enter username of citizen"
-                    floatingLabelText="Citizen username"
-                    value={self.state.username}
-                    onChange={(event, newValue) => {self.setState({ username: newValue });self.handleConnMessage(event)}}
-                />
-            </Box>
-            <Box>
-              <TextField
-                hintText="Enter app name"
-                floatingLabelText="App name"
-                value={self.state.app}
-                onChange={(event, newValue) => {self.setState({ app: newValue });self.handleConnMessage(event)}}
-               />
-            </Box>
-          </Box>  
-          <Box position='absolute' bottom="2%" right= "1%" style={{width:'10%' }}>
-          <Button variant='contained' label="Next"  fullWidth style={{backgroundColor :'rgb(0, 188, 212)' , color:'white'}} onClick={(event) => props.this.handleClickNext(event)} >
-              Next
-          </Button>
-          </Box>
-        </Paper>
-        </Box>
 
-    </Grid>
-  </div>
-  );
-}
 
 class OnboardingScreen extends Component {
   constructor(props){
@@ -311,13 +241,15 @@ class OnboardingScreen extends Component {
 
  handleSelect(event) {
   var self = this;
+  self.setState({
+    onboarded: event.target.value
+  })
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token") 
   }
-  this.setState({
-    onboarded: event.target.value
-  });
+  
+
   if(event.target.value === true){
      var payload_conn = {
                   "meta": {
@@ -339,6 +271,7 @@ class OnboardingScreen extends Component {
                   console.log(error);
               });
             } 
+            console.log(this.state.onboarded)
 }
 
 handleConnMessage(event) {
@@ -395,12 +328,11 @@ handleLogout(event){
       <MuiThemeProvider>
       <div>
       <center>
-      <IssuerBar />
-      <br />
-      <SchemaTable this={this}/>
-  
-  Create connection QR code:
-          <div>
+      <IssuerBar actualTab={0}/>
+
+  }
+
+          {/*
           <TextField
                 hintText="Enter username of citizen"
                 floatingLabelText="Citizen username"
@@ -414,15 +346,14 @@ handleLogout(event){
                 defaultValue="issuer app"
                 value={this.state.app}
                 onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
-            />
-            <br/>
-          <br />
-          <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/>
-          <br />
-          </div>
+            /> */}
+
+           <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
+
+           {/* 
           Select credential Definition for automatic credential offer:
       <br />
-      <Select
+    <Select
           inputId="react-select-single"
           TextFieldProps={{
             label: 'User',
@@ -435,36 +366,7 @@ handleLogout(event){
           options={this.state.credentialDefinitions}
           onChange={(event) => this.setState({credDefId: event.value})}
         />
-          <div>
-        Is the citizen already onboarded? <br />
-              <select value={this.state.onboarded} onChange={this.handleSelect.bind(this)}>
-              <option value={true}>Already onboarded</option>
-              <option value={false}>Not yet onboarded</option>
-              </select>
-          </div>
-          <TextField
-                hintText="Enter username of citizen"
-                floatingLabelText="Citizen username"
-                value={this.state.username}
-                onChange={(event, newValue) => this.setState({ username: newValue })}
-            />
-            <br/>
-          <TextField
-                hintText="Enter citizen DID"
-                floatingLabelText="Citizen DID"
-                value={this.state.citizen_did}
-                onChange={(event, newValue) => this.setState({ citizen_did: newValue })}
-            />
-            <br/>
-            <TextField
-                hintText="Enter citizen verkey"
-                floatingLabelText="Citizen verkey"
-                value={this.state.citizen_verkey}
-                onChange={(event, newValue) => this.setState({ citizen_verkey: newValue })}
-            />
-             <br />
-           <RaisedButton label="Onboard citizen" primary={true} style={style} onClick={(event) => this.handleOnboarding(event)}/>
-      
+        */}
       </center>
       </div>
           <div onClick={(event) => this.handleDivClick(event)}>
