@@ -166,6 +166,9 @@ class OnboardingScreen extends Component {
                   console.log(response.status);
                   if (response.status === 201) {
                     self.setState({connection_message: JSON.stringify(response.data.message)})
+                    //TODO set state citizen_did 
+                    // go to SendCredentialScreen
+
                   }
                 }).catch(function (error) {
                   //alert(error);
@@ -180,40 +183,6 @@ class OnboardingScreen extends Component {
   Usage:This fxn is used to remove file from filesPreview div
   if user clicks close icon adjacent to selected file
   */
-
- handleSelect(event) {
-  var self = this;
-  self.setState({
-    onboarded: event.target.value
-  })
-  var headers = {
-    'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
-  }
-  
-  if(event.target.value === true){
-     var payload_conn = {
-                  "meta": {
-                    "username": self.state.username
-                  },
-                  "data": {
-                    "app": self.state.app
-                  }
-                }
-              axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-                .then(function (response) {
-                  console.log(response);
-                  console.log(response.status);
-                  if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message)})
-                  }
-                }).catch(function (error) {
-                  //alert(error);
-                  console.log(error);
-              });
-            } 
-            console.log(this.state.onboarded)
-}
 
 /* add additional content for conn message
 
@@ -265,12 +234,18 @@ handleTabChange(newTab){
   this.props.onTabChange(newTab)
 }
 
+goTosendCredentialScreen(){
+  this.props.history.push({
+    pathname: '/sendCredOffer',
+    state: { citizen_did: this.state.citizen_did }
+  })
+}
+
+
   render() {
     return (
-      
       <MuiThemeProvider>
       <div className="App">
-      <center>
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
   
       <Grid item xs={8} md={6} xl={4} style={{margin:"auto"}}>
@@ -285,7 +260,7 @@ handleTabChange(newTab){
                 >
                 {/*padding*/}
                 <Box position='absolute' top='8%' left='0' right='0'>
-                  <Typography children={'Onboard new Citizen'} /> 
+                  <Typography>Onboard Citizen {this.props.location.state.firstName} {this.props.location.state.familyName}</Typography> 
                </Box>
                 <Grid item xs={12} >
                     <Box height='8vh' />       
@@ -293,7 +268,7 @@ handleTabChange(newTab){
                   <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
                   <Grid item xs={12} >
                     <Box height='8vh' />       
-                </Grid>
+                  </Grid>
               </Grid>
               <Box position='absolute' bottom='8%' left='0' right='0'>
                 <Typography children={'Scan the QR Code wih your mobile app'} /> 
@@ -306,7 +281,6 @@ handleTabChange(newTab){
                     color='primary'
                     checked={this.state.sendCredentialOfferCheck}
                     value="onboardChecked"
-    
                 />
                 </Box>
             </Box>
@@ -346,8 +320,8 @@ handleTabChange(newTab){
           onChange={(event) => this.setState({credDefId: event.value})}
         />
         */}
-      </center>
       <Button  color="primary" style={style} onClick={(event) => this.handleLogout(event)}>Logout</Button>
+      <Button  color="primary" style={style} onClick={(event) => this.goTosendCredentialScreen(event)}>Send Credential</Button>
       </div>
           </MuiThemeProvider>
     );

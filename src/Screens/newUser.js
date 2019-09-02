@@ -26,33 +26,32 @@ import Button from '@material-ui/core/Button';
 //var apiBaseUrl = ""REPLACE"";
 
 
-function  handleClickAdd(props){
-
-    console.log(props)
-    let self = props
-    if(self.state.onboardChecked===true)
-        self.props.history.push("/onboarding");
-}
-
 class newUserScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
     this.state={
-      //TODO: change username
-      username: '',
       connection_message: '',
-      app: "",
       citizen_did:'',
       citizen_verkey:'',
-      onboarded:true,
-      printingmessage:'',
-      printButtonDisabled:false,
-      newMyDid: "",
-      credDefId: "",
-      credentialDefinitions: [],
       onboardChecked: true,
-      
+      personIdentitfier: '',
+      familyName: '',
+      firstName: '',
+      dateOfBirth: '',
+      birthName: '',
+      placeOfBirth: '',
+      currentAddress: '',
+      gender: '',
+      legalPersonIdentifier: '',
+      legalName: '',
+      legalAdress:'',
+      vatRegistration:'',
+      taxReference:'',
+      lei:'',
+      eori:'',
+      seed:'',
+      sic:'',
     }
   }
   
@@ -69,6 +68,16 @@ class newUserScreen extends Component {
     console.log(newTab)
     this.props.onTabChange(newTab)
   }
+
+  handleClickAdd(props){
+
+    console.log(props)
+    if(this.state.onboardChecked===true)
+    this.props.history.push({
+        pathname: '/onboarding',
+        state: { firstName: this.state.firstName, familyName: this.state.familyName}
+      })
+}
 
 
 
@@ -98,70 +107,70 @@ class newUserScreen extends Component {
                     <Typography children={'Natural Person'}></Typography>
                     <Box>
                         <TextField
-                            hintText="Enter username of citizen"
+                            hintText="Enter PersonIdentitfier"
                             floatingLabelText="PersonIdentitfier"
-                            value={this.state.username}
-                            onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
+                            value={this.state.personIdentitfier}
+                            onChange={(event, newValue) => {this.setState({ personIdentitfier: newValue })}}
                         />
                         *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter FamilyName"
                             floatingLabelText="FamilyName"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.familyName}
+                            onChange={(event, newValue) => {this.setState({ familyName: newValue })}}
                             />
                             *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter FirstName"
                             floatingLabelText="FirstName"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.firstName}
+                            onChange={(event, newValue) => {this.setState({ firstName: newValue })}}
                             />
                             *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter DateOfBirth"
                             floatingLabelText="DateOfBirth"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.dateOfBirth}
+                            onChange={(event, newValue) => {this.setState({ dateOfBirth: newValue })}}
                             />
                             *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter BirthName"
                             floatingLabelText="BirthName"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.birthName}
+                            onChange={(event, newValue) => {this.setState({ birthName: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter PlaceOfBirth"
                             floatingLabelText="PlaceOfBirth"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.placeOfBirth}
+                            onChange={(event, newValue) => {this.setState({ placeOfBirth: newValue })}}
                             />
                     </Box>
                     <Box>
                     <TextField
-                            hintText="Enter app name"
+                            hintText="Enter CurrentAddress"
                             floatingLabelText="CurrentAddress"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.currentAddress}
+                            onChange={(event, newValue) => {this.setState({ currentAddress: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter Gender"
                             floatingLabelText="Gender"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.gender}
+                            onChange={(event, newValue) => {this.setState({ gender: newValue })}}
                             />
                     </Box>
                 </Grid>  
@@ -169,76 +178,76 @@ class newUserScreen extends Component {
                     <Typography children={'Legal Person'}></Typography>
                     <Box>
                         <TextField
-                            hintText="Enter username of citizen"
+                            hintText="Enter LegalPersonIdentifier"
                             floatingLabelText="LegalPersonIdentifier"
-                            value={this.state.username}
-                            onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
+                            value={this.state.legalPersonIdentifier}
+                            onChange={(event, newValue) => {this.setState({ legalPersonIdentifier: newValue })}}
                         />
                         *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter LegalName"
                             floatingLabelText="LegalName"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.legalName}
+                            onChange={(event, newValue) => {this.setState({ legalName: newValue })}}
                             />
                             *
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter LegalAddress"
                             floatingLabelText="LegalAddress"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.legalAddress}
+                            onChange={(event, newValue) => {this.setState({ legalAddress: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter VATRegistration"
                             floatingLabelText="VATRegistration"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.vatRegistration}
+                            onChange={(event, newValue) => {this.setState({ vatRegistration: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter TaxReference"
                             floatingLabelText="TaxReference"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.taxReference}
+                            onChange={(event, newValue) => {this.setState({ taxReference: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter LEI "
                             floatingLabelText="LEI"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.lei}
+                            onChange={(event, newValue) => {this.setState({ lei: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter EORI"
                             floatingLabelText="EORI"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.eori}
+                            onChange={(event, newValue) => {this.setState({ eori: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter SEED"
                             floatingLabelText="SEED"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.seed}
+                            onChange={(event, newValue) => {this.setState({ seed: newValue })}}
                             />
                     </Box>
                     <Box>
                         <TextField
-                            hintText="Enter app name"
+                            hintText="Enter SIC"
                             floatingLabelText="SIC"
-                            value={this.state.app}
-                            onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
+                            value={this.state.sic}
+                            onChange={(event, newValue) => {this.setState({ sic: newValue })}}
                             />
                     </Box>
                 </Box>  
@@ -256,7 +265,7 @@ class newUserScreen extends Component {
                     />
                 </Box>
                 <Box position='absolute' bottom='1%' right= {8} style={{width:'10%' }}>
-                <Button variant='contained' color= 'primary' fullWidth onClick={(event) => handleClickAdd(this)} >
+                <Button variant='contained' color= 'primary' fullWidth onClick={(event) => this.handleClickAdd(this)} >
                     Add
                 </Button>
                 </Box>

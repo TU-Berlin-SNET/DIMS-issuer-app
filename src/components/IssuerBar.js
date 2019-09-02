@@ -9,6 +9,15 @@ import DIMSLogo from'./DIMSLogo';
 
 var activeTab = 0;
 
+const links=[
+  {label: "Citizen", to: 'citizen'},
+  {label:'Credential' ,to:'credential'},
+  {label:'Cred. definition',  to:'credentialdef'},
+  {label:'Proofs',  to:'proofs'},
+  {label:'Schemas', to:'schemas'},
+  {label:'Connections' , to:'connections'}
+]
+
 class IssuerBar extends Component {
     constructor(props) {
         super(props);
@@ -17,6 +26,8 @@ class IssuerBar extends Component {
             
         }
 }
+
+
 
 
 handleTabChange(event,newValue) {
@@ -37,17 +48,13 @@ handleTabChange(event,newValue) {
             onChange={this.handleTabChange.bind(this)}
             centered
           >
-            <Tab  component={Link}  value={0}  label={'Citizen'}  to={'user'} />
-            <Tab  component={Link}  value={1}  label={'Onboarding'}  to={'onboarding'} />
-            <Tab  component={Link}  value={2} label={'Credential'}    to={'credential'} />
-            <Tab  component={Link}  value={3}  label={'Cred. definition'}  to={'credentialdef'} />
-            <Tab  component={Link}  value={4}  label={'Proofs'}  to={'proofs'} />
-            <Tab  component={Link}  value={5}  label={'Schemas'}  to={'schemas'} />
-            <Tab  component={Link}  value={6}   label={'Connections'}  to={'connections'} />
+            {links.map((link, key) => {return (
+                <Tab component={Link} value={key} label={link.label} to={link.to}/>
+            )})}
               </Tabs>
-              <Box  position= 'absolute'  top ='20%' right='1vw' >
+            <Box  position= 'absolute'  top ='20%' right='1vw' >
               <Link underline='none' style= {{color: '#FFFFFF' }}   to={''}>Login</Link>
-                  </Box>
+            </Box>
         </AppBar>
       </Box>
     );

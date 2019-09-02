@@ -92,7 +92,7 @@ componentDidMount(){
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
                     self.props.handler()
-                    self.props.history.push("/onboarding");
+                    self.props.history.push("/citizen");
 
 
                 }

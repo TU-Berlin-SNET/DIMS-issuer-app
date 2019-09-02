@@ -19,7 +19,6 @@ import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
-import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -41,7 +40,7 @@ function SchemaTable(props) {
               pathname: "addASchema",
               state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
               }}>
-              <AddIcon fontSize="large" />
+              <AddIcon style={{color:'white'}} fontSize="large" />
             </Link>
           </Box>
         </Box>

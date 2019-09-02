@@ -21,7 +21,7 @@ import * as Utils from "./../Utils";
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
@@ -44,9 +44,6 @@ const useStyles = makeStyles(() => ({
     borderRadius: 3,
     textAlign: 'center'
   },
-  newSchemaFormContent: {
-    padding: '10px',
-  },
   attributeList: {
     color:'#FFFFFF' , 
     textAlign:'center', 
@@ -64,21 +61,19 @@ function NewSchema(props) {
     <div className="grid">
     <Grid item xs={12} sm={10} md={8} lg={6} xl={4} style={{margin:"auto"}}>
       <Container className="tableContainer" >
-        <Box >
+        <Box position='relative'>
       <Typography variant="h6">
             Add Schema
-        </Typography>
-        </Box>
-    <Paper>
-      <Box  position="relative" >              
+        </Typography>             
         <Box position="absolute" top={0} left={0}>
           <Link  to={"schemas"}>
-            <ArrowBackRounded color='primary' fontSize="large" />
+            <ArrowBackRounded style={{color:'white'}} fontSize="large" />
           </Link>
+      </Box>
         </Box>
-        </Box>
-      <Box className={classes.newSchemaFormContent} >
-
+        <Box>
+    <Paper>
+      <Box p={4} mt={3}>
         <Grid item xs={8}>
           <TextField id="schemaNameInput" fullWidth 
             hintText="Enter the name of the schema"
@@ -95,7 +90,7 @@ function NewSchema(props) {
             onChange={(event, newValue) => props.this.setState({ schema_version: newValue })}
           />
         </Grid>
-          <Box mt={2}>
+          <Box mt={4}>
             {props.this.addAttribute()}
           </Box>
           <Box mt={4}>
@@ -105,11 +100,14 @@ function NewSchema(props) {
                   })} 
             </Grid>           
           </Box>
-        </Box> 
-    <Button variant='contained' label="Submit" color='primary' onClick={(event) => props.this.handleClickNewSchema(event)} >
-      Submit
-    </Button>
-  </Paper>
+          </Box>
+        <Box p={2}>
+          <Button variant='contained' label="Submit" color='primary' onClick={(event) => props.this.handleClickNewSchema(event)} >
+            Submit
+          </Button>
+        </Box>
+     </Paper>
+     </Box> 
   </Container>
   </Grid>
   </div>
@@ -239,7 +237,7 @@ class addASchemaScreen extends Component {
             schema_attrNames.splice(index,1);
             this.setState({ schema_attrNames: schema_attrNames})
             }}> 
-        <DeleteIcon />
+        <CloseIcon />
       </IconButton>
       </Box>
       </Box>

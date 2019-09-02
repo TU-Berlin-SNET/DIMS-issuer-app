@@ -18,10 +18,8 @@ import Select from 'react-select';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
-
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Grid from '@material-ui/core/Grid';
-import { makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -299,67 +297,9 @@ render() {
       <CredentialTable this={this}/>
       
           <div className="SendCredentialOffer">
-        <p className="blockName"  >Send credential offer:</p>
-        Select user:
-      <br />
-      <Select
-          className="SelectCredential"
-          inputId="react-select-single"
-          TextFieldProps={{
-            label: 'User',
-            InputLabelProps: {
-              htmlFor: 'react-select-single',
-              shrink: true,
-            },
-            placeholder: 'Search username for DID',
-          }}
-          options={this.state.pairwiseConnectionsOptions}
-          onChange={(event) => this.setState({recipientDid: event.value})}
-        />
-        Select credential Definition:
-      <br />
-      <Select 
-	        className="SelectCredential"
-          inputId="react-select-single"
-          TextFieldProps={{
-            label: 'User',
-            InputLabelProps: {
-              htmlFor: 'react-select-single',
-              shrink: true,
-            },
-            placeholder: 'Search for credential definition ID',
-          }}
-          options={this.state.credentialDefinitions}
-          onChange={(event) => this.setState({credDefId: event.value})}
-        />
-      <TextField
-                className = "CredTextField"
-                hintText="Set recipient DID"
-                floatingLabelText="Recipient DID"
-                defaultValue={this.state.recipientDid}
-                onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
-            />
-            <br />
-      <TextField
-                className = "CredTextField"
-                hintText="Set credential defintion ID"
-                floatingLabelText="Credential definition ID"
-                defaultValue={this.state.credDefId}
-                onChange={(event, newValue) => this.setState({ credDefId: newValue })}
-            />
-            <br />
-            <Button  primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
-      </div>
-          <div className ="SendCredential">
-          <p className="blockName"  >Send credential</p>
-      <TextField
-                className = "CredTextField"
-                hintText="Set credential request ID"
-                floatingLabelText="Credential request ID"
-                defaultValue={this.state.credentialRequestId}
-                onChange={(event, newValue) => this.setState({ credentialRequestId: newValue })}
-            />
-            <br />
+
+
+      
       <TextField
                 className = "CredTextField"
                 hintText="Set recipient DID"
