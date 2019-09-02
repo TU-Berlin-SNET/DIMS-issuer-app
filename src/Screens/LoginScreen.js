@@ -5,6 +5,10 @@ import {withRouter} from "react-router-dom";
 import Login from './../Login';
 import Register from './../Register';
 import Box from '@material-ui/core/Box'
+import IssuerBar from "./../components/IssuerBar"
+
+import './../CSS/App.css';
+
 
 const style = {
   margin: 15,
@@ -92,9 +96,17 @@ class Loginscreen extends Component {
                    })
     }
   }
+
+  handleTabChange(newTab){
+    console.log(newTab)
+    this.props.onTabChange(newTab)
+  }
+
   render() {
     return (
       <Box  position='relative' height='100vh' className="loginscreen" key="loginscreen">
+                  <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+
           {this.state.loginscreen}
           <Box position='absolute' left= '0' right= '0' top='50%' >
           <Box mb='5vh'>{this.state.loginmessage}</Box>

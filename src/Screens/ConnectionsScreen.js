@@ -4,7 +4,7 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
+import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
@@ -28,26 +28,12 @@ import Container from '@material-ui/core/Container';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-const useStyles = makeStyles(theme => ({
-    ConnectionTable: {
-      margin: '15vh',
-      padding: "10px" , 
-      textAlign:'center',
-      borderTopLeftRadius: '15px' , 
-      borderTopRightRadius: '15px',
-      color: 'white',
-    },
-    grid:{
-      width: '100%',
-    },
-  }));
 
 function SchemaTable(props) {
-    const classes = useStyles();
     return(
-        <div className={classes.grid}>
+        <div className="grid">
         <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-            <Container  className={classes.ConnectionTable}>
+            <Container  className="tableContainer">
             <Box position="relative" >
                 <Typography  variant="h6">
                 Pairwise Connections
@@ -71,7 +57,9 @@ class ConnectionScreen extends Component {
         Utils.checkLogin(this)
         this.state={
           selectedRecipientDid: "",
-          pairwiseConnections: [],
+          pairwiseConnections: <CUSTOMPAGINATIONACTIONSTABLE  
+            data={[]}
+            showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>,
           selected: ""
         }
       }
@@ -90,7 +78,7 @@ class ConnectionScreen extends Component {
 */
 
     handleGoToIssuingClick(){
-        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.fconole.their_did}});
+        this.props.history.push({pathname: "/credential",state: {recipientDid: this.state.selected.their_did}});
     }
 
 
@@ -123,7 +111,10 @@ class ConnectionScreen extends Component {
             if (response.status === 200) {
 
             let data= []
-              let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={data} showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
+              let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE 
+              onEdit={(event, selected) => self.handleEdit(event, selected)} 
+              data={data} 
+              showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
               response.data.map((conn) => {
                   data.push(
                     {
@@ -144,25 +135,26 @@ class ConnectionScreen extends Component {
           console.log(error);
           });
     }
+
+    handleTabChange(newTab){
+      this.props.onTabChange(newTab)
+    }
+    
     
     render(){
       return(
-        <div className="App">
         <MuiThemeProvider>
-        <IssuerBar actualTab={5}/>
+        <div className="App">
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
             <div>
                 Selected recipient: {this.state.selected.their_did}
                 <Button variant='contained' color='primary' onClick={() => this.handleGoToIssuingClick()} >Issue credential</Button>
             </div>
         <div>
         <SchemaTable this={this}/>
-
-
-
-
         </div>
-        </MuiThemeProvider>
       </div>
+      </MuiThemeProvider>
       )   
     }
 

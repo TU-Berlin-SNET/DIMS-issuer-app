@@ -4,25 +4,20 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
+import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-
-import {white} from 'material-ui/styles/colors';
 import {withRouter, Link} from "react-router-dom";
-import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
@@ -31,26 +26,12 @@ import Typography from '@material-ui/core/Typography';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-const useStyles = makeStyles(theme => ({
-  SchemaTable: {
-    margin: '15vh',
-    padding: "10px" , 
-    textAlign:'center',
-    borderTopLeftRadius: '15px' , 
-    borderTopRightRadius: '15px',
-    color: 'white',
-  },
-  grid:{
-    width: '100%',
-  },
-}));
 
 function SchemaTable(props) {
-  const classes = useStyles();
   return(
-  <div className={classes.grid}>
+  <div className="grid">
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className={classes.SchemaTable}>
+        <Container className="tableContainer">
         <Box position="relative" >
           <Typography  variant="h6">
               Schemas
@@ -58,7 +39,7 @@ function SchemaTable(props) {
           <Box position="absolute" top={0} right={0}>
             <Link  to={{
               pathname: "addASchema",
-              state: {selected: props.this.state.selected},
+              state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
               }}>
               <AddIcon fontSize="large" />
             </Link>
@@ -127,13 +108,18 @@ class SchemaScreen extends Component {
     this.setState({ selected: selected}); 
  } 
 
+ handleTabChange(newTab){
+
+  this.props.onTabChange(newTab)
+}
   render() {
+
     return (
       <MuiThemeProvider>
-        <Box>
-          <IssuerBar actualTab={4}/>   
+        <div className='App'>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <SchemaTable this={this}/>
-        </Box>
+        </div>
       </MuiThemeProvider> 
     );
   }

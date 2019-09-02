@@ -4,28 +4,24 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
+import  './../CSS/App.css';
+
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import RaisedButton from 'material-ui/RaisedButton';
-import {withRouter, Link} from "react-router-dom";
-import TextField from 'material-ui/TextField';
+import {withRouter} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Box from '@material-ui/core/Box'
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 // var request = require('superagent');
@@ -34,26 +30,12 @@ const apiBaseUrl = Constants.apiBaseUrl;
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
 
-const useStyles = makeStyles(theme => ({
- CredentialDefTable: {
-    margin: '15vh',
-    padding: "10px" , 
-    textAlign:'center', 
-    borderTopLeftRadius: '15px' , 
-    borderTopRightRadius: '15px',
-    color: 'white',
-  },
-  grid:{
-    width: '100%',
-  },
-}));
 
 function CredentialDefTable(props) {
-  const classes = useStyles();
   return(
-  <div className={classes.grid}>
+  <div className="grid">
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container  className={classes.CredentialDefTable}>
+        <Container className="tableContainer" >
         <Box position="relative" >
           <Typography  variant="h6">
             Credential Defintions 
@@ -78,7 +60,7 @@ class CredentialDefScreen extends Component {
     super(props);
     Utils.checkLogin(this)
     this.state={
-      credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={["wallet"]}/>,
+      credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} />,
       schemaId: "Click on the schema to select ID",
       tag: "Add your tag",
       supportRevocation: false,
@@ -157,13 +139,18 @@ class CredentialDefScreen extends Component {
   if user clicks close icon adjacent to selected file
   */
 
+ handleTabChange(newTab){
+  this.props.onTabChange(newTab)
+}
+
+
   render() {
     return (
-      <div className="App">
-      <MuiThemeProvider>
 
-        <div>
-          <IssuerBar actualTab={2} />
+      <MuiThemeProvider>
+        <div className="App">
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+          <CredentialDefTable this={this}/>
            {/* 
             <TextField
                 hintText="Enter the schema id or click on the schema to select it"
@@ -188,11 +175,11 @@ class CredentialDefScreen extends Component {
             <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClickNewSchema(event)} />
 
             */}
+                     
         </div>
 
-          <CredentialDefTable this={this}/>
+
     </MuiThemeProvider>
-      </div>
     );
   }
 }

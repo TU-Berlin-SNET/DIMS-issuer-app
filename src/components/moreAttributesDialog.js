@@ -7,11 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
-import List from '@material-ui/core/List';
 import Box from '@material-ui/core/Box';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText'
-import ListSubheader from '@material-ui/core/ListSubheader';
 import ReactJson from 'react-json-view'
 
 
@@ -25,7 +21,6 @@ const useStyles = makeStyles(theme => ({
 export default function AlertDialog(props) {
   const [open, setOpen] = React.useState(false);
   let row =props;
-  console.log(row)
   function handleClickOpen() {
     setOpen(true);
   }

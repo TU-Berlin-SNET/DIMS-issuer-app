@@ -4,61 +4,31 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
+import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import IconButton from 'material-ui/IconButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
-import FontIcon from 'material-ui/FontIcon';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-import { Link, withRouter, Redirect} from "react-router-dom";
-import TextField from 'material-ui/TextField';
+import { withRouter} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
-import Select from 'react-select'
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import Container from '@material-ui/core/Container';
-
-
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Grid from '@material-ui/core/Grid';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import {  makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-const useStyles = makeStyles(theme => ({
-  CredentialTable: {
-    margin: '15vh',
-    padding: "10px" , 
-    textAlign:'center',
-    borderTopLeftRadius: '15px' , 
-    borderTopRightRadius: '15px',
-    color: 'white',
-  },
-  grid:{
-    width: '100%',
-  },
-}));
-
 function CredentialTable(props) {
-  const classes = useStyles();
   return(
-  <div className={classes.grid}>
+  <div className="grid">
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container  className={classes.CredentialTable}>
+        <Container  className="tableContainer">
         <Box position="relative" >
           <Typography  variant="h6">
               Proofs
@@ -97,7 +67,11 @@ class ProofScreen extends Component {
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+          proofs: <CUSTOMPAGINATIONACTIONSTABLE 
+            data={[]} 
+            showAttr={[]}
+            showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}
+          />,
           
         }
       } else {
@@ -109,7 +83,11 @@ class ProofScreen extends Component {
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: []
+          proofs: <CUSTOMPAGINATIONACTIONSTABLE 
+          data={[]} 
+          showAttr={[]}
+          showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}
+        />,
         }
       }
       }
@@ -362,6 +340,12 @@ handleEdit(event, selected){ //Fuction
   this.setState({ selected: selected}); 
 } 
 
+handleTabChange(newTab){
+  console.log(newTab)
+  this.props.onTabChange(newTab)
+}
+
+
 /* POST 
 {
 	"credentialRequestId": "5c7071b8db4eb00010a3779d",
@@ -378,7 +362,7 @@ render() {
     <div className="App">
       <MuiThemeProvider>
       <div>
-      <IssuerBar actualTab={3}/>
+      <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
       <CredentialTable this={this}/>
       
        {/*   <div>

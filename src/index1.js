@@ -1,52 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './Screens/App';
 import * as serviceWorker from './serviceWorker';
-import OnboardingScreen from './Screens/newUser';
+import OnboardingScreen from './Screens/OnboardingScreen';
 import SchemasScreen from './Screens/SchemasScreen';
-import addASchemaScreen from './Screens/addASchemaScreen';
+import AddASchemaScreen from './Screens/addASchemaScreen';
 import CredentialDefScreen from './Screens/CredentialDefScreen';
 import LandingScreen from './Screens/LandingScreen';
-import LoginScreen from './Screens/LoginScreen';
 import CredentialScreen from './Screens/CredentialScreen';
 import ConnectionsScreen from './Screens/ConnectionsScreen';
 import ProofScreen from './Screens/ProofScreen'
+import User from './Screens/newUser'
 import { Route,  BrowserRouter as Router } from 'react-router-dom';
-import { ThemeProvider } from '@material-ui/styles';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import IssuerBar from "./components/IssuerBar"
-import AppBar from 'material-ui/AppBar';
-import { bgcolor } from '@material-ui/system';
 
 
-import { withStyles, createStyles } from '@material-ui/core';
 
 import withRoot from './withRoot';
 import PropTypes from 'prop-types';
-const routing = (
-    <Router>
-        <Route exact path="/" component={App} />
-        <Route path="/login" component={LoginScreen} />
-        <Route path="/home" component={LandingScreen} />
-        <Route path="/onboarding" component={OnboardingScreen} />
-        <Route path="/connections" component={ConnectionsScreen} />
-        <Route path="/credentialdef" component={CredentialDefScreen} />
-        <Route path="/schemas" component={SchemasScreen} />
-        <Route path="/addASchema" component={addASchemaScreen} />
-        <Route path="/credential" component={CredentialScreen} />
-        <Route path="/proofs" component={ProofScreen} />
-    </Router>
-  )
 
 
 class Index extends React.Component{
 
-
-
+  state = {
+    loggedIn: false,
+    activeTab: 0,
+  };
+  
   static childContextTypes = {
     muiTheme: PropTypes.object
 }
@@ -55,20 +35,29 @@ getChildContext() {
         muiTheme: this.props.theme
     }
   }
+
+handleTabChange(newTab){
+  this.setState({activeTab: newTab})
+}
+
     render(){
-      console.log(this.props)
         const { classes } = this.props;
         return(
-<div>{routing}</div>
+          <Router>
+            <Route exact path="/"  render={(props)=> <App {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
+            <Route exact path="/user" render={(props)=> <User {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/home" render={(props)=> <LandingScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/onboarding" render={(props)=> <OnboardingScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/connections" render={(props)=> <ConnectionsScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/credentialdef" render={(props)=> <CredentialDefScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/schemas" render={(props)=> <SchemasScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/addASchema"render={(props)=> <AddASchemaScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)}  tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />} />
+            <Route path="/credential" render={(props)=> <CredentialScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)}  tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />} />
+            <Route path="/proofs" render={(props)=> <ProofScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+          </Router>
         )
     }  
 }
-
-Index.propTypes = {
-    classes: PropTypes.object.isRequired,
-  };
-
-
 
   export default withRoot((Index));
 

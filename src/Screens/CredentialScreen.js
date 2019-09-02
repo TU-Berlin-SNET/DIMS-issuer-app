@@ -4,17 +4,15 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import RaisedButton from 'material-ui/RaisedButton';
-import {withRouter, Link} from "react-router-dom";
+import Button from '@material-ui/core/Button';
+import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {List, ListItem} from 'material-ui/List'
 import axios from 'axios';
 import Select from 'react-select';
 import IssuerBar from "./../components/IssuerBar";
@@ -23,12 +21,10 @@ import * as Utils from "./../Utils";
 
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Grid from '@material-ui/core/Grid';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import { makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box'
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -36,26 +32,11 @@ const apiBaseUrl = Constants.apiBaseUrl;
 //var apiBaseUrl = ""REPLACE"";
 
 
-const useStyles = makeStyles(theme => ({
-  CredentialTable: {
-    margin: '15vh',
-    padding: "10px" , 
-    textAlign:'center',
-    borderTopLeftRadius: '15px' , 
-    borderTopRightRadius: '15px',
-    color: 'white',
-  },
-  grid:{
-    width: '100%',
-  },
-}));
-
 function CredentialTable(props) {
-  const classes = useStyles();
   return(
-  <div className={classes.grid}>
+  <div className="grid">
     <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className={classes.CredentialTable}>
+        <Container className="tableContainer">
         <Box position="relative" >
           <Typography  variant="h6">
               Credentials
@@ -302,21 +283,21 @@ axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function
 //alert(JSON.stringify(payload))
 console.log(error);
 });
-
 }
+
+handleTabChange(newTab){
+  console.log(newTab)
+  this.props.onTabChange(newTab)
+}
+
 
 render() {
   return(
+    <MuiThemeProvider>
     <div className="App">
-      <MuiThemeProvider>
-      <IssuerBar actualTab={1} />
+    <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
       <CredentialTable this={this}/>
       
-
-      <table className="CredentialScreenLayout">
-        <tr></tr>
-        <tr>
-          <td>
           <div className="SendCredentialOffer">
         <p className="blockName"  >Send credential offer:</p>
         Select user:
@@ -367,14 +348,8 @@ render() {
                 onChange={(event, newValue) => this.setState({ credDefId: newValue })}
             />
             <br />
-            <RaisedButton label="Offer" primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)} />
+            <Button  primary={true} style={style} onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
       </div>
-          </td>
-          <td></td> 
-        </tr>
-        <tr>          
-          <td></td>
-          <td>
           <div className ="SendCredential">
           <p className="blockName"  >Send credential</p>
       <TextField
@@ -417,13 +392,11 @@ render() {
                 );
               })}
               
-            <RaisedButton label="Send credential" primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)} />
+            <Button primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)}>Send credential</Button>
       </div>
-          </td>
-        </tr>
-      </table>
-      </MuiThemeProvider>
+      
     </div>
+    </MuiThemeProvider>
   )
 }
 

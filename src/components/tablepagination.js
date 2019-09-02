@@ -179,12 +179,10 @@ export default function CustomPaginationActionsTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        console.log("oldRow")
-                                        console.log(row)
+              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                 const isItemSelected = isSelected(row);
                 return(
-                <TableRow key={row[props.showAttr[0]]} 
+                <TableRow key={index} 
                   hover
                   onClick={(event)=>handleClick(event,row )}
                   selected= {isItemSelected}
@@ -195,7 +193,7 @@ export default function CustomPaginationActionsTable(props) {
                       var lengthOfPath = pathToAttribute.length - 1
                       let currentAttribute = attribute
                       let newRow = row
-                      for(var i=0; i<lengthOfPath; i++){
+                      for(let i=0; i<lengthOfPath; i++){
                         currentAttribute = pathToAttribute[i]
                         if(newRow[currentAttribute] !== null)
                           newRow = newRow[currentAttribute]

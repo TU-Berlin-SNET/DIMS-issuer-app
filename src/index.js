@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './Screens/App';
 import * as serviceWorker from './serviceWorker';
 import OnboardingScreen from './Screens/OnboardingScreen';
 import SchemasScreen from './Screens/SchemasScreen';
@@ -14,7 +14,6 @@ import ProofScreen from './Screens/ProofScreen'
 import { Route,  BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IssuerBar from "./components/IssuerBar"
 import AppBar from 'material-ui/AppBar';

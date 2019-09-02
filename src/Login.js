@@ -112,8 +112,7 @@ componentDidMount(){
     }
     render() {
         return (
-            <MuiThemeProvider >
-                <IssuerBar />        
+            <MuiThemeProvider >       
                 <LoginForm this={this}/>
             </MuiThemeProvider> 
 

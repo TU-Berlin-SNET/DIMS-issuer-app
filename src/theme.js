@@ -12,9 +12,7 @@ const theme = createMuiTheme({
         },
         MuiTab: {
           textColorPrimary: '#FFF',
-          colorPrimary: '#FFF',
           textColorSecondary: '#FFF',
-          colorDefault: '#FFF'
         },
         MuiLink:{
           colorPrimary:'#FFFFFF',
@@ -22,15 +20,10 @@ const theme = createMuiTheme({
         },
         MuiContainer: {
           root:{
-                      backgroundColor: '#6980FF',
-          colorDefault:{
-          backgroundColor: '#6980FF',
+            backgroundColor: '#6980FF',
+            color: '#FFFFFF'
           }
-
-          }
-
         }
-
     },
   typography: {
     useNextVariants: true,
@@ -38,9 +31,7 @@ const theme = createMuiTheme({
   },
   palette: {
     primary: {
-      light: '#63ccff',
       main: '#6980ff',
-      dark: '#006db3',
       contrastText: '#FFF',
 
     },

@@ -32,6 +32,16 @@
   }
 }
 
+.grid {
+  width: 100%;
+}
+
+.tableContainer {
+  margin: 15vh;
+  padding: 16px;
+  border-radius: 8px;
+}
+
 
 
 

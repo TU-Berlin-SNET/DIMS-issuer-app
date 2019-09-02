@@ -4,14 +4,13 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
+import './../CSS/App.css';
 
-import {white} from 'material-ui/styles/colors';
 import {withRouter, Link} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -20,6 +19,7 @@ import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,33 +29,20 @@ import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Container from '@material-ui/core/Container'
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-const theme1 = createMuiTheme({
-  palette: {
-    primary:{
-      main: 'rgb(0, 188, 212)',
-     },
-     secondary: {
-      main: 'rgb(0, 188, 212)',
-    }
-  },
-});
 
-
-const useStyles = makeStyles(theme1 => ({
+const useStyles = makeStyles(() => ({
   headline: {
-    backgroundColor: 'rgb(0, 188, 212)',
-    color: white,
     border: 0,
     fontSize: 24,
     borderRadius: 3,
     textAlign: 'center'
-  },
-  newSchemaForm: {
-    margin: '10vh',
   },
   newSchemaFormContent: {
     padding: '10px',
@@ -63,32 +50,30 @@ const useStyles = makeStyles(theme1 => ({
   attributeList: {
     color:'#FFFFFF' , 
     textAlign:'center', 
-    backgroundColor: 'rgb(0, 188, 212)', 
     marginTop: '30px',
     marginBottom: '30px',
-  },
-  grid:{
-    width: '100%',
   },
 }));
 
 function NewSchema(props) {
-  const classes = useStyles(theme1);
+  const classes = useStyles();
   // selected = the selected shema from the Schema Screen 
   let selected = (props.this.props.location.state.selected);
-  console.log(selected);
   return (
    
-    <div className={classes.grid}>
+    <div className="grid">
     <Grid item xs={12} sm={10} md={8} lg={6} xl={4} style={{margin:"auto"}}>
-    <Paper className={classes.newSchemaForm}>
-      <Box className={classes.headline} position="relative" >              
-        <Typography variant="h6">
+      <Container className="tableContainer" >
+        <Box >
+      <Typography variant="h6">
             Add Schema
         </Typography>
+        </Box>
+    <Paper>
+      <Box  position="relative" >              
         <Box position="absolute" top={0} left={0}>
           <Link  to={"schemas"}>
-            <ArrowBackRounded fontSize="large" />
+            <ArrowBackRounded color='primary' fontSize="large" />
           </Link>
         </Box>
         </Box>
@@ -110,22 +95,22 @@ function NewSchema(props) {
             onChange={(event, newValue) => props.this.setState({ schema_version: newValue })}
           />
         </Grid>
-        <Paper className={classes.attributeList}>
-        <Typography variant="subtitle1">
-            Attributes
-        </Typography>
-          <Box >
+          <Box mt={2}>
             {props.this.addAttribute()}
-            {props.this.state.schema_attrNames.map((attr, index) => {
-                return( props.this.currentAttribute(attr, index))
-                })} 
           </Box>
-        </Paper>
-    </Box> 
-    <Button variant='contained' label="Submit"  style={{backgroundColor :'rgb(0, 188, 212)' , color:'white'}} onClick={(event) => props.this.handleClickNewSchema(event)} >
+          <Box mt={4}>
+            <Grid container mt={20} spacing={4} justify='center' >
+              {props.this.state.schema_attrNames.map((attr, index) => {
+                  return( props.this.currentAttribute(attr, index))
+                  })} 
+            </Grid>           
+          </Box>
+        </Box> 
+    <Button variant='contained' label="Submit" color='primary' onClick={(event) => props.this.handleClickNewSchema(event)} >
       Submit
     </Button>
   </Paper>
+  </Container>
   </Grid>
   </div>
   );
@@ -216,7 +201,7 @@ class addASchemaScreen extends Component {
             }
           }
       />
-      <Button variant="contained" label="Add Atribute"  style={{backgroundColor :'rgb(0, 188, 212)' , color:'white'}} onClick={(event) =>  {
+      <Button variant="contained" label="Add Atribute"  color='primary' onClick={(event) =>  {
         var schema_attrNames = this.state.schema_attrNames;
         schema_attrNames.push(this.state.newAttrName);
         this.setState({ schema_attrNames: schema_attrNames}
@@ -231,30 +216,48 @@ class addASchemaScreen extends Component {
 
 
   currentAttribute(attr, index){
+    
     return(
-        <Paper key={index} position="relative" style={ {marginTop: '10px', padding: '2px 4px', display: 'flex', alignItems: 'center'}}>
-          <Box style={{    marginLeft: 8, flex: 1}}>
-          {attr}
-          </Box>
-          <Button variant="contained" color="secondary" label="Delete"  onClick={() => {           
-            var schema_attrNames = this.state.schema_attrNames;
-            schema_attrNames.splice(index,1);
-            this.setState({ schema_attrNames: schema_attrNames})
-            }} >
+   
+    /*     <Button variant="contained" color="secondary" label="Delete"   > 
             <DeleteIcon/>
             DELETE
           </Button>
-        </Paper>
-    )}
+*/
+        <Grid item>
+          <Card>
+          <Box position= 'relative' minWidth={100} minHeight={100}>
+            <CardContent>
+      <Typography variant="body2" color="textSecondary" >
+            {attr}
+      </Typography>
+    </CardContent>
+      <Box position='absolute'  bottom={0} right={0}>
+    <IconButton  color="secondary" 
+     onClick={() => {           
+            var schema_attrNames = this.state.schema_attrNames;
+            schema_attrNames.splice(index,1);
+            this.setState({ schema_attrNames: schema_attrNames})
+            }}> 
+        <DeleteIcon />
+      </IconButton>
+      </Box>
+      </Box>
+           </Card>
+        </Grid>
 
+    )}
+    handleTabChange(newTab){
+      this.props.onTabChange(newTab)
+    }
 
   render() {
     return (
       <MuiThemeProvider>
-        <Box>
-        <IssuerBar/>   
+        <div className='App'>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <NewSchema this={this}/>
-        </Box>
+        </div>
       </MuiThemeProvider> 
     );
   }

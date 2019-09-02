@@ -4,89 +4,32 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../App.css';
+import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import RaisedButton from 'material-ui/RaisedButton';
 import {withRouter} from "react-router-dom";
-import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
-import Select from 'react-select';
-import {createMuiTheme,  makeStyles, withStyles} from '@material-ui/core/styles';
 
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import PropTypes from 'prop-types';
-import Divider from '@material-ui/core/Divider';
-
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 var QRCode = require('qrcode.react');
-
-
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-
-
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
 
-const useStyles = makeStyles(theme => ({
-  progressBar:{
-    position: 'relative',
-    top: '2%',
-  },
-  card: {
-    margin: '0 0',
-    marginTop: '10vh',
-    height: '60vh',
-  },
-  grid:{
-    width: '100%',
-  },
-  attributeList: {
-    margin: 'auto auto',
-    width: '30%',
-  },
-
-}));
-
-const styles = {
-  root: {
-    backgroundColor: props =>
-      props.active === 'true'
-        ? 'rgb(0, 188, 212)'
-        : 'white',
-    width: 30,
-    height: 30,
-    border: 'solid',
-    borderWidth: '1px',
-    borderRadius: 30/2,
-
-    
-  },
-};
-
-function CircleRaw(props) {
-  const { classes, color, ...other } = props;
-  return <Box className={classes.root} {...other} />;
-}
-
-CircleRaw.propTypes = {
-  classes: PropTypes.object.isRequired,
-  active: PropTypes.oneOf(['true', 'false']).isRequired,
-};
-
-const Circle = withStyles(styles)(CircleRaw);
 
 function RenderQR(props){
   if(props.isOnboarded){
@@ -95,8 +38,6 @@ function RenderQR(props){
     return null
   }
 }
-
-
 
 
 class OnboardingScreen extends Component {
@@ -115,7 +56,8 @@ class OnboardingScreen extends Component {
       printButtonDisabled:false,
       newMyDid: "",
       credDefId: "",
-      credentialDefinitions: []
+      credentialDefinitions: [],
+      sendCredentialOfferCheck: true,
     }
   }
   
@@ -249,7 +191,6 @@ class OnboardingScreen extends Component {
     'Authorization': localStorage.getItem("token") 
   }
   
-
   if(event.target.value === true){
      var payload_conn = {
                   "meta": {
@@ -273,6 +214,8 @@ class OnboardingScreen extends Component {
             } 
             console.log(this.state.onboarded)
 }
+
+/* add additional content for conn message
 
 handleConnMessage(event) {
   var self = this;
@@ -300,16 +243,11 @@ handleConnMessage(event) {
                 console.log(error);
             });
 }
+*/
 
-/*
-  Function:toggleDrawer
-  Parameters: event
-  Usage:This fxn is used to close the drawer when user clicks anywhere on the 
-  main div
-  */
-handleDivClick(event){
-  
-}
+handleCredentialOfferCheckChange =  event => {
+  this.setState({sendCredentialOfferCheck: event.target.checked});
+};
 /*
   Function:handleLogout
   Parameters: event
@@ -322,15 +260,57 @@ handleLogout(event){
   self.props.history.push("/");
 }
 
+handleTabChange(newTab){
+  console.log(newTab)
+  this.props.onTabChange(newTab)
+}
+
   render() {
     return (
-      <div className="App">
+      
       <MuiThemeProvider>
-      <div>
+      <div className="App">
       <center>
-      <IssuerBar actualTab={0}/>
-
-  }
+      <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+  
+      <Grid item xs={8} md={6} xl={4} style={{margin:"auto"}}>
+    <Box position='relative' marginTop='15vh'>
+      <Grid item xs={12}>
+            <Grid
+                component= {Paper}
+                container
+                direction="row"
+                justify="center"
+                alignItems="flex-start"
+                >
+                {/*padding*/}
+                <Box position='absolute' top='8%' left='0' right='0'>
+                  <Typography children={'Onboard new Citizen'} /> 
+               </Box>
+                <Grid item xs={12} >
+                    <Box height='8vh' />       
+                </Grid>
+                  <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
+                  <Grid item xs={12} >
+                    <Box height='8vh' />       
+                </Grid>
+              </Grid>
+              <Box position='absolute' bottom='8%' left='0' right='0'>
+                <Typography children={'Scan the QR Code wih your mobile app'} /> 
+               </Box>
+            </Grid>
+            <Box position='absolute' bottom="8%" right= {8}>
+                    send credentials now?
+                <Checkbox  
+                    onChange={this.handleCredentialOfferCheckChange}
+                    color='primary'
+                    checked={this.state.sendCredentialOfferCheck}
+                    value="onboardChecked"
+    
+                />
+                </Box>
+            </Box>
+      </Grid>
 
           {/*
           <TextField
@@ -348,7 +328,6 @@ handleLogout(event){
                 onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
             /> */}
 
-           <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
 
            {/* 
           Select credential Definition for automatic credential offer:
@@ -368,15 +347,9 @@ handleLogout(event){
         />
         */}
       </center>
+      <Button  color="primary" style={style} onClick={(event) => this.handleLogout(event)}>Logout</Button>
       </div>
-          <div onClick={(event) => this.handleDivClick(event)}>
-          <center>
-          <br />
-          </center>
-           <RaisedButton label="Logout" primary={true} style={style} onClick={(event) => this.handleLogout(event)}/>
-          </div>
           </MuiThemeProvider>
-          </div>
     );
   }
 }
