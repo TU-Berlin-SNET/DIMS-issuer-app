@@ -49,7 +49,7 @@ handleTabChange(event,newValue) {
             centered
           >
             {links.map((link, key) => {return (
-                <Tab component={Link} value={key} label={link.label} to={link.to}/>
+                <Tab key={key} component={Link} value={key} label={link.label} to={link.to}/>
             )})}
               </Tabs>
             <Box  position= 'absolute'  top ='20%' right='1vw' >

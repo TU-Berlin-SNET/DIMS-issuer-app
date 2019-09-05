@@ -91,7 +91,6 @@ componentDidMount(){
                     //issuerScreen.push(<IssuerScreen appContext={self.props.appContext} />)
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
-                    self.props.handler()
                     self.props.history.push("/citizen");
 
 

@@ -54,6 +54,7 @@ export async function sendCredentialOffer(recipientDid, credDefId){
     });
   }
 
+
   export function generateSeed(length = 32) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

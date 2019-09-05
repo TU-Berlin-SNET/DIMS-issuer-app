@@ -79,7 +79,6 @@ class Register extends Component {
       <div>
         <MuiThemeProvider>
           <div>
-          <IssuerBar />
            <TextField
              hintText="Enter your username"
              floatingLabelText="username"

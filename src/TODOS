@@ -1,0 +1,12 @@
+TODOS
+
+1. Logout should be possible from every screen / after succsessful login login Link should switch to logout link
+
+2. change table cloumn names (parameter passing to CustomTablePagination Component)
+
+3. customize Register Screen
+
+4. search function for tables
+
+5.the butons on the citizen Screen don't work properly, if you click on the border of the button nothing happens 
+

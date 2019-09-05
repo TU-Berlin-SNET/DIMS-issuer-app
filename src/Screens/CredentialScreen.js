@@ -284,7 +284,6 @@ console.log(error);
 }
 
 handleTabChange(newTab){
-  console.log(newTab)
   this.props.onTabChange(newTab)
 }
 
@@ -332,7 +331,7 @@ render() {
                 );
               })}
               
-            <Button primary={true} style={style} onClick={(event) => this.sendCredentialClick(event)}>Send credential</Button>
+            <Button color='primary' style={style} onClick={(event) => this.sendCredentialClick(event)}>Send credential</Button>
       </div>
       
     </div>

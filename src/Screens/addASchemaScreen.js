@@ -222,7 +222,7 @@ class addASchemaScreen extends Component {
             DELETE
           </Button>
 */
-        <Grid item>
+        <Grid key={index} item>
           <Card>
           <Box position= 'relative' minWidth={100} minHeight={100}>
             <CardContent>
