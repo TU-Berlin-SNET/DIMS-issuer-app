@@ -42,6 +42,10 @@
   border-radius: 8px;
 }
 
+.centeredItem {
+  transform: translateX(-25%);
+}
+
 
 
 

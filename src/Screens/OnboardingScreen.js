@@ -27,8 +27,6 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
-//var apiBaseUrl = ""REPLACE"";
-//var apiBaseUrl = ""REPLACE"";
 
 
 function RenderQR(props){
@@ -46,17 +44,12 @@ class OnboardingScreen extends Component {
     Utils.checkLogin(this)
     this.state={
       //TODO: change username
-      username: '',
       connection_message: '',
-      app: "",
+      citizen_id: props.location.state.citizen_id,
       citizen_did:'',
       citizen_verkey:'',
       onboarded:true,
-      printingmessage:'',
-      printButtonDisabled:false,
       newMyDid: "",
-      credDefId: "",
-      credentialDefinitions: [],
       sendCredentialOfferCheck: true,
     }
   }
@@ -68,7 +61,6 @@ class OnboardingScreen extends Component {
 
   //GET  /api/connection/:myDid
   pollNewConnectionStatus(){
-    if(this.state.newMyDid !== "" && this.state.credDefId !== ""){
       var self = this;
       var headers = {
         'Content-Type': 'application/json',
@@ -79,15 +71,16 @@ class OnboardingScreen extends Component {
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-            let theirDid = response.data.theirDid;
-            Utils.sendCredentialOffer(theirDid,self.state.credDefId)
+            alert('onboarded new Citizen succsessfully')
+            this.setState({citizen_did: response.data.theirDid})
+          //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
             self.setState({newMyDid: ""})
             //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
         }
       })
     }
-  }
+
 
   handleOnboarding(event) {
     var self = this;
@@ -108,12 +101,6 @@ class OnboardingScreen extends Component {
                 console.log("Onboarding successfully executed");
                 console.log(response.data);
                 var payload_conn = {
-                  "meta": {
-                    "username": self.state.username
-                  },
-                  "data": {
-                    "app": self.state.app
-                  }
                 }
                 axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
                 .then(function (response) {
@@ -144,75 +131,29 @@ class OnboardingScreen extends Component {
 
   componentDidMount(){
     document.title = "issuer app"
-    Utils.listCredDefs(this);
     this.timer = setInterval(() => this.pollNewConnectionStatus(), 5000);
-    if(this.state.onboarded){
     var self = this;
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': localStorage.getItem("token") 
     }
-     var payload_conn = {
-                  "meta": {
-                    "username": self.state.username
-                  },
-                  "data": {
-                    "app": self.state.app
-                  }
+     let payload_conn = {
+       id : self.state.citizen_id
                 }
                 axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-                .then(function (response) {
+                 .then(function (response) {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message)})
-                    //TODO set state citizen_did 
-                    // go to SendCredentialScreen
-
+                    self.setState({connection_message: JSON.stringify(response.data.message), newMyDid: response.data.meta.myDid})
                   }
                 }).catch(function (error) {
                   //alert(error);
                   console.log(error);
-              });
-            } 
+              }); 
 
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
 
-/* add additional content for conn message
-
-handleConnMessage(event) {
-  var self = this;
-  var headers = {
-    'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
-  }
-  var payload_conn = {
-              "meta": {
-                "username": self.state.username
-              },
-                "data": {
-                  "app": self.state.app
-                }
-              }
-            axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-              .then(function (response) {
-                console.log(response);
-                console.log(response.status);
-                if (response.status === 201) {
-                  self.setState({connection_message: JSON.stringify(response.data.message), newMyDid: response.data.meta.myDid})
-                }
-              }).catch(function (error) {
-                //alert(error);
-                console.log(error);
-            });
-}
-*/
 
 handleCredentialOfferCheckChange =  event => {
   this.setState({sendCredentialOfferCheck: event.target.checked});
@@ -222,12 +163,7 @@ handleCredentialOfferCheckChange =  event => {
   Parameters: event
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
-handleLogout(event){
-  // console.log("logout event fired",this.props);
-  localStorage.clear();
-  var self = this;
-  self.props.history.push("/");
-}
+
 
 handleTabChange(newTab){
   console.log(newTab)
@@ -285,42 +221,6 @@ goTosendCredentialScreen(){
                 </Box>
             </Box>
       </Grid>
-
-          {/*
-          <TextField
-                hintText="Enter username of citizen"
-                floatingLabelText="Citizen username"
-                value={this.state.username}
-                onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
-            />
-            <br/>
-      <TextField
-                hintText="Enter app name"
-                floatingLabelText="App name"
-                defaultValue="issuer app"
-                value={this.state.app}
-                onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
-            /> */}
-
-
-           {/* 
-          Select credential Definition for automatic credential offer:
-      <br />
-    <Select
-          inputId="react-select-single"
-          TextFieldProps={{
-            label: 'User',
-            InputLabelProps: {
-              htmlFor: 'react-select-single',
-              shrink: true,
-            },
-            placeholder: 'Search for credential definition ID',
-          }}
-          options={this.state.credentialDefinitions}
-          onChange={(event) => this.setState({credDefId: event.value})}
-        />
-        */}
-      <Button  color="primary" style={style} onClick={(event) => this.handleLogout(event)}>Logout</Button>
       <Button  color="primary" style={style} onClick={(event) => this.goTosendCredentialScreen(event)}>Send Credential</Button>
       </div>
           </MuiThemeProvider>

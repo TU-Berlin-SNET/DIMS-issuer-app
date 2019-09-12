@@ -32,6 +32,7 @@ const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
 class newUserScreen extends Component {
   constructor(props){
+     let userdata =  props.location.state
     super(props);
     Utils.checkLogin(this)
     this.state={
@@ -40,23 +41,23 @@ class newUserScreen extends Component {
       citizen_did:'',
       citizen_verkey:'',
       onboardChecked: true,
-      personIdentitfier: '',
-      familyName: '',
-      firstName: '',
-      dateOfBirth: '',
-      birthName: '',
-      placeOfBirth: '',
-      currentAddress: '',
-      gender: '',
-      legalPersonIdentifier: '',
-      legalName: '',
-      legalAdress:'',
-      vatRegistration:'',
-      taxReference:'',
-      lei:'',
-      eori:'',
-      seed:'',
-      sic:'',
+      personIdentitfier: userdata.id,
+      familyName: userdata.familyName,
+      firstName: userdata.firstName,
+      dateOfBirth: userdata.dateOfBirth,
+      birthName: userdata.birthName,
+      placeOfBirth: userdata.placeOfBirth,
+      currentAddress: userdata.currentAddress,
+      gender: userdata.gender,
+      legalPersonIdentifier: userdata.legalPersonIdentifier,
+      legalName: userdata.legalName,
+      legalAdress: userdata.legalAddress,
+      vatRegistration: userdata.vatRegistration,
+      taxReference: userdata.taxReference,
+      lei: userdata.lei,
+      eori: userdata.eori,
+      seed: userdata.seed,
+      sic: userdata.sic,
     }
   }
   
@@ -76,7 +77,6 @@ class newUserScreen extends Component {
 
     async handleClickAdd(event){
         var self = this;
-        console.log(localStorage.getItem("token"))
         var headers = {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem("token") 
@@ -99,12 +99,12 @@ class newUserScreen extends Component {
             "seed": self.state.seed,
             "sic": self.state.sic,
         }
-        console.log(citizen_payload)
+        
         await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
           console.log(response);
                 console.log(response.status);
                 if (response.status === 200) {
-                  alert("new Citizen sucessfully added!")
+                  alert("new Citizen added sucessfully !")
                   if(self.state.onboardChecked===true){}
                   self.props.history.push({
                       pathname: '/onboarding',
@@ -116,8 +116,7 @@ class newUserScreen extends Component {
           //alert(error);
           console.log(error);
       });
-      
-
+    
         
 }
 
@@ -181,7 +180,6 @@ class newUserScreen extends Component {
                                 value={this.state.dateOfBirth}
                                 onChange={(event, newValue) => {this.setState({ dateOfBirth: newValue })}}
                                 />
-                                *
                         </Box>
 
                         <Box>
@@ -301,7 +299,7 @@ class newUserScreen extends Component {
                     </Box>
                     <Box position='absolute' bottom='1%' right= {8} style={{width:'10%' }}>
                     <Button variant='contained' color= 'primary' fullWidth onClick={(event) => this.handleClickAdd(event)} >
-                        Add
+                        Submit
                     </Button>
                     </Box>
                     <Box position='absolute' bottom={8} left= {16} >

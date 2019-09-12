@@ -102,7 +102,7 @@ function NewSchema(props) {
           </Box>
           </Box>
         <Box p={2}>
-          <Button variant='contained' label="Submit" color='primary' onClick={(event) => props.this.handleClickNewSchema(event)} >
+          <Button variant='contained' label="Submit" color='primary'   onClick={(event) => props.this.handleClickNewSchema(event)} >
             Submit
           </Button>
         </Box>
@@ -150,6 +150,7 @@ class addASchemaScreen extends Component {
       "version": self.state.schema_version, 
       "attrNames": self.state.schema_attrNames
     }
+    console.log(schema_payload)
     await axios.post(apiBaseUrl + "indyschema", schema_payload, {headers: headers}).then(function (response) {
       console.log(response);
             console.log(response.status);

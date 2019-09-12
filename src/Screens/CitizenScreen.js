@@ -23,6 +23,15 @@ import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import axios from 'axios';
 import * as Constants from "./../Constants";
+import OnboardIcon from "@material-ui/icons/Work"
+import DeleteIcon from "@material-ui/icons/Delete"
+import EditIcon from '@material-ui/icons/Edit'
+import CredentialIcon from '@material-ui/icons/Assignment'
+import Tooltip from '@material-ui/core/Tooltip';
+import ConfirmDialog from './../components/confirm'
+
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+
 
 
 /*
@@ -42,6 +51,10 @@ function CitizensTable(props) {
           </Typography>
         </Box>
           {props.this.state.citizensTable}
+          <Box >
+            
+            <Button size='large' style={{color:'white'}}  onClick={(event)=> props.this.newCitizen()}>ADD NEW CITIZEN</Button> 
+          </Box>
         </Container>
     </Grid>
   </div>
@@ -52,7 +65,7 @@ function CitizensTable(props) {
 class CitizenScreen extends Component {
   constructor(props){
     super(props);
-
+    Utils.checkLogin(this)
     this.state={
       citizensData:[],
       citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
@@ -77,11 +90,35 @@ class CitizenScreen extends Component {
   }
   await axios.get(Constants.mongoDBBaseUrl + "citizens", {headers}).then(function (response) {
     console.log(response);
-    console.log(response.status);
-    console.log(response.data);
     if (response.status === 200) {
       let citizens = <CUSTOMPAGINATIONACTIONSTABLE 
       onEdit={(event, selected) => self.handleEdit(event, selected)} 
+      
+      rowFunctions= {[
+     { 
+       rowFunction: function (selected){self.removeCitizen(selected)},
+      rowFunctionName : 'Delete',
+      rowFunctionIcon : <DeleteIcon />
+     },
+    { 
+      rowFunction: function(selected){self.editCitizen(selected)},
+      rowFunctionName: 'Edit',
+      rowFunctionIcon: <EditIcon />,
+    },
+    {
+      rowFunction: function (selected){self.onboardCitizen(selected)},
+      rowFunctionName: 'Onboard',
+      rowFunctionIcon: <OnboardIcon />,
+    },
+    {
+      rowFunction: function (selected){self.sendCredentials(selected)},
+      rowFunctionName: 'send credentials',
+      rowFunctionIcon: <CredentialIcon />,
+    }
+
+
+      ]}
+
       data={response.data} 
       showAttr={["id", 'firstName', 'familyName']}/>
 
@@ -93,6 +130,68 @@ class CitizenScreen extends Component {
     console.log(error);
   });
 }
+
+async removeCitizen(selected) {
+
+  let self = this
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+
+  await axios.delete(mongoDBBaseUrl + "citizens/" + selected.id, {headers}).then(function (response) {
+          if (response.status === 200) {
+            alert("new Citizen sucessfully removed!")
+          }
+  }).catch(function (error) {
+    //alert(JSON.stringify(schema_payload))
+    //alert(error);
+    console.log(error);
+});
+
+self.listCitizens()
+}
+
+
+editCitizen(selected){
+  this.props.history.push({
+    pathname: '/newCitizen',
+    state: {            
+      "id": selected.id,
+      "familyName": selected.familyName,
+      "firstName": selected.firstName,
+      "dateOfBirth": selected.dateOfBirth,
+      "placeOfBirth": selected.placeOfBirth,
+      "address": selected.currentAddress,
+      "gender": selected.gender,
+      "legalId": selected.legalId,
+      "legalName": selected.legalName,
+      "legalAdress":selected.legalAdress,
+      "vatRegistration": selected.vatRegistration,
+      "taxReference": selected.taxReference,
+      "lei": selected.lei,
+      "eori": selected.eori,
+      "seed": selected.seed,
+      "sic": selected.sic,
+    }
+  })
+}
+
+onboardCitizen(selected){
+  this.props.history.push({
+    pathname: '/onboarding',
+    state: { citizen_id: selected.id }
+  })
+}
+
+sendCredentials(selected){
+  this.props.history.push({
+    pathname: '/sendCredOffer',
+    state: { my_did: selected.did }
+  })
+}
+
+
 
 handleEdit(event, selected){ //Fuction 
   this.setState({ selected: selected}); 
@@ -133,7 +232,12 @@ changeActiveDB(event){
 
 
 newCitizen(){
-  this.props.history.push('/newCitizen')
+  this.props.history.push({
+    pathname: '/newCitizen',
+    state: {            
+     
+    }
+  })
 }
 
 
@@ -162,10 +266,6 @@ newCitizen(){
           </Box>
           </div>
           <CitizensTable this={this} />
-          <Box mt={4}>
-            
-            <Button size='large' color='primary' variant='contained' onClick={(event)=> this.newCitizen()}>ADD NEW CITIZEN</Button> 
-          </Box>
         </div>
       </MuiThemeProvider>
     );

@@ -68,30 +68,7 @@ class CredentialDefScreen extends Component {
     }
   }
   
-  async createCredentialDef(event){
-    var self = this;
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem("token") 
-    }
-    var credDef_payload = { 
-      "schemaId": self.state.schemaId, 
-      "tag": self.state.tag, 
-      "supportRevocation": self.state.supportRevocation
-    }
-    await axios.post(apiBaseUrl + "credentialdef", credDef_payload, {headers: headers}).then(function (response) {
-      console.log(response);
-            console.log(response.status);
-            if (response.status === 201) {
-              alert("credential definition sucessfully created!")
-              self.listCredDefs()
-            }
-    }).catch(function (error) {
-      alert(JSON.stringify(credDef_payload))
-      alert(error);
-      console.log(error);
-  });
-  }
+
   
   handleGoToIssuingClick(credDefId){
     this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
@@ -107,7 +84,11 @@ class CredentialDefScreen extends Component {
       console.log(response.status);
       console.log(response.data);
       if (response.status === 200) {
-    let credDefs = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["wallet", "credDefId", "data.ver"]}/>
+    let credDefs = <CUSTOMPAGINATIONACTIONSTABLE 
+                      onEdit={(event, selected) => self.handleEdit(event, selected)}
+                      data={response.data} 
+                      showAttr={["wallet", "credDefId", "data.ver"]}
+                      rowFunctions={[]}/>
         self.setState({credDefs: credDefs})
       }
     }).catch(function (error) {
@@ -129,7 +110,7 @@ class CredentialDefScreen extends Component {
     this.listCredDefs()
   }
 
-  handleClickNewSchema(event){
+  handleClickNewCredDef(event){
     this.createCredentialDef(event)
   }
   /*
@@ -159,20 +140,9 @@ class CredentialDefScreen extends Component {
                 onChange={(event, newValue) => this.setState({ schemaId: newValue })}
             />
             <br />
-            <TextField
-                hintText="Enter the tag for the schema"
-                floatingLabelText="Tag"
-                value={this.state.tag}
-                onChange={(event, newValue) => this.setState({ tag: newValue })}
-            />
-            <br />
-              Revocation:
-              <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
-              <option value={true}>enabled</option>
-              <option value={false}>disabled</option>
-              </select>
-            <br />
-            <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClickNewSchema(event)} />
+
+
+            <RaisedButton label="Submit" primary={true} style={style}  />
 
             */}
                      

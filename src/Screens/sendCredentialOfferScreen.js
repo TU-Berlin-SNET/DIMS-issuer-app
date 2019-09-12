@@ -8,13 +8,13 @@ hitting logout
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
-
+import './../CSS/App.css';
 import Button from '@material-ui/core/Button';
 import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
-import Select from 'react-select';
+import Select from '@material-ui/core/Select';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
@@ -24,6 +24,10 @@ import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper'
+import MenuItem from '@material-ui/core/MenuItem'
+
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -40,10 +44,12 @@ class CredentialScreen extends Component {
         Utils.checkLogin(this)
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
+          credDef: {attributes: [],
+            value: "",
+            label: ""},
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
-          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "",
+          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: [],
           credentialRequestId: props.location.state.hasOwnProperty("credentialRequestId") ? props.location.state.credentialRequestId : "",
-          credentialValues: {},
           credentialRequests: [],
           credentialDefinitions: [],
           pairwiseConnectionsOptions: []
@@ -51,9 +57,10 @@ class CredentialScreen extends Component {
       } else {
         this.state={
           recipientDid: "",
-          credDefId: "",
+          credDef: {attributes: [],
+                    value: "",
+                    label: ""},
           credentialRequestId: "",
-          credentialValues: {},
           credentialRequests:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
           credentialDefinitions: [],
           selected: "",
@@ -74,7 +81,7 @@ async sendCredentialOffer(){
  }
  var payload = {
    'recipientDid': this.state.recipientDid,
-   'credDefId': this.state.credDefId
+   'credDefId': this.state.credDef.value
 }
  axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers: headers}).then(function (response) {
   console.log(response);
@@ -98,14 +105,19 @@ async listCredDefs(){
   await axios.get(apiBaseUrl + "credentialdef", {headers: headers}).then(function (response) {
     console.log(response);
     console.log(response.status);
-    console.log(response.data);
     if (response.status === 200) {
+      console.log(self.state.credDefId)
       let credDefs = response.data.map((credDef) => {
+    
+        let attributes = Object.keys(credDef.data.value.primary.r).filter(elem => elem !== 'master_secret')
+
         return(
-          {label: credDef.data.tag, value: credDef.credDefId}
+          {label: credDef.data.tag, value: credDef.credDefId, attributes: attributes}
         )
       }
+      
       )
+      console.log(credDefs)
       self.setState({credentialDefinitions: credDefs})
     }
   }).catch(function (error) {
@@ -119,6 +131,7 @@ async listCredDefs(){
 componentDidMount(){
   document.title = "issuer app"
   this.listCredDefs()
+  this.getTheirDid()
   this.timer = setInterval(() => {
     this.listCredDefs()}, 5000
     );
@@ -137,8 +150,6 @@ handleEdit(event, selected){ //Fuction
   this.setState({ selected: selected}); 
 } 
 
-
-
 /* POST 
 {
 	"credentialRequestId": "5c7071b8db4eb00010a3779d",
@@ -149,21 +160,24 @@ handleEdit(event, selected){ //Fuction
 	}
 }
 */
-async acceptCredentialRequestAndSendCred(){
+
+handleTabChange(newTab){
+  console.log(newTab)
+  this.props.onTabChange(newTab)
+}
+
+async getTheirDid(){
+  let self = this
   var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token")
 }
-var payload = {
-  'credentialRequestId': this.state.credentialRequestId,
-  'values': this.state.credentialValues
-}
-axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
+
+axios.get(apiBaseUrl + 'connection/' + 'TZutFcC3wrpxma3f2TXFZ7',{headers: headers}).then(function (response) {
   console.log(response);
   console.log(response.status);
-  if (response.status === 201) {
-    //alert("credential succesfully issued")
-    window.location.reload()
+  if (response.status === 200) {
+       self.state.recipientDid = response.data.theirDid
   }
 }).catch(function (error) {
 //alert(error);
@@ -172,13 +186,36 @@ console.log(error);
 });
 }
 
-handleTabChange(newTab){
-  console.log(newTab)
-  this.props.onTabChange(newTab)
+currentAttribute(attr, index){
+  return( 
+     <Grid item container xs={3} 
+           component={Paper}
+           justify='center'
+           alignItems='center'>
+        <Grid item xs={10}>{attr}</Grid>
+        <Grid item xs={2}>
+        <IconButton  color="secondary" 
+           onClick={() => {           
+              var attributeNames = this.state.credDef.attributes;
+              attributeNames.splice(index,1);
+
+              this.setState(prevState => ({
+                credDef: {                   // object that we want to update
+                    ...prevState.credDef,    // keep all other key-value pairs
+                    attributes: attributeNames       // update the value of specific key
+                }
+            }))
+            }}> 
+        <CloseIcon />
+      </IconButton>
+        </Grid>
+     </Grid>
+  )
 }
 
 
 render() {
+  console.log(this.state.credentialDefinitions)
   return(
     <MuiThemeProvider>
     <div className="App">
@@ -188,52 +225,80 @@ render() {
 
 
       </div>
+<div className= 'grid'>
 
-
-    <Grid item xs={8} md={6} xl={4} style={{margin:"auto"}}>
-    <Box position='relative' marginTop='15vh'>
-      <Grid item xs={12}>
+    <Grid container xs={12}  style={{margin:"auto"}}>
+    <Container className='tableContainer'>
+    <Box position='relative' >
+      <Typography variant="h6">
+            Send Credential Offer
+        </Typography>
+        </Box>
+        <Box mt={3}>
             <Grid
+                item
                 component= {Paper}
                 container
                 direction="row"
                 justify="center"
                 alignItems="flex-start"
+                xs={12}
                 >
                 {/*padding*/}
-                <Box p={2}>
-                  <Typography children={'Send credential Offer'} /> 
-               </Box>
                 <Grid item xs={12} >
                     <Box height='8vh' />       
                 </Grid>
-                <Grid item xs={8}>
-                   Select Cred Definition:
-                  <Select 
-                      className="SelectCredential"
-                      inputId="react-select-single"
-                      TextFieldProps={{
-                        label: 'Credential Definiton',
-                        InputLabelProps: {
-                          htmlFor: 'react-select-single',
-                          shrink: true,
-                        },
-                        placeholder: 'Search for credential definition ID',
-                      }}
-                      options={this.state.credentialDefinitions}
-                      onChange={(event) => this.setState({credDefId: event.value})}
-                  />
+                <Grid item container xs={8} justify='flex-start'>
+                  <Grid item xs={6}>
+                   Select Credential Definition:  
+                   </Grid>  
+                    <Grid item xs={6} containerjustify='flex-start'> 
+                        <Grid item xs={2}>
+                            <Select value={this.state.credDef.value}
+                            style={{width: '400px'}}
+            
+                            renderValue={() => this.state.credDef.value}
+                                onChange={(event) => this.setState({credDef: event.target.value})}
+                            >
+                              {this.state.credentialDefinitions.map((credD, key)=> {
+                                console.log(credD)
+                                return(
+                                  <MenuItem value={credD} key={key} >{credD.value}</MenuItem>
+                                )})}          
+                            </Select>
+                        </Grid>
+                    </Grid>
                   </Grid>
                   <Grid item xs={12} >
                     <Box height='8vh' />       
                 </Grid>
-                <Box p={2}>
-                <Button  color='primary' variant='contained' onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
-               </Box>
-              </Grid>
+                <Grid item xs={12} >
+                    <Typography>Attributes</Typography>     
+                </Grid>
+                <Grid item xs={12} >
+                    <Box height='2vh' />       
+                </Grid>
+                  <Grid item container xs={12}
+                  
+                    justify='space-evenly'
+                    spacing={2}>
+                    
+                  {this.state.credDef.attributes.map((attr, index) => {
+                       return( this.currentAttribute(attr, index) )
+                  })}  
+                  </Grid>               
+                  <Grid item xs={12} >
+                    <Box height='8vh' />       
+                </Grid>
             </Grid>
             </Box>
+            <Box>
+                  <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
+               </Box>
+            </Container>
       </Grid>
+
+      </div>
       </div>
     </MuiThemeProvider>
   )

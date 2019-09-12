@@ -114,7 +114,8 @@ class ConnectionScreen extends Component {
               let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE 
               onEdit={(event, selected) => self.handleEdit(event, selected)} 
               data={data} 
-              showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
+              showAttr={["theirUsername","their_did", "theirEndpointDid"]}
+              rowFunctions={[]}/>
               response.data.map((conn) => {
                   data.push(
                     {
@@ -146,13 +147,11 @@ class ConnectionScreen extends Component {
         <MuiThemeProvider>
         <div className="App">
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-            <div>
+           {/* <div>
                 Selected recipient: {this.state.selected.their_did}
                 <Button variant='contained' color='primary' onClick={() => this.handleGoToIssuingClick()} >Issue credential</Button>
-            </div>
-        <div>
+           </div> */}
         <SchemaTable this={this}/>
-        </div>
       </div>
       </MuiThemeProvider>
       )   
@@ -160,8 +159,5 @@ class ConnectionScreen extends Component {
 
 }
 
-const style = {
-    margin: 15,
-};
   
   export default withRouter(ConnectionScreen);
