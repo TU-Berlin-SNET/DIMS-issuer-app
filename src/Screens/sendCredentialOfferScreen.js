@@ -153,17 +153,6 @@ handleEdit(event, selected){ //Fuction
   this.setState({ selected: selected}); 
 } 
 
-/* POST 
-{
-	"credentialRequestId": "5c7071b8db4eb00010a3779d",
-	"values": {
-		"given_name@string": "Jesse Digital",
-        "address@string": "Digitalstreet 0101",
-        "birth_date@date": "1998-01-19"
-	}
-}
-*/
-
 handleTabChange(newTab){
   console.log(newTab)
   this.props.onTabChange(newTab)

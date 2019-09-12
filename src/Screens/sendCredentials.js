@@ -186,11 +186,7 @@ render() {
             </Container>
         </Grid>
       </div>
-      </div>
-  
-            
-
-                    
+      </div>         
     </MuiThemeProvider>
     
   )

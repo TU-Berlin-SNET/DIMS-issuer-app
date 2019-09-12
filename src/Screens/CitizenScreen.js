@@ -187,7 +187,7 @@ onboardCitizen(selected){
 sendCredentials(selected){
   this.props.history.push({
     pathname: '/sendCredOffer',
-    state: { my_did: selected.did }
+    state: { myDid: selected.did }
   })
 }
 
