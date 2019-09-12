@@ -139,7 +139,7 @@ async listCredentialRequests(){
      showAttr={["recipientDid","senderDid", "id"]}
      rowFunctions={[
       { 
-        rowFunction: function (selected){self.acceptCredentialRequestAndSendCred(selected)},
+        rowFunction: function (selected){self.sendCredentials(selected)},
        rowFunctionName : 'accept and send',
        rowFunctionIcon : <AcceptIcon />
       }
@@ -194,29 +194,12 @@ handleEdit(event, selected){ //Fuction
 	}
 }
 */
-async acceptCredentialRequestAndSendCred(selected){
-  console.log(selected)
-  let self = this
-  var headers = {
-  'Content-Type': 'application/json',
-  'Authorization': localStorage.getItem("token")
-}
-var payload = {
-  'credentialRequestId': selected.id,
-  'values':{}
-}
-axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
-  console.log(response);
-  console.log(response.status);
-  if (response.status === 201) {
-    alert("credential succesfully issued")
-    self.listCredentialRequests()
-  }
-}).catch(function (error) {
-//alert(error);
-//alert(JSON.stringify(payload))
-console.log(error);
-});
+sendCredentials(selected){
+
+  this.props.history.push({
+    pathname: '/sendCredentials',
+    state: { credReq: selected}
+    })
 }
 
 handleTabChange(newTab){

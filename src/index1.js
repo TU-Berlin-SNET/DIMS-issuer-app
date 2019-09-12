@@ -7,7 +7,7 @@ import OnboardingScreen from './Screens/OnboardingScreen';
 import SchemasScreen from './Screens/SchemasScreen';
 import NewSchemaScreen from './Screens/newSchema';
 import NewCredDef from './Screens/newCredDef';
-
+import SendCredentials from './Screens/sendCredentials'
 import CredentialDefScreen from './Screens/CredentialDefScreen';
 import CitizenScreen from './Screens/CitizenScreen';
 import CredentialScreen from './Screens/CredentialScreen';
@@ -50,6 +50,7 @@ handleTabChange(newTab){
         return(
           <Router>
             <Route exact path="/"  render={(props)=> <App {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
+            <Route exact path="/sendCredentials"  render={(props)=> <SendCredentials {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
             <Route path="/account" render={(props)=> <AccountScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route exact path="/newCitizen" render={(props)=> <User {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route path="/citizen" render={(props)=> <CitizenScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />

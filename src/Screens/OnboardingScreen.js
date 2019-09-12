@@ -26,6 +26,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+
 
 
 
@@ -49,7 +51,7 @@ class OnboardingScreen extends Component {
       citizen_did:'',
       citizen_verkey:'',
       onboarded:true,
-      newMyDid: "",
+      myDid: "",
       sendCredentialOfferCheck: true,
     }
   }
@@ -66,68 +68,22 @@ class OnboardingScreen extends Component {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem("token") 
       }
-      axios.get(apiBaseUrl + "connection/" + this.state.newMyDid, {headers: headers}).then((response) => {
+      axios.get(apiBaseUrl + "connection/" + '4ERnq5sBAWuNf4zdpWHTRN' /*  this.state.myDid */ , {headers: headers}).then((response) => {
         console.log(response.status)
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-            alert('onboarded new Citizen succsessfully')
+          //  alert('onboarded new Citizen succsessfully')
+
             this.setState({citizen_did: response.data.theirDid})
+            self.addDidToCitizenInformation()
           //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
-            self.setState({newMyDid: ""})
             //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
         }
       })
     }
 
-
-  handleOnboarding(event) {
-    var self = this;
-    var payload = {
-        "did": this.state.citizen_did,
-        "verkey": this.state.citizen_verkey,
-        "role": "NONE"
-    }
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem("token") 
-    }
-    axios.post(apiBaseUrl + 'nym' ,payload, {headers: headers})
-        .then(function (response) {
-            console.log(response);
-            console.log(response.status);
-            if (response.status === 200) {
-                console.log("Onboarding successfully executed");
-                console.log(response.data);
-                var payload_conn = {
-                }
-                axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-                .then(function (response) {
-                  console.log(response);
-                  console.log(response.status);
-                  if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
-                  }
-                }).catch(function (error) {
-                  //alert(error);
-                  console.log(error);
-              });
-
-            } else if (response.status === 204) {
-                console.log("TODO: handle onboarding errors");
-                //alert("TODO: handle onboarding errors")
-            }
-            else {
-                console.log("Onboarding is unsuccesful");
-                alert("Onboarding is unsuccesful");
-            }
-        })
-        .catch(function (error) {
-            //alert(error);
-            console.log(error);
-        });
-}
 
   componentDidMount(){
     document.title = "issuer app"
@@ -145,7 +101,7 @@ class OnboardingScreen extends Component {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), newMyDid: response.data.meta.myDid})
+                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
                   }
                 }).catch(function (error) {
                   //alert(error);
@@ -163,7 +119,26 @@ handleCredentialOfferCheckChange =  event => {
   Parameters: event
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
+ async addDidToCitizenInformation() {
 
+  let self = this
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+
+  let citizen_payload={did: this.state.myDid}
+
+  await axios.put(mongoDBBaseUrl + "citizens/" + this.state.citizen_id, citizen_payload, {headers}).then(function (response) {
+          if (response.status === 200) {
+          }
+  }).catch(function (error) {
+    //alert(JSON.stringify(schema_payload))
+    //alert(error);
+    console.log(error);
+});
+
+ }
 
 handleTabChange(newTab){
   console.log(newTab)
@@ -173,7 +148,7 @@ handleTabChange(newTab){
 goTosendCredentialScreen(){
   this.props.history.push({
     pathname: '/sendCredOffer',
-    state: { citizen_did: this.state.citizen_did }
+    state: { myDid: this.state.myDid}
   })
 }
 

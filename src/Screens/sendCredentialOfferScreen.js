@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
-
+import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 
@@ -41,6 +41,7 @@ class CredentialScreen extends Component {
 
     constructor(props){
         super(props);
+        console.log(props)
         Utils.checkLogin(this)
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
@@ -52,7 +53,8 @@ class CredentialScreen extends Component {
           credentialRequestId: props.location.state.hasOwnProperty("credentialRequestId") ? props.location.state.credentialRequestId : "",
           credentialRequests: [],
           credentialDefinitions: [],
-          pairwiseConnectionsOptions: []
+          pairwiseConnectionsOptions: [],
+          myDid: props.location.state.myDid
         }
       } else {
         this.state={
@@ -64,6 +66,7 @@ class CredentialScreen extends Component {
           credentialRequests:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
           credentialDefinitions: [],
           selected: "",
+          myDid: props.location.state.myDid
         }
       }
     }
@@ -173,49 +176,36 @@ async getTheirDid(){
   'Authorization': localStorage.getItem("token")
 }
 
-axios.get(apiBaseUrl + 'connection/' + 'TZutFcC3wrpxma3f2TXFZ7',{headers: headers}).then(function (response) {
-  console.log(response);
-  console.log(response.status);
-  if (response.status === 200) {
-       self.state.recipientDid = response.data.theirDid
-  }
-}).catch(function (error) {
-//alert(error);
-//alert(JSON.stringify(payload))
-console.log(error);
-});
+    axios.get(apiBaseUrl + 'connection/' + '4ERnq5sBAWuNf4zdpWHTRN' /*self.state.myDid */,{headers: headers}).then(function (response) {
+      console.log(response);
+      console.log(response.status);
+      if (response.status === 200) {
+          self.state.recipientDid = response.data.theirDid
+      }
+    }).catch(function (error) {
+    //alert(error);
+    //alert(JSON.stringify(payload))
+    console.log(error);
+    });
 }
 
 currentAttribute(attr, index){
   return( 
-     <Grid item container xs={3} 
+    <Grid item container xs={3}>
+     <Grid item container xs={10} 
            component={Paper}
            justify='center'
            alignItems='center'>
-        <Grid item xs={10}>{attr}</Grid>
-        <Grid item xs={2}>
-        <IconButton  color="secondary" 
-           onClick={() => {           
-              var attributeNames = this.state.credDef.attributes;
-              attributeNames.splice(index,1);
+        <Grid item xs={12}>{attr}</Grid>
 
-              this.setState(prevState => ({
-                credDef: {                   // object that we want to update
-                    ...prevState.credDef,    // keep all other key-value pairs
-                    attributes: attributeNames       // update the value of specific key
-                }
-            }))
-            }}> 
-        <CloseIcon />
-      </IconButton>
-        </Grid>
      </Grid>
+    </Grid>
   )
 }
 
 
 render() {
-  console.log(this.state.credentialDefinitions)
+  console.log(this.state.myDid)
   return(
     <MuiThemeProvider>
     <div className="App">
@@ -274,12 +264,13 @@ render() {
                 </Grid>
                 <Grid item xs={12} >
                     <Typography>Attributes</Typography>     
+                    <Divider />
                 </Grid>
                 <Grid item xs={12} >
                     <Box height='2vh' />       
                 </Grid>
-                  <Grid item container xs={12}
-                  
+                  <Grid item container xs={10}
+                    direction='row'
                     justify='space-evenly'
                     spacing={2}>
                     
