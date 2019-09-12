@@ -69,17 +69,10 @@ getAttributeNames(credReq){
 }
 
 
-sendCredentialClick(){
+sendCredentialsClick(){
   this.acceptCredentialRequestAndSendCred()
 }
 
-sendCredentialOfferClick(){
-  this.sendCredentialOffer()
-}
-
-handleEdit(event, selected){ //Fuction 
-  this.setState({ selected: selected}); 
-} 
 
 
 
@@ -93,16 +86,25 @@ handleEdit(event, selected){ //Fuction
 	}
 }
 */
-async acceptCredentialRequestAndSendCred(selected){
-  console.log(selected)
+async acceptCredentialRequestAndSendCred(){
   let self = this
+  var values = {};  // "object literal" syntax
+ self.state.attributes.map((attrArr) => {
+     let name = attrArr[0]
+     let value = attrArr[1]
+    values[name] = value
+ })
+
+ console.log(values)
+
+
   var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token")
 }
 var payload = {
-  'credentialRequestId': selected.id,
-  'values':{}
+  'credentialRequestId': this.state.credReq.id,
+  'values': values
 }
 axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
   console.log(response);
@@ -159,9 +161,12 @@ render() {
                                 <TextField hintText={'Enter ' +  this.state.attributes[key][0]}
                                 floatingLabelText={this.state.attributes[key][0]} 
                                 onChange={(event, newValue) => {
-                                    const {credentialValues} = this.state.attributes;
-                                    this.state.attributes[key][1] = newValue;
-                                    this.setState({ attributes: credentialValues})}}
+                                    let values = this.state.attributes;
+                                    values[key][1] = newValue;
+                                    this.setState({ attributes: values})
+                                }
+                            
+                            }
                                     />
                                    </Grid>
                                    </Box> 
@@ -175,7 +180,7 @@ render() {
                     </Grid>
                     </Box>
                 <Box>
-                    <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
+                    <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialsClick(event)}>Send</Button>
                 </Box>
             
             </Container>
