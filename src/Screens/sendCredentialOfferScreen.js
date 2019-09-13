@@ -41,7 +41,7 @@ class CredentialScreen extends Component {
 
     constructor(props){
         super(props);
-        console.log(props)
+      console.log(props.location.state)
         Utils.checkLogin(this)
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
@@ -87,8 +87,6 @@ async sendCredentialOffer(){
    'credDefId': this.state.credDef.value
 }
  axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers: headers}).then(function (response) {
-  console.log(response);
-  console.log(response.status);
   if (response.status === 201) {
     alert("Credential offer successfully sent")
   }
@@ -106,10 +104,7 @@ async listCredDefs(){
     'Authorization': localStorage.getItem("token")
   }
   await axios.get(apiBaseUrl + "credentialdef", {headers: headers}).then(function (response) {
-    console.log(response);
-    console.log(response.status);
     if (response.status === 200) {
-      console.log(self.state.credDefId)
       let credDefs = response.data.map((credDef) => {
     
         let attributes = Object.keys(credDef.data.value.primary.r).filter(elem => elem !== 'master_secret')
@@ -117,10 +112,7 @@ async listCredDefs(){
         return(
           {label: credDef.data.tag, value: credDef.credDefId, attributes: attributes}
         )
-      }
-      
-      )
-      console.log(credDefs)
+      } )
       self.setState({credentialDefinitions: credDefs})
     }
   }).catch(function (error) {
@@ -154,7 +146,6 @@ handleEdit(event, selected){ //Fuction
 } 
 
 handleTabChange(newTab){
-  console.log(newTab)
   this.props.onTabChange(newTab)
 }
 
@@ -165,9 +156,7 @@ async getTheirDid(){
   'Authorization': localStorage.getItem("token")
 }
 
-    axios.get(apiBaseUrl + 'connection/' + '4ERnq5sBAWuNf4zdpWHTRN' /*self.state.myDid */,{headers: headers}).then(function (response) {
-      console.log(response);
-      console.log(response.status);
+    axios.get(apiBaseUrl + 'connection/' + self.state.myDid ,{headers: headers}).then(function (response) {
       if (response.status === 200) {
           self.state.recipientDid = response.data.theirDid
       }
@@ -194,7 +183,6 @@ currentAttribute(attr, index){
 
 
 render() {
-  console.log(this.state.myDid)
   return(
     <MuiThemeProvider>
     <div className="App">
@@ -240,7 +228,6 @@ render() {
                                 onChange={(event) => this.setState({credDef: event.target.value})}
                             >
                               {this.state.credentialDefinitions.map((credD, key)=> {
-                                console.log(credD)
                                 return(
                                   <MenuItem value={credD} key={key} >{credD.value}</MenuItem>
                                 )})}          

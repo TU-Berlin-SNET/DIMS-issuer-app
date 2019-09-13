@@ -150,11 +150,6 @@ export default function CustomPaginationActionsTable(props) {
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
-                <TableRow>
-                      <TableCell  align='center' >
-                        no ... available
-                      </TableCell>
-                </TableRow>
             </TableBody>
             <TableFooter>
               <TableRow>

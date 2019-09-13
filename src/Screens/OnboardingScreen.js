@@ -15,6 +15,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
+import * as Test from "./../test";
 import * as Utils from "./../Utils";
 
 import Box from '@material-ui/core/Box'
@@ -27,6 +28,7 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+const testMyDid= Test.myDid
 
 
 
@@ -68,7 +70,7 @@ class OnboardingScreen extends Component {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem("token") 
       }
-      axios.get(apiBaseUrl + "connection/" + '4ERnq5sBAWuNf4zdpWHTRN' /*  this.state.myDid */ , {headers: headers}).then((response) => {
+      axios.get(apiBaseUrl + "connection/" +  this.state.myDid , {headers: headers}).then((response) => {
         console.log(response.status)
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
@@ -101,7 +103,7 @@ class OnboardingScreen extends Component {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
+                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: testMyDid /*response.data.meta.myDid*/})
                   }
                 }).catch(function (error) {
                   //alert(error);
