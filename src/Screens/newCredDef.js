@@ -124,8 +124,10 @@ console.log(schema)
   currentAttribute(attr, index){
     return(
    <div>
-        <ListItem key={index} item>
-            {attr}
+        <ListItem key={index} item  alignItems='center'>
+          <ListItemText align='center'>
+              {attr}
+          </ListItemText>
         </ListItem>
         < Divider />
         </div>
@@ -142,14 +144,12 @@ console.log(schema)
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
         <div className="grid">
-        <Box position='relative' left='50%' className='centeredItem'> 
-          <Grid container item xs={12} sm={10} md={8} lg={6} xl={4}>
-        <Container  className="tableContainer">
+        <Box position='relative'> 
+        <Container maxWidth='false' className="tableContainer">
      
     <Grid container   
          direction="row"
-         justify='space-between'
-         alignItems="flex-start"
+         justify='space-evenly'
          spacing={4}
          xs={12} style={{margin:"auto"}}>
         <Grid item xs={12}>
@@ -157,34 +157,36 @@ console.log(schema)
                 Create Credential Definiton
             </Typography>    
         </Grid>
-    <Grid item container xs={4} direction='column'
-          justify='space-between' 
+    <Grid item container xs={5}
+          justify='center'
           component={Paper}
           >
         
-          <Grid item container xs={12}  >
-              <Grid item container justify='center' xs={6}>
-                <Grid item xs={12}>
-                    <Typography> Schema name:</Typography>
-                    <Typography> Schema version:</Typography>
+          <Grid item container xs={12} justify='center'   >
+          
+              <Grid item container justify='flex-end' xs={6}>
+                <Grid  item xs={6} >
+                    <Typography align='left'> Schema name:</Typography>
+                    <Typography align='left'> Schema version:</Typography>
                 </Grid>
               </Grid>
-              <Grid item container justify='center' xs={6}>
-                <Grid item xs={12}>
+              <Grid item container justify='flex-start' xs={6}>
+                <Grid item xs={6}>
                     <Typography>{this.state.schema_name}:</Typography>
                     <Typography>{this.state.schema_version}</Typography>
                 </Grid>
+              
               </Grid>
           </Grid>
-          <Box mt={2}>
-          <Grid item container xs={12}   >
-              <Grid item container justify='center' xs={6}>
-                <Grid item xs={12}>
-                    <Typography> revocation:</Typography>
+          
+          <Grid item container xs={12} justify='center'  >
+              <Grid item container justify='flex-end' xs={6}>
+                <Grid item xs={6}>
+                    <Typography align='left'> revocation:</Typography>
                 </Grid>
               </Grid>
-              <Grid item container justify='flex-end' xs={6}>
-                <Grid item>
+              <Grid item container justify='flex-start' xs={6}>
+                <Grid item xs={6}>
                   <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
                     <option value={true}>enabled</option>
                     <option value={false}>disabled</option>
@@ -192,11 +194,10 @@ console.log(schema)
                 </Grid>
               </Grid>
           </Grid>
-          </Box>
+          
         
-          <Grid item container xs={12} >
+          <Grid item container xs={12} justify='flex-start' >
         
-              <Grid item container justify='center' xs={6}>
                 <Grid item xs={12}>
                       <TextField
                       hintText="Enter the tag for the schema"
@@ -205,25 +206,23 @@ console.log(schema)
                       onChange={(event, newValue) => this.setState({ tag: newValue })}
                   />
                 </Grid>
-              </Grid>
+              
           </Grid>
-
-      
     </Grid>
-    <Grid container item xs={8} direction='column'>
+    <Grid container item xs={5} >
 
       <Grid item container xs={12} 
             component= {Paper} 
             justify='space-around' 
-            spacing={2}
+            spacing={4}
             alignItems='center' >
-          <Grid item container xs={12} justify='flex-end'>
+          <Grid item container xs={12} >
             <Grid item xs={12}  >
               <Typography>Attributes</Typography>
             </Grid>
           </Grid>
           <Box width='100%'>
-          <List >
+          <List alignItems='center'>
           {this.state.schema_attrNames.map((attr, index) => {
               return( this.currentAttribute(attr, index) )
           })} 
@@ -232,7 +231,7 @@ console.log(schema)
        </Grid>
     </Grid>
 
-      <Box position="absolute" >
+      <Box position="absolute" left='0'>
         <Link  to={"schemas"}>
           <ArrowBackRounded style={{color:'white'}} fontSize="large" />
         </Link>
@@ -247,7 +246,6 @@ console.log(schema)
   </Grid>
 
   </Container>
-  </Grid>
   </Box>
   </div>
         </div>

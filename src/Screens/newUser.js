@@ -23,6 +23,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import * as Constants from "./../Constants";
+import Footer from "./../components/footer"
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 

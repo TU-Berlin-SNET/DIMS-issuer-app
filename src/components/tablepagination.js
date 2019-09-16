@@ -95,7 +95,7 @@ const useStyles2 = makeStyles(theme => ({
     marginTop: theme.spacing(3),
   },
   table: {
-    minWidth: 500,
+  
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -103,7 +103,7 @@ const useStyles2 = makeStyles(theme => ({
 }));
 
 var rows = [];
-var moreAttributesNames= []
+var rowsDefault=['-','-','no..','-','-','-']
 
 
 export default function CustomPaginationActionsTable(props) {
@@ -150,6 +150,14 @@ export default function CustomPaginationActionsTable(props) {
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
+              {rowsDefault.map((row) => {
+                return(
+                  <TableRow>
+                  <TableCell align='center'>
+                    {row}
+                  </TableCell>
+                </TableRow>
+              )})}
             </TableBody>
             <TableFooter>
               <TableRow>

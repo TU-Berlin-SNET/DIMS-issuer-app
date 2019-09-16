@@ -14,6 +14,7 @@ import {withRouter, Link} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
+import Footer from "./../components/footer"
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
@@ -27,26 +28,26 @@ import OnboardIcon from "@material-ui/icons/Work"
 import DeleteIcon from "@material-ui/icons/Delete"
 import EditIcon from '@material-ui/icons/Edit'
 import CredentialIcon from '@material-ui/icons/Assignment'
-
+import Button from '@material-ui/core/Button'
 const apiBaseUrl = Constants.apiBaseUrl;
 
 
 function SchemaTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className="tableContainer">
+    <Grid item xs={12}  style={{margin:"auto"}}>
+        <Container maxWidth='false' className="tableContainer">
         <Box position="relative" >
-          <Typography  variant="h6">
+          <Typography  variant="h5">
               Schemas
           </Typography>
           <Box position="absolute" top={0} right={0}>
-            <Link  to={{
+            <Button component={Link}             to={{
               pathname: "newSchema",
               state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
               }}>
-              <AddIcon style={{color:'white'}} fontSize="large" />
-            </Link>
+              <AddIcon style={{color:'white'}} fontSize="large" /> 
+            </Button>
           </Box>
         </Box>
           {props.this.state.schemas}
@@ -164,6 +165,7 @@ class SchemaScreen extends Component {
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <SchemaTable this={this}/>
+          <Footer />
         </div>
       </MuiThemeProvider> 
     );

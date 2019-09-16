@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import Footer from "./../components/footer"
 // var request = require('superagent');
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -34,10 +34,10 @@ const apiBaseUrl = Constants.apiBaseUrl;
 function CredentialDefTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className="tableContainer" >
+    <Grid item xs={12} >
+        <Container  maxWidth='false' className="tableContainer" >
         <Box position="relative" >
-          <Typography  variant="h6">
+          <Typography  variant="h5">
             Credential Defintions 
           </Typography>
         </Box>
@@ -145,7 +145,7 @@ class CredentialDefScreen extends Component {
             <RaisedButton label="Submit" primary={true} style={style}  />
 
             */}
-                     
+                   <Footer />  
         </div>
 
 

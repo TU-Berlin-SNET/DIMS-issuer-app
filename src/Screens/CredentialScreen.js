@@ -23,7 +23,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-
+import Footer from "./../components/footer"
 import AcceptIcon from '@material-ui/icons/Done'
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -35,10 +35,10 @@ const apiBaseUrl = Constants.apiBaseUrl;
 function CredentialTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className="tableContainer">
+    <Grid item xs={12}  style={{margin:"auto"}}>
+        <Container maxWidth='false' className="tableContainer">
         <Box position="relative" >
-          <Typography  variant="h6">
+          <Typography  variant="h5">
               Credentials
           </Typography>
         </Box>
@@ -220,7 +220,7 @@ render() {
                 );
               })}
                     </div>
-      
+                    <Footer />  
     </div>
     </MuiThemeProvider>
   )

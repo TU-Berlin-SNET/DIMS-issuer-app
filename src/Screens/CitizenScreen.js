@@ -11,7 +11,7 @@ Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import {withRouter} from "react-router-dom";
+import {withRouter, Link} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -29,6 +29,8 @@ import EditIcon from '@material-ui/icons/Edit'
 import CredentialIcon from '@material-ui/icons/Assignment'
 import Tooltip from '@material-ui/core/Tooltip';
 import ConfirmDialog from './../components/confirm'
+import AddIcon from '@material-ui/icons/Add'
+import Footer from "./../components/footer"
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
@@ -43,20 +45,24 @@ superagent is used to handle post/get requests to server
 function CitizensTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className="tableContainer">
+    <Grid item xs={12}  style={{margin:"auto"}}>
+        <Container maxWidth='false' className="tableContainer">
         <Box position="relative" >
-          <Typography  variant="h6">
+          <Typography  variant="h5">
               Citizens
           </Typography>
+          <Box position="absolute" top={0} right={0}>
+            <Button  onClick={(event)=> props.this.newCitizen()}>
+              <AddIcon style={{color:'white'}} fontSize="large" />
+            </Button>
+          </Box>
         </Box>
-          {props.this.state.citizensTable}
           <Box >
-            
-            <Button size='large' style={{color:'white'}}  onClick={(event)=> props.this.newCitizen()}>ADD NEW CITIZEN</Button> 
+          {props.this.state.citizensTable}
           </Box>
         </Container>
     </Grid>
+    <Footer />
   </div>
   );
 }

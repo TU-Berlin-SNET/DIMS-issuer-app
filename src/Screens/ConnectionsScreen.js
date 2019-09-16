@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import Footer from "./../components/footer"
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -32,10 +32,10 @@ const apiBaseUrl = Constants.apiBaseUrl;
 function SchemaTable(props) {
     return(
         <div className="grid">
-        <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-            <Container  className="tableContainer">
+        <Grid item xs={12} style={{margin:"auto"}}>
+            <Container maxWidth='false'  className="tableContainer">
             <Box position="relative" >
-                <Typography  variant="h6">
+                <Typography  variant="h5">
                 Pairwise Connections
                 </Typography>
             </Box>
@@ -152,6 +152,7 @@ class ConnectionScreen extends Component {
                 <Button variant='contained' color='primary' onClick={() => this.handleGoToIssuingClick()} >Issue credential</Button>
            </div> */}
         <SchemaTable this={this}/>
+        <Footer />  
       </div>
       </MuiThemeProvider>
       )   

@@ -17,7 +17,7 @@ import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Test from "./../test";
 import * as Utils from "./../Utils";
-
+import Footer from "./../components/footer"
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -96,14 +96,19 @@ class OnboardingScreen extends Component {
       'Authorization': localStorage.getItem("token") 
     }
      let payload_conn = {
-       id : self.state.citizen_id
+      "meta":{
+        "username" : 'abc'
+       },
+       "data":{
+         "app": "abc"
+       }
                 }
                 axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
                  .then(function (response) {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: testMyDid /*response.data.meta.myDid*/})
+                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
                   }
                 }).catch(function (error) {
                   //alert(error);
@@ -199,6 +204,7 @@ goTosendCredentialScreen(){
             </Box>
       </Grid>
       <Button  color="primary" style={style} onClick={(event) => this.goTosendCredentialScreen(event)}>Send Credential</Button>
+      <Footer />
       </div>
           </MuiThemeProvider>
     );

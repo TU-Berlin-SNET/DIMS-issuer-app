@@ -86,15 +86,19 @@ class newUserScreen extends Component {
       <MuiThemeProvider>
         <div className="App">
             <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-            <div className={styles.grid}>
-            <Grid container  xs={5} md={3} xl={2} style={{margin:"auto"}}
+            <div className={styles.grid}>              
+            <Box position='relative' mt={3} width='100%'>
+              <Container  maxWidth='false' className='tableContainer'>
+              <Grid container  xs={12}  style={{margin:"auto"}}
                   justify='center'>
-              <Container className='tableContainer'>
-              <Typography variant="h6">
-                 User
-              </Typography>
-              <Box position='relative' mt={3}>
-                <Grid container justify='center' xs={12}>
+                    <Grid item container xs={12} justify='center'>
+                      <Grid item xs={3}>
+                          <Typography variant="h6">
+                            User
+                          </Typography>
+                      </Grid>
+                   </Grid>
+                <Grid container justify='center' xs={4}>
                 <Grid
                     component= {Paper}
                     item
@@ -126,13 +130,19 @@ class newUserScreen extends Component {
 
                     </Grid>
                 </Grid>
-                </Box>
-                <Box mt={2}>
+
+                <Grid container item xs={12} justify='center'>
+                  <Grid item xs={4}>
                   <Button  color="primary" style={{color:'white'}} onClick={(event) => this.handleLogout(event)}>Logout</Button>
-                </Box>
+                  </Grid>
+                </Grid>
+                </Grid>
             </Container>
-        </Grid>
+            </Box>
+           
+         
         </div> 
+        
      </div>
     </MuiThemeProvider>
           

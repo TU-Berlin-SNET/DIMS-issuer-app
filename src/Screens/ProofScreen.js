@@ -27,8 +27,8 @@ const apiBaseUrl = Constants.apiBaseUrl;
 function CredentialTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container  className="tableContainer">
+    <Grid item xs={12}  style={{margin:"auto"}}>
+        <Container maxWidth='false'  className="tableContainer">
         <Box position="relative" >
           <Typography  variant="h6">
               Proofs
