@@ -29,14 +29,11 @@ import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container'
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import Footer from "./../components/footer"
 import Divider from '@material-ui/core/Divider'
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -164,42 +161,35 @@ console.log(schema)
                             </Typography>      
                             </Box>
                          </Grid>
-    <Grid item container xs={5}
+    <Grid item container xs={10}
           justify='center'
           component={Paper}
+          spacing={4}
           >
         
           <Grid item container xs={12} justify='center'   >
-          
-              <Grid item container justify='flex-end' xs={6}>
-                <Grid  item xs={6} >
-                    <Typography align='left'> Schema name:</Typography>
-                    <Typography align='left'> Schema version:</Typography>
+                <Grid  item xs={2} >
+                    <Typography align='left'> Schema name: {this.state.schema_name}</Typography>
                 </Grid>
-              </Grid>
-              <Grid item container justify='flex-start' xs={6}>
-                <Grid item xs={6}>
-                    <Typography>{this.state.schema_name}:</Typography>
-                    <Typography>{this.state.schema_version}</Typography>
+          </Grid>
+          <Grid item container xs={12} justify='center'   >
+                <Grid  item xs={2} >
+                    <Typography align='left'> Schema version: {this.state.schema_version}</Typography>
                 </Grid>
-              
-              </Grid>
           </Grid>
           
           <Grid item container xs={12} justify='center'  >
-              <Grid item container justify='flex-end' xs={6}>
+            <Grid item container xs={2}>
                 <Grid item xs={6}>
                     <Typography align='left'> revocation:</Typography>
                 </Grid>
-              </Grid>
-              <Grid item container justify='flex-start' xs={6}>
                 <Grid item xs={6}>
                   <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
                     <option value={true}>enabled</option>
                     <option value={false}>disabled</option>
                   </select>
                 </Grid>
-              </Grid>
+             </Grid>
           </Grid>
           
         
@@ -215,28 +205,27 @@ console.log(schema)
                 </Grid>
               
           </Grid>
-    </Grid>
-    <Grid container item xs={5} >
 
-      <Grid item container xs={12} 
-            component= {Paper} 
-            justify='space-around' 
-            spacing={4}
-            alignItems='center' >
+
           <Grid item container xs={12} >
             <Grid item xs={12}  >
-              <Typography>Attributes</Typography>
+              <Box width='50%' margin='auto'>
+                <Box width='100%' pt={2} pb={2} style={{backgroundColor:'#FF7C7C'}}>
+                  <Typography >Attributes</Typography>
+                </Box>
+                <Box width='100%'>
+                    <List alignItems='center'>
+                    {this.state.schema_attrNames.map((attr, index) => {
+                        return( this.currentAttribute(attr, index) )
+                    })} 
+                    </List>
+              </Box>
+             </Box>
             </Grid>
           </Grid>
-          <Box width='100%'>
-          <List alignItems='center'>
-          {this.state.schema_attrNames.map((attr, index) => {
-              return( this.currentAttribute(attr, index) )
-          })} 
-          </List>
-          </Box>
-       </Grid>
-    </Grid>
+
+          </Grid>
+
     <Grid item container 
           justify='center'
           xs={12}>
@@ -250,6 +239,7 @@ console.log(schema)
   </Container>
 
   </div>
+  <Footer />
         </div>
       </MuiThemeProvider> 
     );

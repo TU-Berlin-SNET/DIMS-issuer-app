@@ -35,6 +35,10 @@ import Container from '@material-ui/core/Container'
 import AcceptIcon from '@material-ui/icons/Done'
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Footer from "./../components/footer"
+import MoreAttributes from './../components/moreAttributesDialog'
+import {Table, TableBody, TableRow, TableCell, TableHead } from '@material-ui/core';
+import MoreHoriz from '@material-ui/icons/MoreHoriz';
+
 
 
 
@@ -55,11 +59,29 @@ superagent is used to handle post/get requests to server
 
 function CredentialTable(props) {
     return(
-    <div className="grid">
       <Grid item xs={12}  >
-            {props.this.state.credentialRequests}
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell children="Nr." />
+              <TableCell children="Credential Definiton ID" />
+              <TableCell children="JSON" />
+              <TableCell children="Send Credential" />
+            </TableRow>
+          </TableHead>
+        <TableBody>
+              {props.this.state.credentialRequest.map((credentialReq, index) => {
+                return(
+                  <TableRow>
+                      <TableCell children={index}/>
+                      <TableCell children={credentialReq.meta.offer.cred_def_id}/>
+                      <TableCell children={<MoreAttributes row={credentialReq} icon={<MoreHoriz/>} iconText=''/>} />
+                      <TableCell children={<IconButton onClick={()=>props.this.sendCredentials}><AcceptIcon /></IconButton> } />
+                  </TableRow>
+                )} )}
+        </TableBody>
+        </Table>
       </Grid>
-    </div>
     );
   }
 
@@ -75,8 +97,7 @@ console.log(props.location.state.citizen)
         ownDid: '',
         connectionState: 'notConnected',
         credentialOffers: '',
-        credentialRequests: '',
-        credentialRequestsOld:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+        credentialRequest: [],
         theirDid: '',
     }
   }
@@ -87,6 +108,7 @@ console.log(props.location.state.citizen)
       this.getConnectionStatus()
       this.getCredentialOffers()
       this.getCredentialRequests()
+      this.getConnectionDetails()
   }
 
 
@@ -106,6 +128,24 @@ console.log(props.location.state.citizen)
         console.log(error)
     })
   }
+
+  async getConnectionDetails(){
+    var self = this;
+    var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token")
+    }
+   
+    await axios.get(apiBaseUrl + "wallet/default/connection", {headers: headers}).then(function(response){
+        if (response.status === 200) {
+         console.log(response)
+         let connection = response.data.filter(connection => connection.my_did === self.state.myDid) 
+         self.setState({connection})
+        }
+      }).catch(function (error) {
+      console.log(error);
+      });
+}
 
 
   async getTheirDid(){
@@ -176,21 +216,8 @@ console.log(props.location.state.citizen)
            credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
          }) */
         let allCredReq = response.data
-        let credentialRequests = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
-
-        let credReqs = <CUSTOMPAGINATIONACTIONSTABLE 
-        onEdit={(event, selected) => self.handleEdit(event, selected)} 
-        data={response.data} 
-        showAttr={["meta.recipientDid","senderDid", "id"]}
-        rowFunctions={[
-         { 
-           rowFunction: function (selected){self.sendCredentials(selected)},
-          rowFunctionName : 'accept and send',
-          rowFunctionIcon : <AcceptIcon />
-         }
-        ]}/>
-        
-        self.setState({credentialRequests: credReqs})
+        let credentialRequest = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
+        self.setState({credentialRequest: credentialRequest})
        }
      }).catch(function (error) {
      //alert(error);
@@ -226,22 +253,31 @@ console.log(props.location.state.citizen)
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
         <div className="grid">
-        <Box position='relative'> 
+
         <Container maxWidth='false' className="tableContainer">
-     
+        <Box> 
     <Grid container   
          direction="row"
          justify='space-evenly'
          spacing={4}
          xs={12} style={{margin:"auto"}}>
         <Grid item xs={12}>
+          <Box position='relative'>
+            <Box position="absolute" top={0} left={0}>
+                <Link  to={"citizens"}>
+                   <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                </Link>  
+            </Box>
             <Typography variant="h5">
                Citizen  {this.state.citizen.firstName} {this.state.citizen.familyName}
-            </Typography>    
+            </Typography> 
+            </Box>   
         </Grid>
+        <Grid item xs={12} />
     <Grid item container xs={12}
           justify='center'
           component={Paper}
+          spacing={4}
           >
          <Grid item xs={12}>
             <Typography variant="h6">
@@ -282,25 +318,28 @@ console.log(props.location.state.citizen)
               </Grid>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid container item xs={12} justify='center'>
+            <Grid item xs={12}>
             <Typography variant="h6">
                Credentials 
-            </Typography>    
+            </Typography>   
+            </Grid> 
+            <Grid item xs={6} >
+              <CredentialTable this={this}/>
+            </Grid>
          </Grid>        
-         <CredentialTable this={this}/>
+         <Grid container item xs={12} justify='center'>
+          <Grid container item xs={6} justify='center'>
+           <MoreAttributes row={this.state.connection} iconText='Connection Information'/> 
+              </Grid>
+         </Grid>
     </Grid>
-
-
-
-    <Box position="absolute" left='0'>
-        <Link  to={"citizens"}>
-          <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-        </Link>
-    </Box>
+    <Grid item  xs={12} />
+  
   </Grid>
-
-  </Container>
   </Box>
+  </Container>
+
   </div>
   <Footer />
         </div>

@@ -59,6 +59,7 @@ class newUserScreen extends Component {
       eori: userdata.eori,
       seed: userdata.seed,
       sic: userdata.sic,
+      did: "",
     }
   }
   
@@ -108,10 +109,11 @@ class newUserScreen extends Component {
                 if (response.status === 200) {
                   alert("new Citizen added sucessfully !")
                   if(self.state.onboardChecked===true){
-                        self.props.history.push({
-                            pathname: '/onboarding',
-                            state: { citizen_id: self.state.id, citizen_did: self.state.did}
-                        })
+                    self.props.history.push({
+                        pathname: '/onboarding',
+                        state: { citizen_id: self.state.personIdentitfier,
+                                citizen_did: self.state.did }
+                      })
                 }
                 else{
                     self.props.history.push({
@@ -297,7 +299,7 @@ class newUserScreen extends Component {
                     <Grid item xs={12} >
                         <Box height='5vh' />
                     </Grid>
-                    {/*}
+                    
                     <Box position='absolute' bottom='8%' right= {8}>
                         Onboard User?
                         <Checkbox  
@@ -307,7 +309,6 @@ class newUserScreen extends Component {
                             value="onboardChecked"
                         />
                     </Box>
-    */}
                     <Box position='absolute' bottom='1%' right= {8} style={{width:'10%' }}>
                     <Button variant='contained' color= 'primary' fullWidth onClick={(event) => this.handleClickAdd(event)} >
                         Submit
@@ -320,6 +321,7 @@ class newUserScreen extends Component {
                 </Box>
         </Grid>
         </div> 
+        <Footer />
      </div>
     </MuiThemeProvider>
           

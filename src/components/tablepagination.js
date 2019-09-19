@@ -20,6 +20,7 @@ import MoreAttributes from './moreAttributesDialog.js'
 import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid'
+import MoreHoriz from '@material-ui/icons/MoreHoriz';
 
 
 const useStyles1 = makeStyles(theme => ({
@@ -238,7 +239,7 @@ export default function CustomPaginationActionsTable(props) {
                     }
                   })}
                   <TableCell align='center' >      
-                    <MoreAttributes row={row} />
+                    <MoreAttributes row={row} icon={<MoreHoriz/>} iconText=''/>
                   </TableCell>
                   
                   <TableCell align='center' > 

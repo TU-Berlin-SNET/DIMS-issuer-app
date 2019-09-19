@@ -47,12 +47,12 @@ class OnboardingScreen extends Component {
     this.state={
       //TODO: change username
       connection_message: '',
-      citizen_id: props.location.state.citizen.id,
+      citizen_id: props.location.state.citizen_id,
       citizen_did:'',
       citizen_verkey:'',
       username: '',
       onboarded:true,
-      myDid: props.location.state.citizen.did,
+      myDid: props.location.state.citizen_did,
       sendCredentialOfferCheck: true,
     }
   }
@@ -77,7 +77,6 @@ class OnboardingScreen extends Component {
           if(status === true){
           alert('onboarded new Citizen succsessfully')
             self.setState({citizen_did: response.data.theirDid})
-            self.getCitizenVerkey_DiD()
             self.addDidToCitizenInformation()
             self.props.history.push({
               pathname: '/citizens',
@@ -155,9 +154,9 @@ class OnboardingScreen extends Component {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    if(self.state.myDid === ""){
+  
                       self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
-                    }
+                    
                   }
                 }).catch(function (error) {
                   //alert(error);
@@ -199,9 +198,9 @@ handleCredentialOfferCheckChange =  event => {
     'Authorization': localStorage.getItem("token") 
   }
 
-  let citizen_payload={did: this.state.myDid}
+  let citizen_payload={did: self.state.myDid}
 
-  await axios.put(mongoDBBaseUrl + "citizens/" + this.state.citizen_id, citizen_payload, {headers}).then(function (response) {
+  await axios.put(mongoDBBaseUrl + "citizens/" + self.state.citizen_id, citizen_payload, {headers}).then(function (response) {
           if (response.status === 200) {
           }
   }).catch(function (error) {

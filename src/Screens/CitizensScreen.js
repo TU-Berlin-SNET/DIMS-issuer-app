@@ -27,8 +27,6 @@ import OnboardIcon from "@material-ui/icons/Work"
 import DeleteIcon from "@material-ui/icons/Delete"
 import EditIcon from '@material-ui/icons/Edit'
 import CredentialIcon from '@material-ui/icons/Assignment'
-import Tooltip from '@material-ui/core/Tooltip';
-import ConfirmDialog from './../components/confirm'
 import AddIcon from '@material-ui/icons/Add'
 import Footer from "./../components/footer"
 
@@ -118,7 +116,7 @@ class CitizenScreen extends Component {
       rowFunctionIcon: <OnboardIcon />,
     },
     {
-      rowFunction: function (selected){self.sendCredentials(selected)},
+      rowFunction: function (selected){self.sendCredentialOffer(selected)},
       rowFunctionName: 'send credentials',
       rowFunctionIcon: <CredentialIcon />,
     }
@@ -193,11 +191,12 @@ editCitizen(selected){
 onboardCitizen(selected){
   this.props.history.push({
     pathname: '/onboarding',
-    state: { citizen: selected }
+    state: { citizen_id: selected.id,
+            citizen_did: selected.did }
   })
 }
 
-sendCredentials(selected){
+sendCredentialOffer(selected){
   this.props.history.push({
     pathname: '/sendCredOffer',
     state: { myDid: selected.did }
@@ -269,12 +268,6 @@ newCitizen(){
             justify="space-evenly"
             alignItems="flex-start"
           >
-            <Grid item>
-              <Button id='issuerButton' color='secondary' variant='contained' onClick={(event)=> this.openIssuerDB(event)} >Issuer DB</Button> 
-            </Grid>
-            <Grid item>
-              <Button id='verifierButton' color='primary' variant='contained' onClick={(event)=> this.openVerifierDB(event)}>Verifier DB</Button> 
-            </Grid>
             </Grid>
           </Box>
           </div>

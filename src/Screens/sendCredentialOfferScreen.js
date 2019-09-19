@@ -26,8 +26,7 @@ import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
+import Footer from "./../components/footer"
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -78,14 +77,14 @@ class CredentialScreen extends Component {
 }
 */
 async sendCredentialOffer(){
-  console.log(this.state.credDef)
+  var self = this
  var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token") 
  }
  var payload = {
-   'recipientDid': this.state.recipientDid,
-   'credDefId': this.state.credDef.value
+   'recipientDid': self.state.recipientDid,
+   'credDefId': self.state.credDef.value
 }
  axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
@@ -268,6 +267,7 @@ render() {
       </Grid>
 
       </div>
+      <Footer />
       </div>
     </MuiThemeProvider>
   )
