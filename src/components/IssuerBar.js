@@ -22,7 +22,6 @@ const links=[
   {label:'Cred. definition',  to:'credentialdef'},
   {label:'Proofs',  to:'proofs'},
   {label:'Schemas', to:'schemas'},
-  {label:'Connections' , to:'connections'}
 ]
 
 class IssuerBar extends Component {
@@ -33,8 +32,6 @@ class IssuerBar extends Component {
             
         }
 }
-
-
 
 
 handleTabChange(event,newValue) {
@@ -75,10 +72,7 @@ handleTabChange(event,newValue) {
                   <Link underline='none' style= {{color: '#ffffff' }}   to={''}>Login</Link>
             </Grid>
             </Grid>
-
             </Container>
-         
-        
         </Box>
       </div>
     );

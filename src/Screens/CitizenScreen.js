@@ -57,7 +57,7 @@ superagent is used to handle post/get requests to server
 
 
 
-function CredentialTable(props) {
+function CredentialRequestsTable(props) {
     return(
       <Grid item xs={12}  >
         <Table>
@@ -70,13 +70,39 @@ function CredentialTable(props) {
             </TableRow>
           </TableHead>
         <TableBody>
-              {props.this.state.credentialRequest.map((credentialReq, index) => {
+              {props.this.state.credentialRequests.map((credentialReq, index) => {
                 return(
                   <TableRow>
                       <TableCell children={index}/>
                       <TableCell children={credentialReq.meta.offer.cred_def_id}/>
                       <TableCell children={<MoreAttributes row={credentialReq} icon={<MoreHoriz/>} iconText=''/>} />
-                      <TableCell children={<IconButton onClick={()=>props.this.sendCredentials}><AcceptIcon /></IconButton> } />
+                      <TableCell children={<IconButton onClick={()=>props.this.sendCredentials(credentialReq)}><AcceptIcon /></IconButton> } />
+                  </TableRow>
+                )} )}
+        </TableBody>
+        </Table>
+      </Grid>
+    );
+  }
+
+  function IssuedCredentialTable(props) {
+    return(
+      <Grid item xs={12}  >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell children="Nr." />
+              <TableCell children="Credential Definiton ID" />
+              <TableCell children="JSON" />
+            </TableRow>
+          </TableHead>
+        <TableBody>
+              {props.this.state.issuedCredentials.map((cred, index) => {
+                return(
+                  <TableRow>
+                      <TableCell children={index}/>
+                      <TableCell children={cred.message.message.cred_def_id}/>
+                      <TableCell children={<MoreAttributes row={cred} icon={<MoreHoriz/>} iconText=''/>} />
                   </TableRow>
                 )} )}
         </TableBody>
@@ -97,7 +123,8 @@ console.log(props.location.state.citizen)
         ownDid: '',
         connectionState: 'notConnected',
         credentialOffers: '',
-        credentialRequest: [],
+        credentialRequests: [],
+        issuedCredentials:[],
         theirDid: '',
     }
   }
@@ -109,6 +136,7 @@ console.log(props.location.state.citizen)
       this.getCredentialOffers()
       this.getCredentialRequests()
       this.getConnectionDetails()
+      this.getIssuedCredentials()
   }
 
 
@@ -208,6 +236,7 @@ console.log(props.location.state.citizen)
     }
     await axios.get(apiBaseUrl + 'credentialrequest/' , {headers: headers}).then(function (response) {
        console.log(response);
+       console.log(self.state.theirDid)
        console.log(response.status);
        if (response.status === 200) {
          
@@ -216,8 +245,32 @@ console.log(props.location.state.citizen)
            credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
          }) */
         let allCredReq = response.data
-        let credentialRequest = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
-        self.setState({credentialRequest: credentialRequest})
+        let credentialRequests = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
+        self.setState({credentialRequests: credentialRequests})
+       }
+     }).catch(function (error) {
+     //alert(error);
+     console.log(error);
+   })}
+
+   async getIssuedCredentials(){
+    var self = this;
+    var headers = {
+     'Content-Type': 'application/json',
+     'Authorization': localStorage.getItem("token") 
+    }
+    await axios.get(apiBaseUrl + 'credential/' , {headers: headers}).then(function (response) {
+       console.log(response);
+       console.log(response.status);
+       if (response.status === 200) {
+         
+      /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
+           //const {credentialValues} = self.state;
+           credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
+         }) */
+        let allIssuedCred = response.data
+        let issuedCredentials = allIssuedCred.filter(cred => cred.senderDid === self.state.ownDid)
+        self.setState({issuedCredentials})
        }
      }).catch(function (error) {
      //alert(error);
@@ -230,11 +283,11 @@ console.log(props.location.state.citizen)
   } 
   
   
-  sendCredentials(selected){
+  sendCredentials(credReq){
   
     this.props.history.push({
       pathname: '/sendCredentials',
-      state: { credReq: selected}
+      state: { credReq: credReq}
       })
   }
   
@@ -277,7 +330,7 @@ console.log(props.location.state.citizen)
     <Grid item container xs={12}
           justify='center'
           component={Paper}
-          spacing={4}
+          spacing={8}
           >
          <Grid item xs={12}>
             <Typography variant="h6">
@@ -285,7 +338,7 @@ console.log(props.location.state.citizen)
             </Typography>    
          </Grid>
         
-          <Grid item container xs={3} justify='center'   >
+          <Grid item container xs={4} justify='center'   >
               
                 <Grid  item xs={6} >
                     <Typography align='left'> personal identifier:  {this.state.citizen.id}</Typography>
@@ -299,7 +352,7 @@ console.log(props.location.state.citizen)
               
           </Grid>
 
-          <Grid item container xs={3} justify='center'   >
+          <Grid item container xs={4} justify='center'   >
               <Grid xs={6}>
                     <Typography align='left'> legal ID:  {this.state.citizen.legalId}</Typography>
                     <Typography align='left'> legal name: {this.state.citizen.legalName}</Typography>
@@ -307,7 +360,7 @@ console.log(props.location.state.citizen)
               </Grid>
           </Grid>
 
-          <Grid item container xs={3} justify='center'   >
+          <Grid item container xs={4} justify='center'   >
               <Grid  xs={6}>
                     <Typography align='left'> vatRegistration:  {this.state.citizen.vatRegistration}</Typography>
                     <Typography align='left'> taxReference: {this.state.citizen.taxReference}</Typography>
@@ -318,16 +371,29 @@ console.log(props.location.state.citizen)
               </Grid>
           </Grid>
 
-          <Grid container item xs={12} justify='center'>
+          <Grid item container xs={12} justify='center'>
             <Grid item xs={12}>
-            <Typography variant="h6">
-               Credentials 
-            </Typography>   
+              <Typography variant="h6">
+                Credential Requests
+              </Typography>   
             </Grid> 
             <Grid item xs={6} >
-              <CredentialTable this={this}/>
+              <CredentialRequestsTable this={this}/>
             </Grid>
-         </Grid>        
+         </Grid>
+
+          <Grid item container xs={12} justify='center'>
+            <Grid item xs={12}>
+              <Typography variant="h6">
+                Issued Credentials 
+              </Typography>   
+            </Grid> 
+            <Grid item xs={6} >
+              <IssuedCredentialTable this={this}/>
+            </Grid>
+         </Grid>      
+
+
          <Grid container item xs={12} justify='center'>
           <Grid container item xs={6} justify='center'>
            <MoreAttributes row={this.state.connection} iconText='Connection Information'/> 
