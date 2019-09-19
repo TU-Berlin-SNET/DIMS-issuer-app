@@ -63,7 +63,6 @@ class newUserScreen extends Component {
     }).catch((error)=> {
         console.log(error)
     })
-    
   }
 
 

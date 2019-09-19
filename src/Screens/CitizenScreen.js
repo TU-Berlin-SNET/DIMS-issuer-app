@@ -1,281 +1,313 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
 /*
 Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../CSS/App.css';
-
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
+import './../CSS/App.css';
+
 import {withRouter, Link} from "react-router-dom";
+import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IssuerBar from'./../components/IssuerBar'
-import Grid from '@material-ui/core/Grid'
-import Container from '@material-ui/core/Container'
-import Typography from '@material-ui/core/Typography'
-import * as Utils from "./../Utils";
-import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import axios from 'axios';
+import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
-import OnboardIcon from "@material-ui/icons/Work"
-import DeleteIcon from "@material-ui/icons/Delete"
-import EditIcon from '@material-ui/icons/Edit'
-import CredentialIcon from '@material-ui/icons/Assignment'
-import Tooltip from '@material-ui/core/Tooltip';
-import ConfirmDialog from './../components/confirm'
-import AddIcon from '@material-ui/icons/Add'
+import * as Utils from "./../Utils";
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
+import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Container from '@material-ui/core/Container'
+import AcceptIcon from '@material-ui/icons/Done'
+import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Footer from "./../components/footer"
 
-const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
 
+
+const apiBaseUrl = Constants.apiBaseUrl;
+
+
+//var apiBaseUrl = ""REPLACE"";
+//var apiBaseUrl = ""REPLACE"";
 
 /*
 Module:superagent
 superagent is used to handle post/get requests to server
 */
-// var request = require('superagent');
-
-function CitizensTable(props) {
-  return(
-  <div className="grid">
-    <Grid item xs={12}  style={{margin:"auto"}}>
-        <Container maxWidth='false' className="tableContainer">
-        <Box position="relative" >
-          <Typography  variant="h5">
-              Citizens
-          </Typography>
-          <Box position="absolute" top={0} right={0}>
-            <Button  onClick={(event)=> props.this.newCitizen()}>
-              <AddIcon style={{color:'white'}} fontSize="large" />
-            </Button>
-          </Box>
-        </Box>
-          <Box >
-          {props.this.state.citizensTable}
-          </Box>
-        </Container>
-    </Grid>
-    <Footer />
-  </div>
-  );
-}
+//var request = require('superagent');
 
 
-class CitizenScreen extends Component {
+
+function CredentialTable(props) {
+    return(
+    <div className="grid">
+      <Grid item xs={12}  >
+            {props.this.state.credentialRequests}
+      </Grid>
+    </div>
+    );
+  }
+
+
+class addASchemaScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
-    this.state={
-      citizensData:[],
-      citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
-      activeDB: 'Issuer DB',
-      issuerDB : 'hallo',
-      verifierDB : 'Tschüss',
-      selected: ''
+console.log(props.location.state.citizen)
+    this.state={ 
+        citizen: props.location.state.citizen,
+        myDid: props.location.state.citizen.did,
+        ownDid: '',
+        connectionState: 'notConnected',
+        credentialOffers: '',
+        credentialRequests: '',
+        credentialRequestsOld:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+        theirDid: '',
     }
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
 
- async  listCitizens(){
-   let self = this
-  var headers = {
+  componentDidMount(){
+      this.getWallet()
+      this.getTheirDid()
+      this.getConnectionStatus()
+      this.getCredentialOffers()
+      this.getCredentialRequests()
+  }
+
+
+
+  async getWallet(){
+    var self = this;
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
+    axios.get(apiBaseUrl + "wallet/default" , {headers: headers}).then((response) => {
+      console.log(response)
+      if(response.status === 200){
+          this.setState({ownDid: response.data.ownDid})
+      }
+    }).catch((error)=> {
+        console.log(error)
+    })
+  }
+
+
+  async getTheirDid(){
+    let self = this
+    var headers = {
     'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
+    'Authorization': localStorage.getItem("token")
   }
-  await axios.get(Constants.mongoDBBaseUrl + "citizens", {headers}).then(function (response) {
-    console.log(response);
-    if (response.status === 200) {
-      let citizens = <CUSTOMPAGINATIONACTIONSTABLE 
-      onEdit={(event, selected) => self.handleEdit(event, selected)} 
-      
-      rowFunctions= {[
-     { 
-       rowFunction: function (selected){self.removeCitizen(selected)},
-      rowFunctionName : 'Delete',
-      rowFunctionIcon : <DeleteIcon />
-     },
-    { 
-      rowFunction: function(selected){self.editCitizen(selected)},
-      rowFunctionName: 'Edit',
-      rowFunctionIcon: <EditIcon />,
-    },
-    {
-      rowFunction: function (selected){self.onboardCitizen(selected)},
-      rowFunctionName: 'Onboard',
-      rowFunctionIcon: <OnboardIcon />,
-    },
-    {
-      rowFunction: function (selected){self.sendCredentials(selected)},
-      rowFunctionName: 'send credentials',
-      rowFunctionIcon: <CredentialIcon />,
-    }
+  
+      axios.get(apiBaseUrl + 'connection/' + self.state.myDid ,{headers: headers}).then(function (response) {
+        if (response.status === 200) {
+            self.state.theirDid = response.data.theirDid
+        }
+      }).catch(function (error) {
+      //alert(error);
+      //alert(JSON.stringify(payload))
+      console.log(error);
+      });
+  }
 
-
-      ]}
-
-      data={response.data} 
-      showAttr={["id", 'firstName', 'familyName']}/>
-
-      self.setState({citizensTable: citizens})
-      console.log(citizens)
-    }
-  }).catch(function (error) {
-    //alert(error);
-    console.log(error);
-  });
-}
-
-async removeCitizen(selected) {
-
-  let self = this
-  let headers = {
+  // get all CredentialOffers and retrieve those that belong to the citzien
+  async getCredentialOffers(){
+    let self = this
+    var headers = {
     'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
+    'Authorization': localStorage.getItem("token")
+  }
+  
+      axios.get(apiBaseUrl + 'credentialoffer/' ,{headers: headers}).then(function (response) {
+        if (response.status === 200) {
+            let allCredOffer = response.data
+            console.log(response.data)
+            let credentialOffers = allCredOffer.filter(credOffer => credOffer.senderDid === self.state.myDid)
+            self.setState(credentialOffers)
+        }
+      }).catch(function (error) {
+      //alert(error);
+      //alert(JSON.stringify(payload))
+      console.log(error);
+      });
   }
 
-  await axios.delete(mongoDBBaseUrl + "citizens/" + selected.id, {headers}).then(function (response) {
-          if (response.status === 200) {
-            alert("new Citizen sucessfully removed!")
-          }
-  }).catch(function (error) {
-    //alert(JSON.stringify(schema_payload))
-    //alert(error);
-    console.log(error);
-});
+// get all CredentialRequests and retrieve those that belong to the citzien
 
-self.listCitizens()
-}
-
-
-editCitizen(selected){
-  this.props.history.push({
-    pathname: '/newCitizen',
-    state: {            
-      "id": selected.id,
-      "familyName": selected.familyName,
-      "firstName": selected.firstName,
-      "dateOfBirth": selected.dateOfBirth,
-      "placeOfBirth": selected.placeOfBirth,
-      "address": selected.currentAddress,
-      "gender": selected.gender,
-      "legalId": selected.legalId,
-      "legalName": selected.legalName,
-      "legalAdress":selected.legalAdress,
-      "vatRegistration": selected.vatRegistration,
-      "taxReference": selected.taxReference,
-      "lei": selected.lei,
-      "eori": selected.eori,
-      "seed": selected.seed,
-      "sic": selected.sic,
+  getConnectionStatus(){
+    var self = this;
+    if(self.state.myDid === null) {
+        self.state.connectionState = 'notConnected'
     }
-  })
-}
-
-onboardCitizen(selected){
-  this.props.history.push({
-    pathname: '/onboarding',
-    state: { citizen_id: selected.id }
-  })
-}
-
-sendCredentials(selected){
-  this.props.history.push({
-    pathname: '/sendCredOffer',
-    state: { myDid: selected.did }
-  })
-}
-
-
-
-handleEdit(event, selected){ //Fuction 
-  this.setState({ selected: selected}); 
-} 
-
- componentDidMount(){
-  this.listCitizens();
-}
-
- handleTabChange(newTab){
-  this.props.onTabChange(newTab)
-}
-openIssuerDB(event){
-  this.changeActiveDB(event)
-    this.setState({db: this.state.issuerDB})
-}
-
-openVerifierDB(event){
-    this.changeActiveDB(event)
-    this.setState({db: this.state.verifierDB})
-}
-
-changeActiveDB(event){
-
-  let issuerButton = document.getElementById('issuerButton')
-  let verifierButton = document.getElementById('verifierButton')
-
-  if(event.target.innerHTML === 'Issuer DB'){
-      verifierButton.style.backgroundColor = '#6980ff'
-      issuerButton.style.backgroundColor = '#FF7C7C' 
-  }
-  else if(event.target.innerHTML =='Verifier DB'){
-    verifierButton.style.backgroundColor =  '#FF7C7C' 
-    issuerButton.style.backgroundColor = '#6980ff'
-  }
-}
-
-
-
-newCitizen(){
-  this.props.history.push({
-    pathname: '/newCitizen',
-    state: {            
-     
+    else{
+        self.state.connectionState = 'connected'
     }
-  })
-}
+  }
+
+  async getCredentialRequests(){
+    var self = this;
+    var headers = {
+     'Content-Type': 'application/json',
+     'Authorization': localStorage.getItem("token") 
+    }
+    await axios.get(apiBaseUrl + 'credentialrequest/' , {headers: headers}).then(function (response) {
+       console.log(response);
+       console.log(response.status);
+       if (response.status === 200) {
+         
+      /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
+           //const {credentialValues} = self.state;
+           credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
+         }) */
+        let allCredReq = response.data
+        let credentialRequests = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
+
+        let credReqs = <CUSTOMPAGINATIONACTIONSTABLE 
+        onEdit={(event, selected) => self.handleEdit(event, selected)} 
+        data={response.data} 
+        showAttr={["meta.recipientDid","senderDid", "id"]}
+        rowFunctions={[
+         { 
+           rowFunction: function (selected){self.sendCredentials(selected)},
+          rowFunctionName : 'accept and send',
+          rowFunctionIcon : <AcceptIcon />
+         }
+        ]}/>
+        
+        self.setState({credentialRequests: credReqs})
+       }
+     }).catch(function (error) {
+     //alert(error);
+     console.log(error);
+   })}
 
 
+   handleEdit(event, selected){ //Fuction 
+    this.setState({ selected: selected}); 
+  } 
+  
+  
+  sendCredentials(selected){
+  
+    this.props.history.push({
+      pathname: '/sendCredentials',
+      state: { credReq: selected}
+      })
+  }
+  
+  handleTabChange(newTab){
+    this.props.onTabChange(newTab)
+  }
 
 
   render() {
+      let dateOfBirth = new Date(this.state.citizen.dateOfBirth)
+      let year = dateOfBirth.getFullYear()
+      let month= dateOfBirth.getMonth() + 1
+      let day = dateOfBirth.getDate()
     return (
       <MuiThemeProvider>
-        <div className="App">
-          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <div className='grid'>
-          <Box position = 'absolute'  top='10%' width='100%'>
-          <Grid
-            container
-            direction="row"
-            justify="space-evenly"
-            alignItems="flex-start"
+        <div className='App'>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+        <div className="grid">
+        <Box position='relative'> 
+        <Container maxWidth='false' className="tableContainer">
+     
+    <Grid container   
+         direction="row"
+         justify='space-evenly'
+         spacing={4}
+         xs={12} style={{margin:"auto"}}>
+        <Grid item xs={12}>
+            <Typography variant="h5">
+               Citizen  {this.state.citizen.firstName} {this.state.citizen.familyName}
+            </Typography>    
+        </Grid>
+    <Grid item container xs={12}
+          justify='center'
+          component={Paper}
           >
-            <Grid item>
-              <Button id='issuerButton' color='secondary' variant='contained' onClick={(event)=> this.openIssuerDB(event)} >Issuer DB</Button> 
-            </Grid>
-            <Grid item>
-              <Button id='verifierButton' color='primary' variant='contained' onClick={(event)=> this.openVerifierDB(event)}>Verifier DB</Button> 
-            </Grid>
-            </Grid>
-          </Box>
-          </div>
-          <CitizensTable this={this} />
+         <Grid item xs={12}>
+            <Typography variant="h6">
+               Attributes 
+            </Typography>    
+         </Grid>
+        
+          <Grid item container xs={3} justify='center'   >
+              
+                <Grid  item xs={6} >
+                    <Typography align='left'> personal identifier:  {this.state.citizen.id}</Typography>
+                    <Typography align='left'> first name: {this.state.citizen.firstName}</Typography>
+                    <Typography align='left'> family name:  {this.state.citizen.familyName}</Typography>
+                    <Typography align='left'> date of birth:  {day + "." + month + "." + year}</Typography>
+                    <Typography align='left'> place of birth:  {this.state.citizen.placeOfBirth}</Typography>
+                    <Typography align='left'> adress:  {this.state.citizen.adress}</Typography>
+                    <Typography align='left'> gender:  {this.state.citizen.gender}</Typography>
+                </Grid>
+              
+          </Grid>
+
+          <Grid item container xs={3} justify='center'   >
+              <Grid xs={6}>
+                    <Typography align='left'> legal ID:  {this.state.citizen.legalId}</Typography>
+                    <Typography align='left'> legal name: {this.state.citizen.legalName}</Typography>
+                    <Typography align='left'> legal adress:  {this.state.citizen.legalAdress}</Typography>
+              </Grid>
+          </Grid>
+
+          <Grid item container xs={3} justify='center'   >
+              <Grid  xs={6}>
+                    <Typography align='left'> vatRegistration:  {this.state.citizen.vatRegistration}</Typography>
+                    <Typography align='left'> taxReference: {this.state.citizen.taxReference}</Typography>
+                    <Typography align='left'> lei:  {this.state.citizen.lei}</Typography>
+                    <Typography align='left'> eori:  {this.state.citizen.eori}</Typography>
+                    <Typography align='left'> seed:  {this.state.citizen.seed}</Typography>
+                    <Typography align='left'> sic:  {this.state.citizen.sic}</Typography>
+              </Grid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6">
+               Credentials 
+            </Typography>    
+         </Grid>        
+         <CredentialTable this={this}/>
+    </Grid>
+
+
+
+    <Box position="absolute" left='0'>
+        <Link  to={"citizens"}>
+          <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+        </Link>
+    </Box>
+  </Grid>
+
+  </Container>
+  </Box>
+  </div>
+  <Footer />
         </div>
-      </MuiThemeProvider>
+      </MuiThemeProvider> 
     );
   }
 }
 
-export default withRouter(CitizenScreen);
+export default withRouter(addASchemaScreen);
+

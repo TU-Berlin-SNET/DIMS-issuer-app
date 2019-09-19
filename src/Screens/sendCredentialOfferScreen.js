@@ -78,6 +78,7 @@ class CredentialScreen extends Component {
 }
 */
 async sendCredentialOffer(){
+  console.log(this.state.credDef)
  var headers = {
   'Content-Type': 'application/json',
   'Authorization': localStorage.getItem("token") 
@@ -86,7 +87,7 @@ async sendCredentialOffer(){
    'recipientDid': this.state.recipientDid,
    'credDefId': this.state.credDef.value
 }
- axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers: headers}).then(function (response) {
+ axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
     alert("Credential offer successfully sent")
   }
@@ -103,10 +104,10 @@ async listCredDefs(){
   var headers = {
     'Authorization': localStorage.getItem("token")
   }
-  await axios.get(apiBaseUrl + "credentialdef", {headers: headers}).then(function (response) {
+  await axios.get(apiBaseUrl + "credentialdef/", {headers: headers}).then(function (response) {
     if (response.status === 200) {
       let credDefs = response.data.map((credDef) => {
-    
+    console.log(response.data)
         let attributes = Object.keys(credDef.data.value.primary.r).filter(elem => elem !== 'master_secret')
 
         return(
@@ -149,7 +150,7 @@ handleTabChange(newTab){
   this.props.onTabChange(newTab)
 }
 
-async getTheirDid(){
+getTheirDid(){
   let self = this
   var headers = {
   'Content-Type': 'application/json',
@@ -157,6 +158,7 @@ async getTheirDid(){
 }
 
     axios.get(apiBaseUrl + 'connection/' + self.state.myDid ,{headers: headers}).then(function (response) {
+      console.log(response)
       if (response.status === 200) {
           self.state.recipientDid = response.data.theirDid
       }

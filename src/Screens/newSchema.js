@@ -32,6 +32,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container'
+import Footer from "./../components/footer"
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -59,63 +60,78 @@ function NewSchema(props) {
   return (
    
     <div className="grid">
-    <Grid item xs={12} sm={10} md={8} lg={6} xl={4} style={{margin:"auto"}}>
-      <Container className="tableContainer" >
-        <Box position='relative'>
-      <Typography variant="h6">
-            Add Schema
-        </Typography>             
-        <Box position="absolute" top={0} left={0}>
-          <Link  to={"schemas"}>
-            <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-          </Link>
-      </Box>
+      <Container maxWidth='false'className="tableContainer">       
+        <Box >
+          <Grid container   
+            direction="row"
+            justify='space-evenly'
+            spacing={4}
+            xs={12} 
+            style={{margin:"auto"}}>
+                        <Grid item xs={12}>
+                          <Box position='relative'>
+                            <Box position="absolute" top={0} left={0}>
+                              <Link  to={"schemas"}>
+                                <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                              </Link>
+                            </Box>
+                            <Typography variant="h5">
+                                create new schema
+                            </Typography>      
+                            </Box>
+                         </Grid>
+                  <Grid item container xs={6}
+                        justify='center'
+                        component={Paper}>
+                        <Grid item container xs={12} spacing={4}>
+                        <Grid item container xs={12} justify='center'>
+                          <Grid item xs={6}>
+                              <TextField id="schemaNameInput" fullWidth 
+                                hintText="Enter the name of the schema"
+                                floatingLabelText="Schema name"
+                                defaultValue={props.this.state.schema_name}
+                                onChange={(event, newValue) => props.this.setState({ schema_name: newValue })}
+                              />  
+                          </Grid>
+                        </Grid>
+                        <Grid item container xs={12} justify='center'>
+                          <Grid item xs={6}>
+                            <TextField id="versionInput" fullWidth 
+                              hintText="Enter the version of the schema"
+                              floatingLabelText="Version"
+                              defaultValue={props.this.state.schema_version}
+                              onChange={(event, newValue) => props.this.setState({ schema_version: newValue })}
+                            />
+                          </Grid>
+                        </Grid>
+                        <Grid item container xs={12} justify='center'>
+                          <Grid item xs={6}>
+                            {props.this.addAttribute()}
+                          </Grid>
+                        </Grid>
+                        <Grid item container xs={12} justify='center'>
+                              <Grid container mt={20} spacing={4} justify='center' >
+                                    {props.this.state.schema_attrNames.map((attr, index) => {
+                                        return( props.this.currentAttribute(attr, index))
+                                        })} 
+                              </Grid>
+                        </Grid>       
+                  </Grid>
+                  </Grid>
+                  <Grid item container 
+                        justify='center'
+                        xs={12}>
+                        <Button style={{color:'white'}} onClick={(event) => props.this.handleClickNewSchema(event)}>
+                          Submit
+                        </Button>
+                  </Grid>
+            </Grid>
         </Box>
-        <Box>
-    <Paper>
-      <Box p={4} mt={3}>
-        <Grid item xs={8}>
-          <TextField id="schemaNameInput" fullWidth 
-            hintText="Enter the name of the schema"
-            floatingLabelText="Schema name"
-            defaultValue={props.this.state.schema_name}
-            onChange={(event, newValue) => props.this.setState({ schema_name: newValue })}
-          />  
-          </Grid>
-          <Grid item xs={8}>
-          <TextField id="versionInput" fullWidth 
-            hintText="Enter the version of the schema"
-            floatingLabelText="Version"
-            defaultValue={props.this.state.schema_version}
-            onChange={(event, newValue) => props.this.setState({ schema_version: newValue })}
-          />
-        </Grid>
-          <Box mt={4}>
-            {props.this.addAttribute()}
-          </Box>
-          <Box mt={4}>
-            <Grid container mt={20} spacing={4} justify='center' >
-              {props.this.state.schema_attrNames.map((attr, index) => {
-                  return( props.this.currentAttribute(attr, index))
-                  })} 
-            </Grid>           
-          </Box>
-          </Box>
-        <Box p={2}>
-          <Button variant='contained' label="Submit" color='primary'   onClick={(event) => props.this.handleClickNewSchema(event)} >
-            Submit
-          </Button>
-        </Box>
-     </Paper>
-     </Box> 
   </Container>
-  </Grid>
   </div>
   );
 }
 
-//var apiBaseUrl = ""REPLACE"";
-//var apiBaseUrl = ""REPLACE"";
 
 /*
 Module:superagent
@@ -192,7 +208,7 @@ class addASchemaScreen extends Component {
   return(
     <Paper style={ {padding: '2px 4px', display: 'flex', alignItems: 'center'}}>
       <InputBase id="attributeNameInput" style={{    marginLeft: 8, flex: 1}}
-          placeholder="Add a new Attribute"
+          placeholder="new attribute name"
           onChange={
             (event) => 
             { 
@@ -218,33 +234,27 @@ class addASchemaScreen extends Component {
     
     return(
    
-    /*     <Button variant="contained" color="secondary" label="Delete"   > 
-            <DeleteIcon/>
-            DELETE
-          </Button>
-*/
-        <Grid key={index} item>
-          <Card>
+      <Grid key={index} item>
+        <Card>
           <Box position= 'relative' minWidth={100} minHeight={100}>
             <CardContent>
-      <Typography variant="body2" color="textSecondary" >
-            {attr}
-      </Typography>
-    </CardContent>
-      <Box position='absolute'  bottom={0} right={0}>
-    <IconButton  color="secondary" 
-     onClick={() => {           
-            var schema_attrNames = this.state.schema_attrNames;
-            schema_attrNames.splice(index,1);
-            this.setState({ schema_attrNames: schema_attrNames})
-            }}> 
-        <CloseIcon />
-      </IconButton>
-      </Box>
-      </Box>
-           </Card>
-        </Grid>
-
+              <Typography variant="body2" color="textSecondary" >
+                    {attr}
+              </Typography>
+            </CardContent>
+            <Box position='absolute'  bottom={0} right={0}>
+              <IconButton  color="secondary" 
+                  onClick={() => {           
+                    var schema_attrNames = this.state.schema_attrNames;
+                    schema_attrNames.splice(index,1);
+                    this.setState({ schema_attrNames: schema_attrNames})
+              }}> 
+                 <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </Card>
+      </Grid>
     )}
     handleTabChange(newTab){
       this.props.onTabChange(newTab)
@@ -256,6 +266,7 @@ class addASchemaScreen extends Component {
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <NewSchema this={this}/>
+          <Footer />
         </div>
       </MuiThemeProvider> 
     );

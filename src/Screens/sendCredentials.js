@@ -89,35 +89,34 @@ sendCredentialsClick(){
 async acceptCredentialRequestAndSendCred(){
   let self = this
   var values = {};  // "object literal" syntax
- self.state.attributes.map((attrArr) => {
-     let name = attrArr[0]
-     let value = attrArr[1]
-    values[name] = value
- })
+  self.state.attributes.map((attrArr) => {
+      let name = attrArr[0]
+      let value = attrArr[1]
+      values[name] = value
+  })
 
- console.log(values)
-
-
+  console.log(values)
   var headers = {
-  'Content-Type': 'application/json',
-  'Authorization': localStorage.getItem("token")
-}
-var payload = {
-  'credentialRequestId': this.state.credReq.id,
-  'values': values
-}
-axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
-  console.log(response);
-  console.log(response.status);
-  if (response.status === 201) {
-    alert("credential succesfully issued")
-    self.listCredentialRequests()
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token")
   }
-}).catch(function (error) {
-//alert(error);
-//alert(JSON.stringify(payload))
-console.log(error);
-});
+  var payload = {
+    'credentialRequestId': this.state.credReq.id,
+    'values': values
+  }
+  axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
+    console.log(response);
+    console.log(response.status);
+    if (response.status === 201) {
+      alert("credential succesfully issued")
+      self.props.history.push({
+        pathname: '/citizens',
+        })
+    }
+  }).catch(function (error) {
+      alert(error);
+      console.log(error);
+  });
 }
 
 handleTabChange(newTab){

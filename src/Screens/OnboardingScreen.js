@@ -28,9 +28,7 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
-const testMyDid= Test.myDid
-
-
+var username =''
 
 
 function RenderQR(props){
@@ -49,11 +47,12 @@ class OnboardingScreen extends Component {
     this.state={
       //TODO: change username
       connection_message: '',
-      citizen_id: props.location.state.citizen_id,
+      citizen_id: props.location.state.citizen.id,
       citizen_did:'',
       citizen_verkey:'',
+      username: '',
       onboarded:true,
-      myDid: "",
+      myDid: props.location.state.citizen.did,
       sendCredentialOfferCheck: true,
     }
   }
@@ -65,20 +64,24 @@ class OnboardingScreen extends Component {
 
   //GET  /api/connection/:myDid
   pollNewConnectionStatus(){
+    console.log(this.state.myDid)
       var self = this;
       var headers = {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem("token") 
       }
-      axios.get(apiBaseUrl + "connection/" +  this.state.myDid , {headers: headers}).then((response) => {
+      axios.get(apiBaseUrl + "connection/" +  self.state.myDid , {headers: headers}).then((response) => {
         console.log(response.status)
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-          //  alert('onboarded new Citizen succsessfully')
-
-            this.setState({citizen_did: response.data.theirDid})
+          alert('onboarded new Citizen succsessfully')
+            self.setState({citizen_did: response.data.theirDid})
+            self.getCitizenVerkey_DiD()
             self.addDidToCitizenInformation()
+            self.props.history.push({
+              pathname: '/citizens',
+            })
           //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
             //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
@@ -86,37 +89,99 @@ class OnboardingScreen extends Component {
       })
     }
 
+    getCitizenVerkey_DiD(){
+        var self = this;
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem("token") 
+        }
+        axios.get(apiBaseUrl + "wallet/default", {headers: headers}).then((response) => {
+          console.log(response)
+          if(response.status === 200){
+
+          }
+        })
+      }
+
+    handleOnboarding(event) {
+      var self = this;
+      var payload = {
+          "did": this.state.citizen_did,
+          "verkey": this.state.citizen_verkey,
+          "role": "NONE"
+      }
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token") 
+      }
+      axios.post(apiBaseUrl + 'nym' ,payload, {headers: headers})
+          .then(function (response) {
+              console.log(response);
+              console.log(response.status);
+              if (response.status === 200) {
+                  console.log("Onboarding successfully executed");
+                  console.log(response.data)
+              }
+            }).catch(function (error){
+              console.log(error)
+            })
+          }  
+
 
   componentDidMount(){
     document.title = "issuer app"
+    this.getWallet()
     this.timer = setInterval(() => this.pollNewConnectionStatus(), 5000);
-    var self = this;
+  }
+
+ async createConnectionOffer(){
+  var self = this;
+
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': localStorage.getItem("token") 
     }
+    console.log(self.state.username)
      let payload_conn = {
       "meta":{
         "username" : 'abc'
        },
        "data":{
-         "app": "abc"
+         "app": username
        }
                 }
-                axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
+             await   axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
                  .then(function (response) {
                   console.log(response);
                   console.log(response.status);
                   if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
+                    if(self.state.myDid === ""){
+                      self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
+                    }
                   }
                 }).catch(function (error) {
                   //alert(error);
                   console.log(error);
               }); 
+            }
 
+ async getWallet(){
+    var self = this;
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
+  await axios.get(apiBaseUrl + "user/me" , {headers: headers}).then((response) => {
+
+      if(response.status === 200){
+        console.log(response)
+          username = response.data.username
+          this.createConnectionOffer()
+      }
+    }).catch((error)=> {
+        console.log(error)
+    })
   }
-
 
 handleCredentialOfferCheckChange =  event => {
   this.setState({sendCredentialOfferCheck: event.target.checked});
@@ -203,7 +268,6 @@ goTosendCredentialScreen(){
                 </Box>
             </Box>
       </Grid>
-      <Button  color="primary" style={style} onClick={(event) => this.goTosendCredentialScreen(event)}>Send Credential</Button>
       <Footer />
       </div>
           </MuiThemeProvider>

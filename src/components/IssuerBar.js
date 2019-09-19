@@ -18,8 +18,7 @@ import IconButton from '@material-ui/core/IconButton'
 var activeTab = 0;
 
 const links=[
-  {label: "Citizen", to: 'citizen'},
-  {label:'Credential' ,to:'credential'},
+  {label: "Citizens", to: 'citizens'},
   {label:'Cred. definition',  to:'credentialdef'},
   {label:'Proofs',  to:'proofs'},
   {label:'Schemas', to:'schemas'},

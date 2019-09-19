@@ -92,11 +92,6 @@ class SchemaScreen extends Component {
         data={response.data} 
         showAttr={["name","version", "schemaId"]}
         rowFunctions={[
-          { 
-            rowFunction: function (selected){self.removeSchema(selected)},
-           rowFunctionName : 'Delete',
-           rowFunctionIcon : <DeleteIcon />
-          },
          { 
            rowFunction: function(selected){self.editSchema(selected)},
            rowFunctionName: 'Edit',
@@ -116,18 +111,11 @@ class SchemaScreen extends Component {
     });
   }
 
-  componentWillMount(){
-
-  }
-
   componentDidMount(){
     document.title = "issuer app"
     this.listSchemas()
   }
 
-  removeSchema(selected){
-
-  }
 
   editSchema(selected){
 
@@ -155,7 +143,6 @@ class SchemaScreen extends Component {
  } 
 
  handleTabChange(newTab){
-
   this.props.onTabChange(newTab)
 }
   render() {

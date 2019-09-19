@@ -9,6 +9,7 @@ import NewSchemaScreen from './Screens/newSchema';
 import NewCredDef from './Screens/newCredDef';
 import SendCredentials from './Screens/sendCredentials'
 import CredentialDefScreen from './Screens/CredentialDefScreen';
+import CitizensScreen from './Screens/CitizensScreen';
 import CitizenScreen from './Screens/CitizenScreen';
 import CredentialScreen from './Screens/CredentialScreen';
 import ConnectionsScreen from './Screens/ConnectionsScreen';
@@ -53,7 +54,9 @@ handleTabChange(newTab){
             <Route exact path="/sendCredentials"  render={(props)=> <SendCredentials {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
             <Route path="/account" render={(props)=> <AccountScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route exact path="/newCitizen" render={(props)=> <User {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route path="/citizens" render={(props)=> <CitizensScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route path="/citizen" render={(props)=> <CitizenScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+
             <Route path="/onboarding" render={(props)=> <OnboardingScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route path="/connections" render={(props)=> <ConnectionsScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
             <Route path="/credentialdef" render={(props)=> <CredentialDefScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />

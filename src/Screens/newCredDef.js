@@ -144,19 +144,26 @@ console.log(schema)
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
         <div className="grid">
-        <Box position='relative'> 
+
         <Container maxWidth='false' className="tableContainer">
-     
+        <Box > 
     <Grid container   
          direction="row"
          justify='space-evenly'
          spacing={4}
          xs={12} style={{margin:"auto"}}>
-        <Grid item xs={12}>
-            <Typography variant="h6">
-                Create Credential Definiton
-            </Typography>    
-        </Grid>
+                    <Grid item xs={12}>
+                          <Box position='relative'>
+                            <Box position="absolute" top={0} left={0}>
+                              <Link  to={"schemas"}>
+                                <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                              </Link>
+                            </Box>
+                            <Typography variant="h5">
+                                create new credential definiton
+                            </Typography>      
+                            </Box>
+                         </Grid>
     <Grid item container xs={5}
           justify='center'
           component={Paper}
@@ -230,23 +237,18 @@ console.log(schema)
           </Box>
        </Grid>
     </Grid>
-
-      <Box position="absolute" left='0'>
-        <Link  to={"schemas"}>
-          <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-        </Link>
-    </Box>
-  </Grid>
-  <Grid item container 
-        justify='center'
-        xs={12}>
+    <Grid item container 
+          justify='center'
+          xs={12}>
       <Button style={{color:'white'}} onClick={(event) => this.handleClickNewCredDef(event)}>
         Submit
       </Button>
+    </Grid>
   </Grid>
 
-  </Container>
   </Box>
+  </Container>
+
   </div>
         </div>
       </MuiThemeProvider> 

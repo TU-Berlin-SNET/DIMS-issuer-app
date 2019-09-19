@@ -123,6 +123,11 @@ export default function CustomPaginationActionsTable(props) {
       setSelected(row);
       props.onEdit(event, row)
       }
+    
+      function handleDoubleClick(event, row) {
+        setSelected(row);
+        if(props.hasOwnProperty('onDoubleClick')) props.onDoubleClick(row);
+      }
 
     function rowFunction1(row){
       props.rowFunction1(row)
@@ -206,6 +211,7 @@ export default function CustomPaginationActionsTable(props) {
                 <TableRow key={index} 
                   hover
                   onClick={(event)=>handleClick(event,row )}
+                  onDoubleClick={(event) => handleDoubleClick(event,row)}
                   selected= {isItemSelected}
                 >
                   {props.showAttr.map((attribute, i) => {

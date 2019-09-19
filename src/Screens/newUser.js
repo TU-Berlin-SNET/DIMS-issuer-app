@@ -41,7 +41,7 @@ class newUserScreen extends Component {
       connection_message: '',
       citizen_did:'',
       citizen_verkey:'',
-      onboardChecked: true,
+      onboardChecked: false,
       personIdentitfier: userdata.id,
       familyName: userdata.familyName,
       firstName: userdata.firstName,
@@ -99,6 +99,7 @@ class newUserScreen extends Component {
             "eori": self.state.eori,
             "seed": self.state.seed,
             "sic": self.state.sic,
+            "did":"",
         }
         
         await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
@@ -106,11 +107,18 @@ class newUserScreen extends Component {
                 console.log(response.status);
                 if (response.status === 200) {
                   alert("new Citizen added sucessfully !")
-                  if(self.state.onboardChecked===true){}
-                  self.props.history.push({
-                      pathname: '/onboarding',
-                      state: { firstName: self.state.firstName, familyName: self.state.familyName}
-                  })
+                  if(self.state.onboardChecked===true){
+                        self.props.history.push({
+                            pathname: '/onboarding',
+                            state: { citizen_id: self.state.id, citizen_did: self.state.did}
+                        })
+                }
+                else{
+                    self.props.history.push({
+                        pathname: '/citizens',
+                })
+
+                }
                 }
         }).catch(function (error) {
           //alert(JSON.stringify(schema_payload))
@@ -289,6 +297,7 @@ class newUserScreen extends Component {
                     <Grid item xs={12} >
                         <Box height='5vh' />
                     </Grid>
+                    {/*}
                     <Box position='absolute' bottom='8%' right= {8}>
                         Onboard User?
                         <Checkbox  
@@ -298,6 +307,7 @@ class newUserScreen extends Component {
                             value="onboardChecked"
                         />
                     </Box>
+    */}
                     <Box position='absolute' bottom='1%' right= {8} style={{width:'10%' }}>
                     <Button variant='contained' color= 'primary' fullWidth onClick={(event) => this.handleClickAdd(event)} >
                         Submit
