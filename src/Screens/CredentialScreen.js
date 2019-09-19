@@ -277,8 +277,6 @@ axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function
     window.location.reload()
   }
 }).catch(function (error) {
-//alert(error);
-//alert(JSON.stringify(payload))
 console.log(error);
 });
 }

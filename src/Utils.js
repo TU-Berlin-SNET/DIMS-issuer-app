@@ -74,3 +74,9 @@ export function checkLogin(self){
     self.props.history.push("/");
   }
 }
+
+export function redirectToLogin(self){
+  if(localStorage.getItem('token') === null){
+  self.props.history.push("/");
+}
+}

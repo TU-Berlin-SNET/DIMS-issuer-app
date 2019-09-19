@@ -53,7 +53,7 @@ handleTabChange(event,newValue) {
             )})}
               </Tabs>
             <Box  position= 'absolute'  top ='20%' right='1vw' >
-              <Link underline='none' style= {{color: '#FFFFFF' }}   to={''}>Login</Link>
+              <Link underline='none' style= {{color: '#ffffff' }}   to={''}>Login</Link>
             </Box>
         </AppBar>
       </Box>

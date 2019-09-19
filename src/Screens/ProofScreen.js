@@ -4,92 +4,102 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../CSS/App.css';
+//import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
 */
-import { withRouter} from "react-router-dom";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+import ProofTable from './ProofTable'
+
+
+import { Link, withRouter, Redirect} from "react-router-dom";
+import TextField from '@material-ui/core/TextField';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
+import {List, ListItem} from '@material-ui/core'
 import axios from 'axios';
-import IssuerBar from "./../components/IssuerBar";
+import IssuerBar from "./../components/IssuerBar"
+import Grid from '@material-ui/core/Grid'
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Select from 'react-select'
+import Chip from '@material-ui/core/Chip';
+import { orange, amber, green, red } from '@material-ui/core/colors';
 import * as Constants from "./../Constants";
-import * as Utils from "./../Utils";
-import Container from '@material-ui/core/Container';
-import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
-import Grid from '@material-ui/core/Grid';
-import {  makeStyles} from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box'
-import Typography from '@material-ui/core/Typography';
+import * as Utils from "./../Utils"
 
 const apiBaseUrl = Constants.apiBaseUrl;
-
-function CredentialTable(props) {
-  return(
-  <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container  className="tableContainer">
-        <Box position="relative" >
-          <Typography  variant="h6">
-              Proofs
-          </Typography>
-        </Box>
-          {props.this.state.proofs}
-        </Container>
-    </Grid>
-  </div>
-  );
-}
 
 class ProofScreen extends Component {
 
     constructor(props){
         super(props);
-        Utils.checkLogin(this)
+        Utils.redirectToLogin(this)
         let proofOfIncome = [
           ["Bank"], ["Last name"], ["First name"], ["Date of birth"] ,
           ["Month 1"], ["Income month 1"],["Balance month 1"],
           ["Month 2"], ["Income month 2"],["Balance month 2"],
           ["Month 3"], ["Income month 3"],["Balance month 3"]
-        ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"3V3hNz25KVFvg8JdAQWqqu:3:CL:49:Proof_of_Income"])
+        ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income"])
         let IDCard = [["Issuing municipality"], ["Last name"], 
         ["Given name"], ["Place of birth"], ["Date of birth"] ,["Sex"]
         ,["Number of birth registration"],["Height"],["Municipality of residence"],
-        ["Address"],["Issuing date"],["Expiration date"],["Nationality"],["Fiscal code"],["Signature"],["Validity to travel"]].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"WDxzddggRk2HnmY6rc5AHg:3:CL:54:Italian_ID_Card"])
+        ["Address"],["Issuing date"],["Expiration date"],["Nationality"],["Fiscal code"],["Signature"],["Validity to travel"]].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Italian_ID_Card"])
         var requestedAttrs = proofOfIncome//.concat(IDCard)
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
-          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "3V3hNz25KVFvg8JdAQWqqu:3:CL:49:Proof_of_Income",
+          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
           credentialValues: {},
           credentialRequests: [],
           credentialDefinitions: [],
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: <CUSTOMPAGINATIONACTIONSTABLE 
-            data={[]} 
-            showAttr={[]}
-            showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}
-          />,
-          
+          proofs: []
         }
       } else {
         this.state={
           recipientDid: "",
-          credDefId: "3V3hNz25KVFvg8JdAQWqqu:3:CL:49:Proof_of_Income",
+          credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
           proofId: "",
           credentialDefinitions: [],
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: <CUSTOMPAGINATIONACTIONSTABLE 
-          data={[]} 
-          showAttr={[]}
-          showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}
-        />,
+          proofs: []
         }
       }
+      }
+
+
+      handleTabChange(newTab){
+        this.props.onTabChange(newTab)
+      }
+      openIssuerDB(event){
+        this.changeActiveDB(event)
+          this.setState({db: this.state.issuerDB})
+      }
+      
+      openVerifierDB(event){
+          this.changeActiveDB(event)
+          this.setState({db: this.state.verifierDB})
+      }
+      
+      changeActiveDB(event){
+      
+        let issuerButton = document.getElementById('issuerButton')
+        let verifierButton = document.getElementById('verifierButton')
+      
+        if(event.target.innerHTML === 'Issuer DB'){
+            verifierButton.style.backgroundColor = '#6980ff'
+            issuerButton.style.backgroundColor = '#FF7C7C' 
+        }
+        else if(event.target.innerHTML =='Verifier DB'){
+          verifierButton.style.backgroundColor =  '#FF7C7C' 
+          issuerButton.style.backgroundColor = '#6980ff'
+        }
       }
 
 /* POST /api/proofrequest
@@ -192,15 +202,10 @@ async listProofs(){
   'Authorization': localStorage.getItem("token") 
  }
  await axios.get(apiBaseUrl + 'proof' , {headers: headers}).then(function (response) {
+    console.log(response);
+    console.log(response.status);
     if (response.status === 200) {
-      let proofs = <CUSTOMPAGINATIONACTIONSTABLE 
-      onEdit={(event, selected) => self.handleEdit(event, selected)} 
-      data={response.data} 
-      showAttr={["did","status", "proof.identifiers[0].cred_def_id", "proof.identifiers[0].schema_id", "wallet", "createdAt", "id"]}/>
-      self.setState({proofs: proofs})
-    }
-      /*{
-     let proofs = <List>{response.data.sort(Utils.compareDates).map((proof) => {if(proof.status === "received"){
+      let proofs = <List>{response.data.sort(Utils.compareDates).map((proof) => {if(proof.status === "received"){
         return(
           <ListItem>
           <div>
@@ -237,7 +242,7 @@ async listProofs(){
                 </List>
               </ListItem>
               <ListItem>
-              <RaisedButton label="Verify" primary={true} style={style} onClick={(event) => self.verifyProofIdClick(event,proof.id)} />
+              <Button label="Verify" primary={true} style={style} onClick={(event) => self.verifyProofIdClick(event,proof.id)} />
               </ListItem>
             </List>
           </div>
@@ -260,20 +265,16 @@ async listProofs(){
               Proof ID: {proof.id}
               </ListItem>
               <ListItem>
-              <RaisedButton label="Verify" primary={true} style={style} onClick={(event) => self.verifyProofIdClick(event,proof.id)} />
+              <Button label="Verify" primary={true} style={style} onClick={(event) => self.verifyProofIdClick(event,proof.id)} />
               </ListItem>
             </List>
           </div>
           </ListItem>
         )}
-      })}</List> 
-/*      response.data.sort(Utils.compareDates).map((proof) => {
-        if(proof.status === "received") receivedProofs.push(proof)
-        else pendingProofs.push(proof)
-      }) */
-
-   //   self.setState({proofs: proofs})
-   // }
+      })}</List>
+      self.setState({proofs: proofs})
+    alert(proofs)
+    }
   }).catch(function (error) {
   //alert(error);
   console.log(error);
@@ -336,16 +337,6 @@ sendCredentialOfferClick(){
   this.sendCredentialOffer()
 }
 
-handleEdit(event, selected){ //Fuction 
-  this.setState({ selected: selected}); 
-} 
-
-handleTabChange(newTab){
-  console.log(newTab)
-  this.props.onTabChange(newTab)
-}
-
-
 /* POST 
 {
 	"credentialRequestId": "5c7071b8db4eb00010a3779d",
@@ -360,12 +351,27 @@ handleTabChange(newTab){
 render() {
   return(
     <div className="App">
-      <MuiThemeProvider>
+      <ThemeProvider>
       <div>
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-      <CredentialTable this={this}/>
-      
-       {/*   <div>
+      <div className='grid'>
+          <Box position = 'absolute'  top='10%' width='100%'>
+          <Grid
+            container
+            direction="row"
+            justify="space-evenly"
+            alignItems="flex-start"
+          >
+            <Grid item>
+              <Button id='issuerButton' color='secondary' variant='contained' onClick={(event)=> this.openIssuerDB(event)} >Issuer DB</Button> 
+            </Grid>
+            <Grid item>
+              <Button id='verifierButton' color='primary' variant='contained' onClick={(event)=> this.openVerifierDB(event)}>Verifier DB</Button> 
+            </Grid>
+            </Grid>
+          </Box>
+          </div>
+          <div>
       Send proof request:
       <br />
       <TextField
@@ -385,7 +391,7 @@ render() {
             />
             <br />
             <br />
-            Optional: select recipient by username:
+            Select recipient by username:
       <Select
           inputId="react-select-single"
           TextFieldProps={{
@@ -400,42 +406,30 @@ render() {
           onChange={(event) => this.setState({recipientDid: event.value})}
         />
         <br />
+        <div>
         Select requested attributes:
-      <List>{this.state.requested_attributes.map((attr, index) => {
-              return(
-              <div>
-                <ListItem>
-                {attr[0]}
-              <RaisedButton label="Remove" primary={true} style={style} onClick={() => { 
-                    var requested_attributes = this.state.requested_attributes;
-                    requested_attributes.splice(index,1);
-                    this.setState({ requested_attributes: requested_attributes})
-                    }} />
-                    </ListItem></div>)})}
-                    </List>
+      {this.state.requested_attributes.map((attr, index) => {
+        return(
+                <Chip
+        label={attr[0].replace("_referent","").replace(/_/g, " ")}
+        onDelete={() => { 
+          var requested_attributes = this.state.requested_attributes;
+          requested_attributes.splice(index,1);
+          this.setState({ requested_attributes: requested_attributes})}}
+        variant="outlined"
+        className="chip"
+        />)})
+      }
+            </div>
             <br />
-            <RaisedButton label="Send proof request" primary={true} style={style} onClick={(event) => this.sendProofRequestClick(event)} />
-      </div>     
-                  */}
-
-    {/* <div>
-      Verify Proof received from DID {this.state.recipientDid}:
-      <br />
-      <TextField
-                hintText="Set proof ID"
-                floatingLabelText="Proof ID"
-                defaultValue={this.state.proofId}
-                onChange={(event, newValue) => this.setState({ proofId: newValue })}
-            />
-            <br />
-            <RaisedButton label="Verify proof" primary={true} style={style} onClick={(event) => this.verifyProofClick(event)} />
-      </div>    
-      */}
-      
+            <Button label="Send proof request" primary={true} style={style} onClick={(event) => this.sendProofRequestClick(event)} />
       </div>
-      </MuiThemeProvider>
+      <ProofTable />
+      <br />
+      {/*this.state.proofs*/}
+      </div>
+      </ThemeProvider>
     </div>
-
   )
 }
 
@@ -446,4 +440,3 @@ const style = {
 };
   
   export default withRouter(ProofScreen);
-
