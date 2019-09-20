@@ -49,6 +49,8 @@ class OnboardingScreen extends Component {
       connection_message: '',
       citizen_id: props.location.state.citizen_id,
       citizen_did:'',
+      citizen_firstName: props.location.citizen.firstName,
+      citizen_familyName: props.location.citizen.familyName,
       citizen_verkey:'',
       username: '',
       onboarded:true,
@@ -143,7 +145,7 @@ class OnboardingScreen extends Component {
     console.log(self.state.username)
      let payload_conn = {
       "meta":{
-        "username" : 'abc'
+        "username" : self.state.citizen_firstName + "_" + self.state.citizen_familyName
        },
        "data":{
          "app": username

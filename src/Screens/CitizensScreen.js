@@ -191,7 +191,9 @@ onboardCitizen(selected){
   this.props.history.push({
     pathname: '/onboarding',
     state: { citizen_id: selected.id,
-            citizen_did: selected.did }
+             ciitzen_firstName: selected.firstName,
+             citizen_familyName: selected.familyName,
+             citizen_did: selected.did }
   })
 }
 
