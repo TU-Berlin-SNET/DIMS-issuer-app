@@ -260,7 +260,7 @@ newCitizen(){
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <div className='grid'>
-          <Box  mt={4}  width='100%'>
+          <Box    width='100%'>
           <Grid
             container
             direction="row"
