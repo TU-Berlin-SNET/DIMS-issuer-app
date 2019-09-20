@@ -17,6 +17,11 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import MoreAttributes from './moreAttributesDialog.js'
+import Box from '@material-ui/core/Box'
+import Tooltip from '@material-ui/core/Tooltip';
+import Grid from '@material-ui/core/Grid'
+import MoreHoriz from '@material-ui/icons/MoreHoriz';
+
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -91,7 +96,7 @@ const useStyles2 = makeStyles(theme => ({
     marginTop: theme.spacing(3),
   },
   table: {
-    minWidth: 500,
+  
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -99,7 +104,7 @@ const useStyles2 = makeStyles(theme => ({
 }));
 
 var rows = [];
-var moreAttributesNames= []
+var rowsDefault=['-','-','no..','-','-','-']
 
 
 export default function CustomPaginationActionsTable(props) {
@@ -120,6 +125,24 @@ export default function CustomPaginationActionsTable(props) {
       props.onEdit(event, row)
       }
     
+      function handleDoubleClick(event, row) {
+        setSelected(row);
+        if(props.hasOwnProperty('onDoubleClick')) props.onDoubleClick(row);
+      }
+
+    function rowFunction1(row){
+      props.rowFunction1(row)
+    }
+    function rowFunction2(row){
+      props.rowFunction2(row)
+    }
+    function rowFunction3(row){
+      props.rowFunction3(row)
+    }
+    function rowFunction4(row){
+      props.rowFunction4(row)
+    }
+
     function handleChangePage(event, newPage) {
       setPage(newPage);
     }
@@ -133,11 +156,14 @@ export default function CustomPaginationActionsTable(props) {
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
-                <TableRow>
-                      <TableCell  align='center' >
-                        no ... available
-                      </TableCell>
+              {rowsDefault.map((row) => {
+                return(
+                  <TableRow>
+                  <TableCell align='center'>
+                    {row}
+                  </TableCell>
                 </TableRow>
+              )})}
             </TableBody>
             <TableFooter>
               <TableRow>
@@ -175,7 +201,8 @@ export default function CustomPaginationActionsTable(props) {
                   )
                 }
               )}
-              <TableCell align='center'> more Attributes</TableCell>
+              <TableCell align='center'> all attributes</TableCell>
+              <TableCell align='center'> actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -185,6 +212,7 @@ export default function CustomPaginationActionsTable(props) {
                 <TableRow key={index} 
                   hover
                   onClick={(event)=>handleClick(event,row )}
+                  onDoubleClick={(event) => handleDoubleClick(event,row)}
                   selected= {isItemSelected}
                 >
                   {props.showAttr.map((attribute, i) => {
@@ -211,8 +239,25 @@ export default function CustomPaginationActionsTable(props) {
                     }
                   })}
                   <TableCell align='center' >      
-                    <MoreAttributes row={row} />
+                    <MoreAttributes row={row} icon={<MoreHoriz/>} iconText=''/>
                   </TableCell>
+                  
+                  <TableCell align='center' > 
+                  <Grid container justify='center' spacing={0}>
+                  { props.rowFunctions.map((func, index) => {
+                  return(
+                      <Grid item >
+                      <Tooltip title={func.rowFunctionName}>
+                        <IconButton onClick={() => func.rowFunction(row)}>
+                          {func.rowFunctionIcon} 
+                        </IconButton>
+                      </Tooltip>
+                      </Grid>
+                      )})
+                 
+                }
+                      </Grid>    
+                    </TableCell>
                 </TableRow>
                 )
               })}

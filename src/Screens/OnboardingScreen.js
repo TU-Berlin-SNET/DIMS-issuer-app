@@ -15,8 +15,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
+import * as Test from "./../test";
 import * as Utils from "./../Utils";
-
+import Footer from "./../components/footer"
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -26,9 +27,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
-
-//var apiBaseUrl = ""REPLACE"";
-//var apiBaseUrl = ""REPLACE"";
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+var username =''
 
 
 function RenderQR(props){
@@ -46,17 +46,13 @@ class OnboardingScreen extends Component {
     Utils.checkLogin(this)
     this.state={
       //TODO: change username
-      username: '',
       connection_message: '',
-      app: "",
+      citizen_id: props.location.state.citizen_id,
       citizen_did:'',
       citizen_verkey:'',
+      username: '',
       onboarded:true,
-      printingmessage:'',
-      printButtonDisabled:false,
-      newMyDid: "",
-      credDefId: "",
-      credentialDefinitions: [],
+      myDid: props.location.state.citizen_did,
       sendCredentialOfferCheck: true,
     }
   }
@@ -68,151 +64,123 @@ class OnboardingScreen extends Component {
 
   //GET  /api/connection/:myDid
   pollNewConnectionStatus(){
-    if(this.state.newMyDid !== "" && this.state.credDefId !== ""){
+    console.log(this.state.myDid)
       var self = this;
       var headers = {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem("token") 
       }
-      axios.get(apiBaseUrl + "connection/" + this.state.newMyDid, {headers: headers}).then((response) => {
+      axios.get(apiBaseUrl + "connection/" +  self.state.myDid , {headers: headers}).then((response) => {
         console.log(response.status)
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-            let theirDid = response.data.theirDid;
-            Utils.sendCredentialOffer(theirDid,self.state.credDefId)
-            self.setState({newMyDid: ""})
+          alert('onboarded new Citizen succsessfully')
+            self.setState({citizen_did: response.data.theirDid})
+            self.addDidToCitizenInformation()
+            self.props.history.push({
+              pathname: '/citizens',
+            })
+          //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
             //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
         }
       })
     }
-  }
 
-  handleOnboarding(event) {
-    var self = this;
-    var payload = {
-        "did": this.state.citizen_did,
-        "verkey": this.state.citizen_verkey,
-        "role": "NONE"
-    }
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem("token") 
-    }
-    axios.post(apiBaseUrl + 'nym' ,payload, {headers: headers})
-        .then(function (response) {
-            console.log(response);
-            console.log(response.status);
-            if (response.status === 200) {
-                console.log("Onboarding successfully executed");
-                console.log(response.data);
-                var payload_conn = {
-                  "meta": {
-                    "username": self.state.username
-                  },
-                  "data": {
-                    "app": self.state.app
-                  }
-                }
-                axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-                .then(function (response) {
-                  console.log(response);
-                  console.log(response.status);
-                  if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message), onboarded: true})
-                  }
-                }).catch(function (error) {
-                  //alert(error);
-                  console.log(error);
-              });
+    getCitizenVerkey_DiD(){
+        var self = this;
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem("token") 
+        }
+        axios.get(apiBaseUrl + "wallet/default", {headers: headers}).then((response) => {
+          console.log(response)
+          if(response.status === 200){
 
-            } else if (response.status === 204) {
-                console.log("TODO: handle onboarding errors");
-                //alert("TODO: handle onboarding errors")
-            }
-            else {
-                console.log("Onboarding is unsuccesful");
-                alert("Onboarding is unsuccesful");
-            }
+          }
         })
-        .catch(function (error) {
-            //alert(error);
-            console.log(error);
-        });
-}
+      }
+
+    handleOnboarding(event) {
+      var self = this;
+      var payload = {
+          "did": this.state.citizen_did,
+          "verkey": this.state.citizen_verkey,
+          "role": "NONE"
+      }
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token") 
+      }
+      axios.post(apiBaseUrl + 'nym' ,payload, {headers: headers})
+          .then(function (response) {
+              console.log(response);
+              console.log(response.status);
+              if (response.status === 200) {
+                  console.log("Onboarding successfully executed");
+                  console.log(response.data)
+              }
+            }).catch(function (error){
+              console.log(error)
+            })
+          }  
+
 
   componentDidMount(){
     document.title = "issuer app"
-    Utils.listCredDefs(this);
+    this.getWallet()
     this.timer = setInterval(() => this.pollNewConnectionStatus(), 5000);
-    if(this.state.onboarded){
+  }
+
+ async createConnectionOffer(){
+  var self = this;
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
+    console.log(self.state.username)
+     let payload_conn = {
+      "meta":{
+        "username" : 'abc'
+       },
+       "data":{
+         "app": username
+       }
+                }
+             await   axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
+                 .then(function (response) {
+                  console.log(response);
+                  console.log(response.status);
+                  if (response.status === 201) {
+  
+                      self.setState({connection_message: JSON.stringify(response.data.message), myDid: response.data.meta.myDid})
+                    
+                  }
+                }).catch(function (error) {
+                  //alert(error);
+                  console.log(error);
+              }); 
+            }
+
+ async getWallet(){
     var self = this;
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': localStorage.getItem("token") 
     }
-     var payload_conn = {
-                  "meta": {
-                    "username": self.state.username
-                  },
-                  "data": {
-                    "app": self.state.app
-                  }
-                }
-                axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-                .then(function (response) {
-                  console.log(response);
-                  console.log(response.status);
-                  if (response.status === 201) {
-                    self.setState({connection_message: JSON.stringify(response.data.message)})
-                    //TODO set state citizen_did 
-                    // go to SendCredentialScreen
+  await axios.get(apiBaseUrl + "user/me" , {headers: headers}).then((response) => {
 
-                  }
-                }).catch(function (error) {
-                  //alert(error);
-                  console.log(error);
-              });
-            } 
-
+      if(response.status === 200){
+        console.log(response)
+          username = response.data.username
+          this.createConnectionOffer()
+      }
+    }).catch((error)=> {
+        console.log(error)
+    })
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
-
-/* add additional content for conn message
-
-handleConnMessage(event) {
-  var self = this;
-  var headers = {
-    'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
-  }
-  var payload_conn = {
-              "meta": {
-                "username": self.state.username
-              },
-                "data": {
-                  "app": self.state.app
-                }
-              }
-            axios.post(apiBaseUrl + 'connectionoffer' ,payload_conn, {headers: headers})
-              .then(function (response) {
-                console.log(response);
-                console.log(response.status);
-                if (response.status === 201) {
-                  self.setState({connection_message: JSON.stringify(response.data.message), newMyDid: response.data.meta.myDid})
-                }
-              }).catch(function (error) {
-                //alert(error);
-                console.log(error);
-            });
-}
-*/
 
 handleCredentialOfferCheckChange =  event => {
   this.setState({sendCredentialOfferCheck: event.target.checked});
@@ -222,12 +190,26 @@ handleCredentialOfferCheckChange =  event => {
   Parameters: event
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
-handleLogout(event){
-  // console.log("logout event fired",this.props);
-  localStorage.clear();
-  var self = this;
-  self.props.history.push("/");
-}
+ async addDidToCitizenInformation() {
+
+  let self = this
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+
+  let citizen_payload={did: self.state.myDid}
+
+  await axios.put(mongoDBBaseUrl + "citizens/" + self.state.citizen_id, citizen_payload, {headers}).then(function (response) {
+          if (response.status === 200) {
+          }
+  }).catch(function (error) {
+    //alert(JSON.stringify(schema_payload))
+    //alert(error);
+    console.log(error);
+});
+
+ }
 
 handleTabChange(newTab){
   console.log(newTab)
@@ -237,7 +219,7 @@ handleTabChange(newTab){
 goTosendCredentialScreen(){
   this.props.history.push({
     pathname: '/sendCredOffer',
-    state: { citizen_did: this.state.citizen_did }
+    state: { myDid: this.state.myDid}
   })
 }
 
@@ -285,43 +267,7 @@ goTosendCredentialScreen(){
                 </Box>
             </Box>
       </Grid>
-
-          {/*
-          <TextField
-                hintText="Enter username of citizen"
-                floatingLabelText="Citizen username"
-                value={this.state.username}
-                onChange={(event, newValue) => {this.setState({ username: newValue });this.handleConnMessage(event)}}
-            />
-            <br/>
-      <TextField
-                hintText="Enter app name"
-                floatingLabelText="App name"
-                defaultValue="issuer app"
-                value={this.state.app}
-                onChange={(event, newValue) => {this.setState({ app: newValue });this.handleConnMessage(event)}}
-            /> */}
-
-
-           {/* 
-          Select credential Definition for automatic credential offer:
-      <br />
-    <Select
-          inputId="react-select-single"
-          TextFieldProps={{
-            label: 'User',
-            InputLabelProps: {
-              htmlFor: 'react-select-single',
-              shrink: true,
-            },
-            placeholder: 'Search for credential definition ID',
-          }}
-          options={this.state.credentialDefinitions}
-          onChange={(event) => this.setState({credDefId: event.value})}
-        />
-        */}
-      <Button  color="primary" style={style} onClick={(event) => this.handleLogout(event)}>Logout</Button>
-      <Button  color="primary" style={style} onClick={(event) => this.goTosendCredentialScreen(event)}>Send Credential</Button>
+      <Footer />
       </div>
           </MuiThemeProvider>
     );

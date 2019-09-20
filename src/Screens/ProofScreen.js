@@ -23,7 +23,13 @@ import IssuerBar from "./../components/IssuerBar"
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import Select from 'react-select'
+//import Select from 'react-select'
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Container from '@material-ui/core/Container'
 import Chip from '@material-ui/core/Chip';
 import { orange, amber, green, red } from '@material-ui/core/colors';
 import * as Constants from "./../Constants";
@@ -50,6 +56,7 @@ class ProofScreen extends Component {
         if(props.location.hasOwnProperty("state") && props.location.state !== undefined){
         this.state={
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
+          recipientUsername: "",
           credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
           credentialValues: {},
           credentialRequests: [],
@@ -57,18 +64,21 @@ class ProofScreen extends Component {
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: []
+          proofs: [],
+          pairwiseConnectionsOptions: []
         }
       } else {
         this.state={
           recipientDid: "",
+          recipientUsername: "",
           credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
           proofId: "",
           credentialDefinitions: [],
           requested_attributes: requestedAttrs,
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
-          proofs: []
+          proofs: [],
+          pairwiseConnectionsOptions: []
         }
       }
       }
@@ -354,25 +364,8 @@ render() {
       <ThemeProvider>
       <div>
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-      <div className='grid'>
-          <Box position = 'absolute'  top='10%' width='100%'>
-          <Grid
-            container
-            direction="row"
-            justify="space-evenly"
-            alignItems="flex-start"
-          >
-            <Grid item>
-              <Button id='issuerButton' color='secondary' variant='contained' onClick={(event)=> this.openIssuerDB(event)} >Issuer DB</Button> 
-            </Grid>
-            <Grid item>
-              <Button id='verifierButton' color='primary' variant='contained' onClick={(event)=> this.openVerifierDB(event)}>Verifier DB</Button> 
-            </Grid>
-            </Grid>
-          </Box>
-          </div>
           <div>
-      Send proof request:
+      Send proof request to DID:
       <br />
       <TextField
                 hintText="Set recipient DID"
@@ -381,6 +374,8 @@ render() {
                 value={this.state.recipientDid}
                 onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
             />
+      <br />
+      Credential definition ID:
       <br />
       <TextField
                 hintText="Set credential defintion ID"
@@ -391,21 +386,26 @@ render() {
             />
             <br />
             <br />
-            Select recipient by username:
-      <Select
-          inputId="react-select-single"
-          TextFieldProps={{
-            label: 'User',
-            InputLabelProps: {
-              htmlFor: 'react-select-single',
-              shrink: true,
-            },
-            placeholder: 'Search username for DID',
-          }}
-          options={this.state.pairwiseConnectionsOptions}
-          onChange={(event) => this.setState({recipientDid: event.value})}
-        />
+            Select recipient DID by username:
         <br />
+        <FormControl variant="outlined" >
+        <Select
+          value={this.state.recipientUsername}
+          onChange={(event) => {this.setState({recipientDid: event.target.value["value"], recipientUsername: event.target.value["label"]})}
+        }
+          //labelWidth="200px"
+        >
+        {
+          this.state.pairwiseConnectionsOptions.map(
+            (conn) => {
+              return(
+                <MenuItem value={conn}>{conn["label"]}</MenuItem>
+              )
+            }
+          )
+        }
+        </Select>
+      </FormControl>
         <div>
         Select requested attributes:
       {this.state.requested_attributes.map((attr, index) => {

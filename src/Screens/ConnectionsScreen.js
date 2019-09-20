@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import Footer from "./../components/footer"
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -32,10 +32,10 @@ const apiBaseUrl = Constants.apiBaseUrl;
 function SchemaTable(props) {
     return(
         <div className="grid">
-        <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-            <Container  className="tableContainer">
+        <Grid item xs={12} style={{margin:"auto"}}>
+            <Container maxWidth='false'  className="tableContainer">
             <Box position="relative" >
-                <Typography  variant="h6">
+                <Typography  variant="h5">
                 Pairwise Connections
                 </Typography>
             </Box>
@@ -114,7 +114,8 @@ class ConnectionScreen extends Component {
               let pairwiseConnections = <CUSTOMPAGINATIONACTIONSTABLE 
               onEdit={(event, selected) => self.handleEdit(event, selected)} 
               data={data} 
-              showAttr={["theirUsername","their_did", "theirEndpointDid"]}/>
+              showAttr={["theirUsername","their_did", "theirEndpointDid"]}
+              rowFunctions={[]}/>
               response.data.map((conn) => {
                   data.push(
                     {
@@ -146,13 +147,12 @@ class ConnectionScreen extends Component {
         <MuiThemeProvider>
         <div className="App">
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-            <div>
+           {/* <div>
                 Selected recipient: {this.state.selected.their_did}
                 <Button variant='contained' color='primary' onClick={() => this.handleGoToIssuingClick()} >Issue credential</Button>
-            </div>
-        <div>
+           </div> */}
         <SchemaTable this={this}/>
-        </div>
+        <Footer />  
       </div>
       </MuiThemeProvider>
       )   
@@ -160,8 +160,5 @@ class ConnectionScreen extends Component {
 
 }
 
-const style = {
-    margin: 15,
-};
   
   export default withRouter(ConnectionScreen);

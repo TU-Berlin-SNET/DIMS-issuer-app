@@ -34,8 +34,8 @@ export default function AlertDialog(props) {
 
   return (
     <Box>
-      <IconButton onClick={handleClickOpen}>
-        <MoreHoriz />
+      <IconButton color='primary'  size='small' onClick={handleClickOpen}>
+        {props.iconText} {props.icon}
       </IconButton>
       <Dialog
         open={open}

@@ -14,6 +14,7 @@ import {withRouter, Link} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
+import Footer from "./../components/footer"
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
@@ -23,25 +24,30 @@ import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 
+import OnboardIcon from "@material-ui/icons/Work"
+import DeleteIcon from "@material-ui/icons/Delete"
+import EditIcon from '@material-ui/icons/Edit'
+import CredentialIcon from '@material-ui/icons/Assignment'
+import Button from '@material-ui/core/Button'
 const apiBaseUrl = Constants.apiBaseUrl;
 
 
 function SchemaTable(props) {
   return(
   <div className="grid">
-    <Grid item xs={12} md={10} xl={8} style={{margin:"auto"}}>
-        <Container className="tableContainer">
+    <Grid item xs={12}  style={{margin:"auto"}}>
+        <Container maxWidth='false' className="tableContainer">
         <Box position="relative" >
-          <Typography  variant="h6">
+          <Typography  variant="h5">
               Schemas
           </Typography>
           <Box position="absolute" top={0} right={0}>
-            <Link  to={{
-              pathname: "addASchema",
+            <Button component={Link}             to={{
+              pathname: "newSchema",
               state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
               }}>
-              <AddIcon style={{color:'white'}} fontSize="large" />
-            </Link>
+              <AddIcon style={{color:'white'}} fontSize="large" /> 
+            </Button>
           </Box>
         </Box>
           {props.this.state.schemas}
@@ -81,7 +87,22 @@ class SchemaScreen extends Component {
     }
     await axios.get(apiBaseUrl + "indyschema", {headers: headers}).then(function (response) {
       if (response.status === 200) {
-        let schemas = <CUSTOMPAGINATIONACTIONSTABLE onEdit={(event, selected) => self.handleEdit(event, selected)} data={response.data} showAttr={["name","version", "schemaId"]}/>
+        let schemas = <CUSTOMPAGINATIONACTIONSTABLE 
+        onEdit={(event, selected) => self.handleEdit(event, selected)} 
+        data={response.data} 
+        showAttr={["name","version", "schemaId"]}
+        rowFunctions={[
+         { 
+           rowFunction: function(selected){self.editSchema(selected)},
+           rowFunctionName: 'Edit',
+           rowFunctionIcon: <EditIcon />,
+         },
+         {
+          rowFunction: function(selected){self.createCredDef(selected)},
+          rowFunctionName: 'create Credential Definition',
+          rowFunctionIcon: <CredentialIcon />,
+         }
+        ]}/>
         self.setState({schemas: schemas});
       }
     }).catch(function (error) {
@@ -90,13 +111,27 @@ class SchemaScreen extends Component {
     });
   }
 
-  componentWillMount(){
-
-  }
-
   componentDidMount(){
     document.title = "issuer app"
     this.listSchemas()
+  }
+
+
+  editSchema(selected){
+
+  }
+
+  createCredDef(selected){
+    console.log(selected)
+    this.props.history.push({
+      pathname: '/newCredDef',
+      state: { name: selected.name,
+              version: selected.version,
+              id: selected.schemaId,
+              attributes: selected.attrNames
+        }
+    })
+
   }
 
   handleClickNewSchema(event){
@@ -108,7 +143,6 @@ class SchemaScreen extends Component {
  } 
 
  handleTabChange(newTab){
-
   this.props.onTabChange(newTab)
 }
   render() {
@@ -118,6 +152,7 @@ class SchemaScreen extends Component {
         <div className='App'>
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <SchemaTable this={this}/>
+          <Footer />
         </div>
       </MuiThemeProvider> 
     );
