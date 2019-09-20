@@ -32,7 +32,8 @@ import Container from '@material-ui/core/Container'
 import Chip from '@material-ui/core/Chip';
 import { orange, amber, green, red } from '@material-ui/core/colors';
 import * as Constants from "./../Constants";
-import * as Utils from "./../Utils"
+import * as Utils from "./../Utils";
+import SendIcon from '@material-ui/icons/Send';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -436,13 +437,12 @@ render() {
         className="chip"
         />)})
       }
-            </div>
-            <br />
-            <Button label="Send proof request" primary={true} style={style} onClick={(event) => this.sendProofRequestClick(event)} />
+      </div>
+          <Button variant="outlined" color="primary" style={style} onClick={(event) => this.sendProofRequestClick(event)}>
+          Send proof request <SendIcon />
+          </Button>
       </div>
       <ProofTable />
-      <br />
-      {/*this.state.proofs*/}
       </div>
       </ThemeProvider>
     </div>

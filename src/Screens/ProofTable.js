@@ -527,13 +527,13 @@ function CircularIntegrationVerification() {
           className={buttonClassname}
           onClick={handleButtonClick}
         >
-          {success ? <CheckIcon /> : <SearchIcon />}
+          {success ? <CheckIcon/> : <SearchIcon/>}
         </Fab>
         {loading && <CircularProgress size={68} className={classes.fabProgress} />}
       </div>
       <div className={classes.wrapper}>
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           className={buttonClassname}
           disabled={loading}
