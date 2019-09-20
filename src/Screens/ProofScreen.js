@@ -287,7 +287,6 @@ async listProofs(){
         )}
       })}</List>
       self.setState({proofs: proofs})
-    alert(proofs)
     }
   }).catch(function (error) {
   //alert(error);
@@ -333,9 +332,8 @@ verifyProofIdClick(event,id){
 
 componentDidMount(){
   document.title = "issuer app"
-  this.listProofs()
   this.listPairwiseConnectionOptions()
-  this.timer = setInterval(() => {this.listProofs(); this.listPairwiseConnectionOptions()},5000)
+  this.timer = setInterval(() => {this.listPairwiseConnectionOptions()},5000)
 }
 
 componentWillUnmount(){

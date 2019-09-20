@@ -159,7 +159,7 @@ async function verifyProof(proofId){
         } else {
          let isValid = proof.isValid ? "valid" : "invalid"
          let isValidM = proof.isValid ? "valid" : "not valid"
-         setVerificationMessage("The proof is" + isValidM)
+         setVerificationMessage("The proof is " + isValidM)
          setProofState(isValid)
          handleSnackbarOpen()
          //alert("Proof " + isValid + " valid!")
