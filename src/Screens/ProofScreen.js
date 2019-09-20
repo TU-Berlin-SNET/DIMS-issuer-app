@@ -22,7 +22,6 @@ import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar"
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -34,6 +33,11 @@ import { orange, amber, green, red } from '@material-ui/core/colors';
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import SendIcon from '@material-ui/icons/Send';
+import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import MoreAttributes from './../components/moreAttributesDialog'
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -65,7 +69,10 @@ class ProofScreen extends Component {
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
           proofs: [],
-          pairwiseConnectionsOptions: []
+          pairwiseConnectionsOptions: [],
+          credDef: {attributes: [],
+            value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+            label: ""},
         }
       } else {
         this.state={
@@ -78,7 +85,10 @@ class ProofScreen extends Component {
           proofRequestName: "IncomeVerify",
           proofRequestVersion: "1.0",
           proofs: [],
-          pairwiseConnectionsOptions: []
+          pairwiseConnectionsOptions: [],
+          credDef: {attributes: [],
+            value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+            label: ""},
         }
       }
       }
@@ -332,6 +342,7 @@ verifyProofIdClick(event,id){
 
 componentDidMount(){
   document.title = "issuer app"
+  Utils.listCredDefs(this)
   this.listPairwiseConnectionOptions()
   this.timer = setInterval(() => {this.listPairwiseConnectionOptions()},5000)
 }
@@ -347,6 +358,23 @@ sendCredentialClick(){
 
 sendCredentialOfferClick(){
   this.sendCredentialOffer()
+}
+
+
+
+currentAttribute(attr, index){
+  return(
+    <Grid item xs={3}>
+                  <Chip
+        label={attr[0].replace("_referent","").replace(/_/g, " ")}
+        onDelete={() => { 
+          var requested_attributes = this.state.requested_attributes;
+          requested_attributes.splice(index,1);
+          this.setState({ requested_attributes: requested_attributes})}}
+        variant="outlined"
+        className="chip"
+        />
+</Grid> )
 }
 
 /* POST 
@@ -366,81 +394,110 @@ render() {
       <ThemeProvider>
       <div>
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <div>
-      Send proof request to DID:
-      <br />
-      <TextField
-                hintText="Set recipient DID"
-                floatingLabelText="Recipient DID"
-                defaultValue={this.state.recipientDid}
-                value={this.state.recipientDid}
-                onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
-                style = {{width: Math.max(this.state.recipientDid.length*10,160)}}
-            />
-      <br />
-      Credential definition ID:
-      <br />
-      <TextField
-                hintText="Set credential defintion ID"
-                floatingLabelText="Credential definition ID"
-                defaultValue={this.state.credDefId}
-                value={this.state.credDefId}
-                onChange={(event, newValue) => this.setState({ credDefId: newValue })}
-                style = {{width: Math.max(this.state.credDefId.length*9,160)}}
-            />
-            <br />
-            <br />
-            Select recipient DID by username:
-        <br />
-        <br />
-        <FormControl variant="outlined" >
-        <InputLabel htmlFor="did-helper">Username</InputLabel>
-        <Select
-          onChange={(event,index,value) => this.handleSelectValueChange(event,index,value)}
-        inputProps={{
-          name: 'name',
-          id: 'did-helper',
-        }}
-          name="Username"
-          value={this.state.recipientUsername}
-          renderValue={() => this.state.recipientUsername}
+      <div className="grid">
+      <Container maxWidth='false' className="tableContainer">
+      <Box> 
+      <Grid container   
+      direction="row"
+      justify='space-evenly'
+      spacing={4}
+      xs={12} style={{margin:"auto"}}>
+        <Grid item xs={12}>
+          <Box position='relative'>
+            <Box position="absolute" top={0} left={0}>
+                <Link  to={"citizens"}>
+                  <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                </Link>  
+            </Box>
+            <Typography variant="h5">
+              Send Proof Request
+            </Typography> 
+            </Box>   
+        </Grid>
+      <Grid item xs={12} />
+      <Grid item container xs={12}
+        justify='center'
+        component={Paper}
+        spacing={8}
         >
-        {
-          this.state.pairwiseConnectionsOptions.map(
-            (conn) => {
-              return(
-                <MenuItem key={conn["value"]} value={conn}>{conn["label"]}</MenuItem>
-              )
-            }
-          )
-        }
-        </Select>
-        <FormHelperText>Select recipient DID by username</FormHelperText>
-      </FormControl>
-      <br />
-      {/*this.state.proofs*/}
-      <br />
-        <div>
-        Select requested attributes:
-        <br />
-      {this.state.requested_attributes.map((attr, index) => {
-        return(
-                <Chip
-        label={attr[0].replace("_referent","").replace(/_/g, " ")}
-        onDelete={() => { 
-          var requested_attributes = this.state.requested_attributes;
-          requested_attributes.splice(index,1);
-          this.setState({ requested_attributes: requested_attributes})}}
-        variant="outlined"
-        className="chip"
-        />)})
-      }
-      </div>
+        <Grid item container xs={4} justify='center'   >
+        Credential definition ID:
+          <Select value={this.state.credDef.value}
+            defaultValue={this.state.credDef.value}
+            style={{width: (this.state.credDef.value.length * 10) + 'px'}}
+
+            renderValue={() => this.state.credDef.value}
+                onChange={(event) => this.setState({credDef: event.target.value})}
+            >
+              {this.state.credentialDefinitions.map((credD, key)=> {
+                return(
+                  <MenuItem value={credD} key={key} >{credD.value}</MenuItem>
+                )})}        
+            </Select>
+        </Grid>
+
+        <Grid item container xs={12} justify='center'>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              Select Recipient by Username
+            </Typography>   
+          </Grid> 
+          <Grid item xs={12}>
+              <FormControl variant="outlined" >
+                <InputLabel htmlFor="did-helper">Username</InputLabel>
+                  <Select
+                    onChange={(event,index,value) => this.handleSelectValueChange(event,index,value)}
+                  inputProps={{
+                    name: 'name',
+                    id: 'did-helper',
+                  }}
+                    name="Username"
+                    value={this.state.recipientUsername}
+                    renderValue={() => this.state.recipientUsername}
+                  >
+                  {
+                    this.state.pairwiseConnectionsOptions.map(
+                      (conn) => {
+                        return(
+                          <MenuItem key={conn["value"]} value={conn}>{conn["label"]}</MenuItem>
+                        )
+                      }
+                    )
+                  }
+              </Select>
+            <FormHelperText>Select recipient DID by username</FormHelperText>
+          </FormControl>
+          </Grid>
+          <Grid item xs={6} >
+          </Grid>
+        </Grid>
+
+        <Grid item container xs={12} justify='center'>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              Attributes
+            </Typography>   
+          </Grid> 
+          <Grid container spacing={4} justify='space-evenly' item xs={12}>
+
+          {this.state.requested_attributes.map((attr, index) => {
+                       return( this.currentAttribute(attr, index) )
+                  })}  
+          </Grid>
+        </Grid>      
+        <Grid container item xs={12} justify='center'>
           <Button variant="outlined" color="primary" style={style} onClick={(event) => this.sendProofRequestClick(event)}>
           Send proof request <SendIcon />
           </Button>
-      </div>
-      <ProofTable />
+        </Grid>
+
+      </Grid>
+      <Grid item  xs={12} />
+          <ProofTable />
+      </Grid>
+      </Box>
+      </Container>
+    </div>
       </div>
       </ThemeProvider>
     </div>

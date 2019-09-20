@@ -41,8 +41,10 @@ export async function sendCredentialOffer(recipientDid, credDefId){
       console.log(response.data);
       if (response.status === 200) {
         let credDefs = response.data.map((credDef) => {
+          let attributes = Object.keys(credDef.data.value.primary.r).filter(elem => elem !== 'master_secret')
+
           return(
-            {label: credDef.data.tag, value: credDef.credDefId}
+            {label: credDef.data.tag, value: credDef.credDefId, attributes: attributes}
           )
         }
         )

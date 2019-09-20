@@ -191,7 +191,9 @@ onboardCitizen(selected){
   this.props.history.push({
     pathname: '/onboarding',
     state: { citizen_id: selected.id,
-            citizen_did: selected.did }
+             ciitzen_firstName: selected.firstName,
+             citizen_familyName: selected.familyName,
+             citizen_did: selected.did }
   })
 }
 
@@ -260,7 +262,7 @@ newCitizen(){
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <div className='grid'>
-          <Box  mt={4}  width='100%'>
+          <Box    width='100%'>
           <Grid
             container
             direction="row"

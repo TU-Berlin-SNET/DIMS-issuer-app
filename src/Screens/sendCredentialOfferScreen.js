@@ -10,7 +10,7 @@ Material-UI is used for designing ui of the app
 */
 import './../CSS/App.css';
 import Button from '@material-ui/core/Button';
-import {withRouter} from "react-router-dom";
+import {withRouter, Link} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
@@ -27,6 +27,10 @@ import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider'
 import Footer from "./../components/footer"
+import Chip from '@material-ui/core/Chip';
+import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
+
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -170,14 +174,12 @@ getTheirDid(){
 
 currentAttribute(attr, index){
   return( 
-    <Grid item container xs={3}>
-     <Grid item container xs={10} 
-           component={Paper}
-           justify='center'
-           alignItems='center'>
-        <Grid item xs={12}>{attr}</Grid>
-
-     </Grid>
+    <Grid item  xs={3}>
+        <Chip
+        label={attr.replace("_referent","").replace(/_/g, " ")}
+        variant="outlined"
+        className="chip"
+        />
     </Grid>
   )
 }
@@ -195,32 +197,43 @@ render() {
       </div>
 <div className= 'grid'>
 
-    <Grid container xs={12}  style={{margin:"auto"}}>
-    <Container className='tableContainer'>
-    <Box position='relative' >
-      <Typography variant="h6">
-            Send Credential Offer
-        </Typography>
-        </Box>
-        <Box mt={3}>
+
+
+    <Container maxWidth='false' className='tableContainer'>
+      <Box>
+      <Grid container   
+      direction="row"
+      justify='center'
+      spacing={4}
+      xs={12} style={{margin:"auto"}}>
+        <Grid item xs={12}>
+          <Box position='relative'>
+            <Box position="absolute" top={0} left={0}>
+                <Link  to={"citizens"}>
+                  <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                </Link>  
+            </Box>
+            <Typography variant="h5">
+              Send Credential Offer
+            </Typography> 
+            </Box>   
+        </Grid>
+
             <Grid
                 item
                 component= {Paper}
                 container
-                direction="row"
                 justify="center"
-                alignItems="flex-start"
+                spacing={8}
                 xs={12}
+                style={{margin:'auto'}}
                 >
-                {/*padding*/}
-                <Grid item xs={12} >
-                    <Box height='8vh' />       
-                </Grid>
+
                 <Grid item container xs={8} justify='flex-start'>
                   <Grid item xs={6}>
                    Select Credential Definition:  
                    </Grid>  
-                    <Grid item xs={6} containerjustify='flex-start'> 
+                    <Grid item xs={6} container justify='flex-start'> 
                         <Grid item xs={2}>
                             <Select value={this.state.credDef.value}
                             style={{width: '400px'}}
@@ -236,40 +249,36 @@ render() {
                         </Grid>
                     </Grid>
                   </Grid>
+         
+                <Grid container item xs={12} justify='center' spacing={4}>
                   <Grid item xs={12} >
-                    <Box height='8vh' />       
-                </Grid>
-                <Grid item xs={12} >
-                    <Typography>Attributes</Typography>     
-                    <Divider />
-                </Grid>
-                <Grid item xs={12} >
-                    <Box height='2vh' />       
-                </Grid>
-                  <Grid item container xs={10}
-                    direction='row'
-                    justify='space-evenly'
-                    spacing={2}>
-                    
-                  {this.state.credDef.attributes.map((attr, index) => {
-                       return( this.currentAttribute(attr, index) )
-                  })}  
-                  </Grid>               
-                  <Grid item xs={12} >
-                    <Box height='8vh' />       
-                </Grid>
+                      <Typography>Attributes</Typography>    
+                      <Divider /> 
+                   
+                  </Grid>
+                    <Grid container spacing={4} justify='space-evenly' item xs={12}>
+                      
+                    {this.state.credDef.attributes.map((attr, index) => {
+                        return( this.currentAttribute(attr, index) )
+                    })}  
+                    </Grid> 
+                  </Grid>              
+    
             </Grid>
-            </Box>
-            <Box>
-                  <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick(event)}>Offer</Button>
-               </Box>
-            </Container>
-      </Grid>
-
-      </div>
-      <Footer />
-      </div>
-    </MuiThemeProvider>
+            <Grid item container 
+                  justify='center'
+                  xs={12}>
+                  <Button style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick()}>
+                    Send
+                  </Button>
+              </Grid>
+          </Grid>
+        </Box>
+      </Container>
+    </div>
+  <Footer />
+  </div>
+</MuiThemeProvider>
   )
 }
 
