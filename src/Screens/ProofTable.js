@@ -38,6 +38,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import { amber, green, red } from '@material-ui/core/colors';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
@@ -799,7 +800,7 @@ async function listProofs(){
                       <TableCell align="right">{proof.createdAt}</TableCell>
                       <TableCell align="right">
                         <Button variant="outlined" color="primary" onClick={() => handleClickProofOpen(proof)}>
-                        Details
+                        <VisibilityIcon/>
                         </Button>
                       </TableCell>
                      </TableRow>

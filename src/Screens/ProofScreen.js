@@ -23,7 +23,6 @@ import IssuerBar from "./../components/IssuerBar"
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-//import Select from 'react-select'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -81,6 +80,10 @@ class ProofScreen extends Component {
           pairwiseConnectionsOptions: []
         }
       }
+      }
+
+      handleSelectValueChange(event, index, value){
+        this.setState({recipientDid: event.target.value["value"], recipientUsername: event.target.value["label"]})
       }
 
 
@@ -328,7 +331,7 @@ verifyProofIdClick(event,id){
 }
 
 componentDidMount(){
-  document.title = "verifier app"
+  document.title = "issuer app"
   this.listProofs()
   this.listPairwiseConnectionOptions()
   this.timer = setInterval(() => {this.listProofs(); this.listPairwiseConnectionOptions()},5000)
@@ -373,6 +376,7 @@ render() {
                 defaultValue={this.state.recipientDid}
                 value={this.state.recipientDid}
                 onChange={(event, newValue) => this.setState({ recipientDid: newValue })}
+                style = {{width: Math.max(this.state.recipientDid.length*10,160)}}
             />
       <br />
       Credential definition ID:
@@ -383,31 +387,43 @@ render() {
                 defaultValue={this.state.credDefId}
                 value={this.state.credDefId}
                 onChange={(event, newValue) => this.setState({ credDefId: newValue })}
+                style = {{width: Math.max(this.state.credDefId.length*9,160)}}
             />
             <br />
             <br />
             Select recipient DID by username:
         <br />
+        <br />
         <FormControl variant="outlined" >
+        <InputLabel htmlFor="did-helper">Username</InputLabel>
         <Select
+          onChange={(event,index,value) => this.handleSelectValueChange(event,index,value)}
+        inputProps={{
+          name: 'name',
+          id: 'did-helper',
+        }}
+          name="Username"
           value={this.state.recipientUsername}
-          onChange={(event) => {this.setState({recipientDid: event.target.value["value"], recipientUsername: event.target.value["label"]})}
-        }
-          //labelWidth="200px"
+          renderValue={() => this.state.recipientUsername}
         >
         {
           this.state.pairwiseConnectionsOptions.map(
             (conn) => {
               return(
-                <MenuItem value={conn}>{conn["label"]}</MenuItem>
+                <MenuItem key={conn["value"]} value={conn}>{conn["label"]}</MenuItem>
               )
             }
           )
         }
         </Select>
+        <FormHelperText>Select recipient DID by username</FormHelperText>
       </FormControl>
+      <br />
+      {/*this.state.proofs*/}
+      <br />
         <div>
         Select requested attributes:
+        <br />
       {this.state.requested_attributes.map((attr, index) => {
         return(
                 <Chip
