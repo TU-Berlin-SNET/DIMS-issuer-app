@@ -46,8 +46,8 @@ handleTabChange(event,newValue) {
 
   render() {
     return (
-        <Box  width="100%" position='fixed' bottom='0'>
-
+        <Box   width="100%" position='fixed' bottom='0'>
+              
               <Container  maxWidth='false' >
                   <Box height='4vh' />
             </Container>

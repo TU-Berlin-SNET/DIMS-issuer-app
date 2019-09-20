@@ -126,9 +126,7 @@ class CitizenScreen extends Component {
 
       data={response.data} 
       showAttr={["id", 'firstName', 'familyName']}/>
-
       self.setState({citizensTable: citizens})
-      console.log(citizens)
     }
   }).catch(function (error) {
     //alert(error);
@@ -145,8 +143,9 @@ async removeCitizen(selected) {
   }
 
   await axios.delete(mongoDBBaseUrl + "citizens/" + selected.id, {headers}).then(function (response) {
-          if (response.status === 200) {
+          if (response.status === 204) {
             alert("new Citizen sucessfully removed!")
+            self.listCitizens()
           }
   }).catch(function (error) {
     //alert(JSON.stringify(schema_payload))
