@@ -368,22 +368,16 @@ sendCredentialOfferClick(){
 currentAttribute(attr, index){
   return(
     <Grid item xs={3}>
-          <Chip
-  label={attr.replace("_referent","").replace(/_/g, " ")}
-  onDelete={() => { 
-    var requested_attributes = this.state.credDef.attributes;
-    requested_attributes.splice(index,1);
-
-    this.setState(prevState => ({
-      credReq: {                   // object that we want to update
-          ...prevState.credReq,    // keep all other key-value pairs
-          attributes: requested_attributes       // update the value of specific key
-      }
-  }))
-    this.setState({ requested_attributes: requested_attributes})}}
-  variant="outlined"
-  className="chip"
-  /></Grid> )
+                  <Chip
+        label={attr[0].replace("_referent","").replace(/_/g, " ")}
+        onDelete={() => { 
+          var requested_attributes = this.state.requested_attributes;
+          requested_attributes.splice(index,1);
+          this.setState({ requested_attributes: requested_attributes})}}
+        variant="outlined"
+        className="chip"
+        />
+</Grid> )
 }
 
 /* POST 
@@ -488,7 +482,7 @@ render() {
           </Grid> 
           <Grid container spacing={4} justify='space-evenly' item xs={12}>
 
-          {this.state.credDef.attributes.map((attr, index) => {
+          {this.state.requested_attributes.map((attr, index) => {
                        return( this.currentAttribute(attr, index) )
                   })}  
           </Grid>
