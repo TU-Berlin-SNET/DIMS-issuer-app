@@ -49,8 +49,8 @@ class OnboardingScreen extends Component {
       connection_message: '',
       citizen_id: props.location.state.citizen_id,
       citizen_did:'',
-      citizen_firstName: props.location.citizen.firstName,
-      citizen_familyName: props.location.citizen.familyName,
+      citizen_firstName: props.location.state.citizen_firstName,
+      citizen_familyName: props.location.state.citizen_familyName,
       citizen_verkey:'',
       username: '',
       onboarded:true,
@@ -231,7 +231,6 @@ goTosendCredentialScreen(){
       <MuiThemeProvider>
       <div className="App">
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-  
       <Grid item xs={8} md={6} xl={4} style={{margin:"auto"}}>
     <Box position='relative' marginTop='15vh'>
       <Grid item xs={12}>
@@ -244,7 +243,7 @@ goTosendCredentialScreen(){
                 >
                 {/*padding*/}
                 <Box position='absolute' top='8%' left='0' right='0'>
-                  <Typography>Onboard Citizen {this.props.location.state.firstName} {this.props.location.state.familyName}</Typography> 
+                  <Typography>Onboard Citizen {this.props.location.state.citizen_firstName} {this.props.location.state.citizen_familyName}</Typography> 
                </Box>
                 <Grid item xs={12} >
                     <Box height='8vh' />       

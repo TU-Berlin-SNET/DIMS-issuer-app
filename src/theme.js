@@ -25,6 +25,14 @@ const theme = createMuiTheme({
           }
         }
     },
+    avatar: {
+      margin: 10,
+    },
+    bigAvatar: {
+      margin: 10,
+      width: 200,
+      height: 200,
+    },
   typography: {
     useNextVariants: true,
     colorPrimary: '#FFFFFF',

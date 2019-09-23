@@ -15,22 +15,25 @@ import {withRouter, Link} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import IssuerBar from'./../components/IssuerBar'
-import Grid from '@material-ui/core/Grid'
-import Container from '@material-ui/core/Container'
-import Typography from '@material-ui/core/Typography'
+import IssuerBar from'./../components/IssuerBar';
+import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 import * as Utils from "./../Utils";
-import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
+import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js";
 import axios from 'axios';
 import * as Constants from "./../Constants";
-import OnboardIcon from "@material-ui/icons/Work"
-import DeleteIcon from "@material-ui/icons/Delete"
-import EditIcon from '@material-ui/icons/Edit'
-import CredentialIcon from '@material-ui/icons/Assignment'
-import AddIcon from '@material-ui/icons/Add'
-import Footer from "./../components/footer"
+import OnboardIcon from "@material-ui/icons/Work";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from '@material-ui/icons/Edit';
+import CredentialIcon from '@material-ui/icons/Assignment';
+import AddIcon from '@material-ui/icons/Add';
+import Footer from "./../components/footer";
+import MessageIcon from '@material-ui/icons/Message';
+import SearchIcon from '@material-ui/icons/Message';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+const apiBaseUrl = Constants.apiBaseUrl;
 
 
 
@@ -76,7 +79,8 @@ class CitizenScreen extends Component {
       activeDB: 'Issuer DB',
       issuerDB : 'hallo',
       verifierDB : 'Tschüss',
-      selected: ''
+      selected: '',
+      credReq: null
     }
   }
   /*
@@ -117,11 +121,14 @@ class CitizenScreen extends Component {
     },
     {
       rowFunction: function (selected){self.sendCredentialOffer(selected)},
-      rowFunctionName: 'send credentials',
+      rowFunctionName: 'send credential offer',
       rowFunctionIcon: <CredentialIcon />,
+    },
+    {
+      rowFunction: function (selected){self.openCitizenView(selected)},
+      rowFunctionName: 'send and view credentials',
+      rowFunctionIcon: <MessageIcon />,
     }
-
-
       ]}
 
       data={response.data} 
@@ -187,11 +194,45 @@ editCitizen(selected){
   })
 }
 
+async getLastCredentialRequest(senderDid){
+  var self = this;
+  var headers = {
+   'Content-Type': 'application/json',
+   'Authorization': localStorage.getItem("token") 
+  }
+  let credentialRequests = []
+  await axios.get(apiBaseUrl + 'credentialrequest/' , {headers: headers}).then(function (response) {
+     console.log(response);
+     console.log(self.state.theirDid)
+     console.log(response.status);
+     if (response.status === 200) {
+       
+    /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
+         //const {credentialValues} = self.state;
+         credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
+       }) */
+      let allCredReq = response.data
+      credentialRequests = allCredReq.filter(credReq => senderDid === self.state.theirDid)
+     }
+   }).catch(function (error) {
+   //alert(error);
+   console.log(error);
+ })
+ let lastCredentialRequest = null
+ if(credentialRequests.length > 0){
+   credentialRequests.sort(function(a,b){
+   return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+  lastCredentialRequest = credentialRequests[0]
+}
+ return(lastCredentialRequest)
+}
+
 onboardCitizen(selected){
   this.props.history.push({
     pathname: '/onboarding',
     state: { citizen_id: selected.id,
-             ciitzen_firstName: selected.firstName,
+             citizen_firstName: selected.firstName,
              citizen_familyName: selected.familyName,
              citizen_did: selected.did }
   })
@@ -201,6 +242,16 @@ sendCredentialOffer(selected){
   this.props.history.push({
     pathname: '/sendCredOffer',
     state: { myDid: selected.did }
+  })
+}
+
+async sendCredential(selected){
+  this.props.history.push({
+    pathname: '/sendCredentials',
+    state: 
+    { myDid: selected.did,
+      credReq: await this.getLastCredentialRequest(selected.did)
+    }
   })
 }
 

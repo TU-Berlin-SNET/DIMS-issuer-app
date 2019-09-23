@@ -21,6 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
 import * as Constants from "./../Constants";
 import Footer from "./../components/footer"
@@ -60,6 +61,7 @@ class newUserScreen extends Component {
       seed: userdata.seed,
       sic: userdata.sic,
       did: "",
+      profilePictureSrc: null,
     }
   }
   
@@ -134,6 +136,7 @@ class newUserScreen extends Component {
 
 
   render() {
+    let profilePicture = this.state.profilePictureSrc !== null ? <Avatar alt="Profile picture" src={this.state.profilePictureSrc} className={styles.bigAvatar}/> : ""
     return (
       <MuiThemeProvider>
         <div className="App">
@@ -154,8 +157,15 @@ class newUserScreen extends Component {
                         <Typography variant= 'h5' children={'New Citizen'} />
                         <Box height='2vh' />  
                     </Grid>
-            
-                    <Grid item display='block' >
+                    <Grid>
+                    <Grid
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="flex-start"
+                    >
+                    {profilePicture}
+                    </Grid>
                         <Typography children={'Natural Person'}></Typography>
                         <Box>
                             <TextField
@@ -217,7 +227,21 @@ class newUserScreen extends Component {
                                 onChange={(event, newValue) => {this.setState({ gender: newValue })}}
                                 />
                         </Box>
-                    </Grid>  
+                        <Box>
+                            <Button
+                            variant="outlined"
+                            component="label"
+                            onChange={(event) => {if(event.target.files[0] !== ""){this.setState({ profilePictureSrc: URL.createObjectURL(event.target.files[0]) })}}}
+                            >
+                            Upload picture 
+                            <input
+                            accept="image/*"
+                            type="file"
+                            style={{ display: "none" }}
+                            />
+                            </Button>
+                        </Box>
+                    </Grid>
                     <Box display='inline-block' ml='10%'>
                         <Typography children={'Legal Person'}></Typography>
                         <Box>

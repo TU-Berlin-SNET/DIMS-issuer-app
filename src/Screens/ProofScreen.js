@@ -13,7 +13,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import ProofTable from './ProofTable'
 
-
+import PropTypes from 'prop-types';
 import { Link, withRouter, Redirect} from "react-router-dom";
 import TextField from '@material-ui/core/TextField';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
@@ -37,9 +37,76 @@ import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import MoreAttributes from './../components/moreAttributesDialog'
+import MoreAttributes from './../components/moreAttributesDialog';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import WarningIcon from '@material-ui/icons/Warning';
+import Snackbar from '@material-ui/core/Snackbar';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import { lighten, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import IconButton from '@material-ui/core/IconButton';
 
 const apiBaseUrl = Constants.apiBaseUrl;
+
+const variantIcon = {
+  sent: CheckCircleIcon,
+  error: ErrorIcon,
+};
+
+const useStylesSendProofSnackbar = makeStyles(theme => ({
+  sent: {
+    backgroundColor: green[600],
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1),
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
+
+function SendProofSnackbarContentWrapper(props) {
+  const classes = useStylesSendProofSnackbar();
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      className={clsx(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={clsx(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+          <CloseIcon className={classes.icon} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
+  );
+}
+
+SendProofSnackbarContentWrapper.propTypes = {
+  className: PropTypes.string,
+  message: PropTypes.string,
+  onClose: PropTypes.func,
+  variant: PropTypes.oneOf(['sent','error']).isRequired,
+};
 
 class ProofScreen extends Component {
 
@@ -73,6 +140,9 @@ class ProofScreen extends Component {
           credDef: {attributes: [],
             value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
             label: ""},
+            snackbarOpen: false,
+            proofSendRes: "",
+            proofSentMessage: "",
         }
       } else {
         this.state={
@@ -89,6 +159,9 @@ class ProofScreen extends Component {
           credDef: {attributes: [],
             value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
             label: ""},
+            snackbarOpen: false,
+            proofSendRes: "",
+            proofSentMessage: "",
         }
       }
       }
@@ -174,12 +247,14 @@ var payload =  {
   console.log(response);
   console.log(response.status);
   if (response.status === 201) {
-    alert("proof request successfully sent")
+    //alert("proof request successfully sent")
+    self.setState({proofSendRes: "sent", snackbarOpen: true, proofSentMessage: "proof request successfully sent"});
   }
 }).catch(function (error) {
 //alert(error);
 //alert(JSON.stringify(payload))
 console.log(error);
+self.setState({proofSendRes: "error", snackbarOpen: true, proofSentMessage: "error"});
 });
 }
 
@@ -360,7 +435,16 @@ sendCredentialOfferClick(){
   this.sendCredentialOffer()
 }
 
+handleSnackbarOpen() {
+  this.setState({snackbarOpen: true})
+}
 
+handleSnackbarClose(event, reason) {
+  this.setState({snackbarOpen: false});
+  if (reason === 'clickaway') {
+    return;
+  }
+} 
 
 currentAttribute(attr, index){
   return(
@@ -427,12 +511,12 @@ render() {
             style={{width: (this.state.credDef.value.length * 10) + 'px'}}
 
             renderValue={() => this.state.credDef.value}
-                onChange={(event) => this.setState({credDef: event.target.value})}
+                onChange={(event) => {this.setState({credDef: event.target.value, requested_attributes: event.target.value["attributes"].map((attr => [attr]))})}}
             >
               {this.state.credentialDefinitions.map((credD, key)=> {
                 return(
                   <MenuItem value={credD} key={key} >{credD.value}</MenuItem>
-                )})}        
+                )})}
             </Select>
         </Grid>
 
@@ -499,6 +583,21 @@ render() {
       </Container>
     </div>
       </div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={this.state.snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => this.handleSnackbarClose()}
+      >
+        <SendProofSnackbarContentWrapper
+          onClose={() => this.handleSnackbarClose()}
+          variant={this.state.proofSendRes}
+          message={this.state.proofSentMessage}
+        />
+      </Snackbar>
       </ThemeProvider>
     </div>
   )
