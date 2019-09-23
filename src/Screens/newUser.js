@@ -114,7 +114,10 @@ class newUserScreen extends Component {
                     self.props.history.push({
                         pathname: '/onboarding',
                         state: { citizen_id: self.state.personIdentitfier,
-                                citizen_did: self.state.did }
+                                citizen_did: self.state.did,
+                                citizen_firstName: self.state.firstName,
+                                citizen_familyName: self.state.familyName
+                             }
                       })
                 }
                 else{

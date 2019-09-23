@@ -511,7 +511,11 @@ render() {
             style={{width: (this.state.credDef.value.length * 10) + 'px'}}
 
             renderValue={() => this.state.credDef.value}
-                onChange={(event) => {this.setState({credDef: event.target.value, requested_attributes: event.target.value["attributes"].map((attr => [attr]))})}}
+                onChange={(event) => 
+                  {
+                    this.setState({credDef: event.target.value, requested_attributes: event.target.value["attributes"].map((attr => [attr, event.target.value.value]))})
+                  }
+                }
             >
               {this.state.credentialDefinitions.map((credD, key)=> {
                 return(
