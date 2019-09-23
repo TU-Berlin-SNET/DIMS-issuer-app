@@ -49,8 +49,13 @@ class OnboardingScreen extends Component {
       connection_message: '',
       citizen_id: props.location.state.citizen_id,
       citizen_did:'',
+<<<<<<< HEAD
       citizen_firstName: props.location.state.citizen_firstName,
       citizen_familyName: props.location.state.citizen_familyName,
+=======
+      citizen_firstName: props.location.citizen_firstName,
+      citizen_familyName: props.location.citizen_familyName,
+>>>>>>> e8547820b8d6406dbdf012f2201c1592a1d7f59e
       citizen_verkey:'',
       username: '',
       onboarded:true,
