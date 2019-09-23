@@ -126,6 +126,7 @@ console.log(props.location.state.citizen)
         credentialRequests: [],
         issuedCredentials:[],
         theirDid: '',
+        connection: '',
     }
   }
 
@@ -168,6 +169,7 @@ console.log(props.location.state.citizen)
         if (response.status === 200) {
          console.log(response)
          let connection = response.data.filter(connection => connection.my_did === self.state.myDid) 
+         
          self.setState({connection})
         }
       }).catch(function (error) {
@@ -260,7 +262,7 @@ console.log(props.location.state.citizen)
      'Authorization': localStorage.getItem("token") 
     }
     await axios.get(apiBaseUrl + 'credential/' , {headers: headers}).then(function (response) {
-       console.log(response);
+
        console.log(response.status);
        if (response.status === 200) {
          
@@ -269,7 +271,7 @@ console.log(props.location.state.citizen)
            credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
          }) */
         let allIssuedCred = response.data
-        let issuedCredentials = allIssuedCred.filter(cred => cred.senderDid === self.state.ownDid)
+        let issuedCredentials = allIssuedCred.filter(cred => cred.recipientDid === self.state.theirDid)
         self.setState({issuedCredentials})
        }
      }).catch(function (error) {
