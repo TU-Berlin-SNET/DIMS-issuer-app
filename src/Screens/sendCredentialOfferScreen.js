@@ -29,6 +29,7 @@ import Divider from '@material-ui/core/Divider'
 import Footer from "./../components/footer"
 import Chip from '@material-ui/core/Chip';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
+import Checkbox from '@material-ui/core/Checkbox';
 
 
 
@@ -40,7 +41,7 @@ const apiBaseUrl = Constants.apiBaseUrl;
 
 
 
-class CredentialScreen extends Component {
+class CredentialOfferScreen extends Component {
 
     constructor(props){
         super(props);
@@ -57,7 +58,10 @@ class CredentialScreen extends Component {
           credentialRequests: [],
           credentialDefinitions: [],
           pairwiseConnectionsOptions: [],
-          myDid: props.location.state.myDid
+          myDid: props.location.state.myDid,
+          sendCredentialCheck: true,
+          citizen_id: props.location.state.citizen_id,
+          citizen: null,
         }
       } else {
         this.state={
@@ -69,10 +73,34 @@ class CredentialScreen extends Component {
           credentialRequests:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
           credentialDefinitions: [],
           selected: "",
-          myDid: props.location.state.myDid
+          myDid: props.location.state.myDid,
+          sendCredentialCheck: true,
+          citizen: null,
         }
       }
     }
+
+
+    async getCitizen(citizen_id){
+      let self = this
+      let citizen = null
+     var headers = {
+       'Content-Type': 'application/json',
+       'Authorization': localStorage.getItem("token") 
+     }
+     await axios.get(Constants.mongoDBBaseUrl + "citizens?id=" + citizen_id, {headers}).then(function (response) {
+       console.log(response);
+       if (response.status === 200) {
+         citizen = response.data[0]
+         self.setState({citizen: citizen})
+       }
+     }).catch(function (error) {
+       //alert(error);
+       console.log(error);
+       alert(error)
+     });
+     return(citizen)
+   }
 
 /* POST /api/credentialoffer
  {
@@ -90,9 +118,19 @@ async sendCredentialOffer(){
    'recipientDid': self.state.recipientDid,
    'credDefId': self.state.credDef.value
 }
- axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
+ await axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
     alert("Credential offer successfully sent")
+    if(self.state.sendCredentialCheck === true){
+      self.getCitizen(self.state.citizen_id).then((citizen) =>
+      {
+      alert(JSON.stringify(citizen))
+        self.props.history.push({
+          pathname: '/citizen',
+          state: { citizen: citizen}
+        })
+    })
+  }
   }
 }).catch(function (error) {
 //alert(error);
@@ -184,6 +222,10 @@ currentAttribute(attr, index){
   )
 }
 
+handleCredentialSendCheckChange =  event => {
+  this.setState({sendCredentialCheck: event.target.checked});
+};
+
 
 render() {
   return(
@@ -261,14 +303,25 @@ render() {
                     {this.state.credDef.attributes.map((attr, index) => {
                         return( this.currentAttribute(attr, index) )
                     })}  
-                    </Grid> 
-                  </Grid>              
+                    </Grid>
+                  </Grid>
+                  <Grid container item spacing={4} justify='center' xs={12}>
+                  <Grid item xs={12} >
+                    send credentials now?
+                    <Checkbox  
+                    onChange={(event) => this.handleCredentialSendCheckChange(event)}
+                    color='primary'
+                    checked={this.state.sendCredentialCheck}
+                    value={this.state.sendCredentialCheck}
+                    />
+                    </Grid>
+                    </Grid>              
     
             </Grid>
             <Grid item container 
                   justify='center'
                   xs={12}>
-                  <Button style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick()}>
+                  <Button variant="outlined" style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick()}>
                     Send
                   </Button>
               </Grid>
@@ -288,4 +341,4 @@ const style = {
     margin: 15,
 };
   
-  export default withRouter(CredentialScreen);
+  export default withRouter(CredentialOfferScreen);

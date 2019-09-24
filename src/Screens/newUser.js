@@ -25,6 +25,7 @@ import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
 import * as Constants from "./../Constants";
 import Footer from "./../components/footer"
+import AppCanvas from 'material-ui/internal/AppCanvas';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
@@ -62,6 +63,7 @@ class newUserScreen extends Component {
       sic: userdata.sic,
       did: "",
       profilePictureSrc: null,
+      base64ProfilePic: ""
     }
   }
   
@@ -72,7 +74,7 @@ class newUserScreen extends Component {
 
  handleOnboardCheckChange =  event => {
      this.setState({onboardChecked: event.target.checked});
-   };
+};
 
    handleTabChange(newTab){
     console.log(newTab)
@@ -103,6 +105,7 @@ class newUserScreen extends Component {
             "seed": self.state.seed,
             "sic": self.state.sic,
             "did":"",
+            //"picture": self.state.base64ProfilePic,
         }
         
         await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
@@ -135,6 +138,22 @@ class newUserScreen extends Component {
     
         
 }
+
+readUploadedFileAsDataURL(inputFile){
+    const temporaryFileReader = new FileReader();
+  
+    return new Promise((resolve, reject) => {
+      temporaryFileReader.onerror = () => {
+        temporaryFileReader.abort();
+        reject(new DOMException("Problem parsing input file."));
+      };
+  
+      temporaryFileReader.onload = () => {
+        resolve(temporaryFileReader.result);
+      };
+      temporaryFileReader.readAsDataURL(inputFile);
+    });
+  };
 
 
 
@@ -234,7 +253,16 @@ class newUserScreen extends Component {
                             <Button
                             variant="outlined"
                             component="label"
-                            onChange={(event) => {if(event.target.files[0] !== ""){this.setState({ profilePictureSrc: URL.createObjectURL(event.target.files[0]) })}}}
+                            onChange={(event) => {
+                                let blobURLref = URL.createObjectURL(event.target.files[0])
+                                if(event.target.files[0] !== ""){
+                                    this.readUploadedFileAsDataURL(event.target.files[0]).then(
+                                        (base64img) => {
+                                            this.setState({base64ProfilePic: base64img})
+                                        })
+                                    this.setState({ profilePictureSrc: blobURLref })
+                                }
+                            }}
                             >
                             Upload picture 
                             <input
