@@ -10,7 +10,7 @@ Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import {withRouter} from "react-router-dom";
+import {withRouter, Link} from "react-router-dom";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
@@ -22,8 +22,10 @@ import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Checkbox from '@material-ui/core/Checkbox';
+import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
+
 var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -237,42 +239,57 @@ goTosendCredentialScreen(){
       <MuiThemeProvider>
       <div className="App">
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-      <Grid item xs={8} md={6} xl={4} style={{margin:"auto"}}>
-    <Box position='relative' marginTop='15vh'>
-      <Grid item xs={12}>
-            <Grid
-                component= {Paper}
-                container
-                direction="row"
-                justify="center"
-                alignItems="flex-start"
-                >
-                {/*padding*/}
-                <Box position='absolute' top='8%' left='0' right='0'>
-                  <Typography>Onboard Citizen {this.props.location.state.citizen_firstName} {this.props.location.state.citizen_familyName}</Typography> 
-               </Box>
-                <Grid item xs={12} >
-                    <Box height='8vh' />       
-                </Grid>
-                  <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
-                  <Grid item xs={12} >
-                    <Box height='8vh' />       
-                  </Grid>
-              </Grid>
-              <Box position='absolute' bottom='8%' left='0' right='0'>
-                <Typography children={'Scan the QR Code wih your mobile app'} /> 
-               </Box>
+      <Grid item xs={12} style={{margin:"auto"}}>
+      <Container maxWidth='false' className="tableContainer">
+        <Grid container   
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} style={{margin:"auto"}}>
+          <Grid item container spacing={0} xs={12}>
+            <Grid item xs={1} position='relative'>
+              <Box position='absolute' left={16}>
+                <Link  to={"citizens"}>
+                  <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                </Link>
+              </Box>
             </Grid>
-            <Box position='absolute' bottom="8%" right= {8}>
-                    send credentials now?
-                <Checkbox  
-                    onChange={this.handleCredentialOfferCheckChange}
-                    color='primary'
-                    checked={this.state.sendCredentialOfferCheck}
-                    value="onboardChecked"
-                />
-                </Box>
+            <Grid item xs={10}>
+              <Typography variant="h5">
+                  Onboard Citizen {this.props.location.state.citizen_firstName} {this.props.location.state.citizen_familyName}
+              </Typography> 
+            </Grid>
+          <Grid item xs={1} position='relative'>
+          </Grid>     
+        </Grid>
+        <Grid item xs={12} />
+        <Grid item container xs={12}
+              justify='center'
+              component={Paper}
+              spacing={8}
+        >
+          <Grid item xs={12}>
+            <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
+          </Grid>
+          <Grid item xs={2} />
+          <Grid item xs={8}>
+            <Typography children={'Scan the QR Code wih your mobile app'} /> 
+          </Grid>
+          <Grid item xs={2}>
+            <Box >
+              send credentials now?
+              <Checkbox  
+              onChange={this.handleCredentialOfferCheckChange}
+              color='primary'
+              checked={this.state.sendCredentialOfferCheck}
+              value="onboardChecked"
+              />
             </Box>
+          </Grid>
+          </Grid>
+          <Grid item xs={12} />
+     </Grid>
+        </Container>
       </Grid>
       <Footer />
       </div>
@@ -284,5 +301,6 @@ goTosendCredentialScreen(){
 const style = {
   margin: 15,
 };
+
 
 export default withRouter(OnboardingScreen);

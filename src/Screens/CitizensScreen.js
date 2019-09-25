@@ -31,6 +31,7 @@ import Paper from '@material-ui/core/Paper';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
 import SearchIcon from '@material-ui/icons/Message';
+import AddIcon from '@material-ui/icons/Add';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -49,16 +50,25 @@ function CitizensTable(props) {
     <Grid item xs={12}  style={{margin:"auto"}}>
         <Container maxWidth='false' className="tableContainer">
         <Grid container   
-      direction="row"
-      justify='space-evenly'
-      spacing={4}
-      xs={12} style={{margin:"auto"}}>
-        <Grid item xs={12}>
-          <Box position='relative'>
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} style={{margin:"auto"}}>
+       <Grid item container spacing={0} xs={12}>
+            <Grid item xs={1} />
+            <Grid item xs={10}>
             <Typography variant="h5">
               Citizens
             </Typography> 
-            </Box>   
+            </Grid>
+          <Grid item xs={1} position='relative'>
+            <Box position='absolute' right={16}>
+              <Button onClick={(event) => props.this.newCitizen()}>
+                <AddIcon style={{color:'white'}} fontSize="large" /> 
+              </Button>
+            </Box>
+          </Grid> 
+          
         </Grid>
       <Grid item xs={12} />
       <Grid item container xs={12}
@@ -322,17 +332,6 @@ newCitizen(){
       <MuiThemeProvider>
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <div className='grid'>
-          <Box    width='100%'>
-          <Grid
-            container
-            direction="row"
-            justify="space-evenly"
-            alignItems="flex-start"
-          >
-            </Grid>
-          </Box>
-          </div>
           <CitizensTable this={this} />
         </div>
       </MuiThemeProvider>

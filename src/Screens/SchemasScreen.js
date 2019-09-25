@@ -37,10 +37,10 @@ function SchemaTable(props) {
     <Grid item xs={12}  style={{margin:"auto"}}>
         <Container maxWidth='false' className="tableContainer">
         <Grid container   
-      direction="row"
-      justify='space-evenly'
-      spacing={4}
-      xs={12} style={{margin:"auto"}}>
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} style={{margin:"auto"}}>
         <Grid item container spacing={0} xs={12}>
             <Grid item xs={1} />
             <Grid item xs={10}>
@@ -48,18 +48,18 @@ function SchemaTable(props) {
               Schemas
             </Typography> 
             </Grid>
-            <Grid item xs={1} position='relative'>
-              <Box position='absolute' right={16}>
-            <Button
-              component={Link} 
-              to={{
-              pathname: "newSchema",
-              state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
-              }}>
-              <AddIcon style={{color:'white'}} fontSize="large" /> 
-            </Button>
+          <Grid item xs={1} position='relative'>
+            <Box position='absolute' right={16}>
+              <Button
+                component={Link} 
+                to={{
+                pathname: "newSchema",
+                state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
+                }}>
+                <AddIcon style={{color:'white'}} fontSize="large" /> 
+              </Button>
             </Box>
-        </Grid> 
+          </Grid> 
         </Grid>
       <Grid item xs={12} />
       <Grid item container xs={12}
