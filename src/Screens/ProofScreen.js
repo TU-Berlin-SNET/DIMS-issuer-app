@@ -487,16 +487,9 @@ render() {
       spacing={4}
       xs={12} style={{margin:"auto"}}>
         <Grid item xs={12}>
-          <Box position='relative'>
-            <Box position="absolute" top={0} left={0}>
-                <Link  to={"citizens"}>
-                  <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-                </Link>  
-            </Box>
             <Typography variant="h5">
               Send Proof Request
             </Typography> 
-            </Box>   
         </Grid>
       <Grid item xs={12} />
       <Grid item container xs={12}

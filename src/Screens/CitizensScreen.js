@@ -27,12 +27,13 @@ import OnboardIcon from "@material-ui/icons/Work";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@material-ui/icons/Edit';
 import CredentialIcon from '@material-ui/icons/Assignment';
-import AddIcon from '@material-ui/icons/Add';
+import Paper from '@material-ui/core/Paper';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
 import SearchIcon from '@material-ui/icons/Message';
 import Avatar from '@material-ui/core/Avatar';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AddIcon from '@material-ui/icons/Add';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -50,19 +51,38 @@ function CitizensTable(props) {
   <div className="grid">
     <Grid item xs={12}  style={{margin:"auto"}}>
         <Container maxWidth='false' className="tableContainer">
-        <Box position="relative" >
-          <Typography  variant="h5">
+        <Grid container   
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} style={{margin:"auto"}}>
+       <Grid item container spacing={0} xs={12}>
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+            <Typography variant="h5">
               Citizens
-          </Typography>
-          <Box position="absolute" top={0} right={0}>
-            <Button  onClick={(event)=> props.this.newCitizen()}>
-              <AddIcon style={{color:'white'}} fontSize="large" />
-            </Button>
-          </Box>
-        </Box>
-          <Box >
-          {props.this.state.citizensTable}
-          </Box>
+            </Typography> 
+            </Grid>
+          <Grid item xs={1} position='relative'>
+            <Box position='absolute' right={16}>
+              <Button onClick={(event) => props.this.newCitizen()}>
+                <AddIcon style={{color:'white'}} fontSize="large" /> 
+              </Button>
+            </Box>
+          </Grid> 
+          
+        </Grid>
+      <Grid item xs={12} />
+      <Grid item container xs={12}
+        justify='center'
+        component={Paper}
+        spacing={8}
+        >
+                    {props.this.state.citizensTable}
+          </Grid>
+          <Grid item xs={12} />
+          </Grid>
+     
         </Container>
     </Grid>
     <Footer />
@@ -328,17 +348,6 @@ newCitizen(){
       <MuiThemeProvider>
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <div className='grid'>
-          <Box    width='100%'>
-          <Grid
-            container
-            direction="row"
-            justify="space-evenly"
-            alignItems="flex-start"
-          >
-            </Grid>
-          </Box>
-          </div>
           <CitizensTable this={this} />
         </div>
       </MuiThemeProvider>

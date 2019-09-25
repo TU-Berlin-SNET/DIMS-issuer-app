@@ -89,44 +89,30 @@ class newUserScreen extends Component {
             <Box position='relative' mt={3} width='100%'>
               <Container  maxWidth='false' className='tableContainer'>
               <Grid container  xs={12}  style={{margin:"auto"}}
-                  justify='center'>
-                    <Grid item container xs={12} justify='center'>
-                      <Grid item xs={3}>
-                          <Typography variant="h6">
+                  justify='center' spacing={4}>
+                    <Grid item xs={12} justify='center'>
+                          <Typography  variant="h5">
                             User
                           </Typography>
-                      </Grid>
                    </Grid>
-                <Grid container justify='center' xs={4}>
+                <Grid item xs={12} />
                 <Grid
                     component= {Paper}
                     item
                     container
                     direction="row"
                     justify="center"
-                    spacing={2}
+                    spacing={8}
                     xs={12}
                     >
-                    <Grid container justify='center' item xs={10}>
-                         <Grid item container justify='center' xs={6}>
-                            username:
-                        </Grid>
-                        <Grid item container justify='center' xs={6}>
-                            {this.state.username}
-                        </Grid>
+                    <Grid item justify='center' item xs={10}>
+                         username:  
+                         <Typography color='primary'> {this.state.username} </Typography>
                     </Grid>
-                    <Grid>
-                      <Box height='4vh' />
+                    <Grid item justify='center' item xs={10}>
+                        wallet:  
+                        <Typography color='primary'> {this.state.wallet} </Typography>
                     </Grid>
-                    <Grid container justify='center' item xs={10}>
-                         <Grid item container justify='center' xs={6}>
-                            wallet:
-                        </Grid>
-                        <Grid item container justify='center' xs={6}>
-                            {this.state.wallet}
-                        </Grid>
-                    </Grid>
-
                     </Grid>
                 </Grid>
 
@@ -134,7 +120,6 @@ class newUserScreen extends Component {
                   <Grid item xs={4}>
                   <Button  color="primary" style={{color:'white'}} onClick={(event) => this.handleLogout(event)}>Logout</Button>
                   </Grid>
-                </Grid>
                 </Grid>
             </Container>
             </Box>

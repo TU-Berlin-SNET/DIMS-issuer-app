@@ -76,14 +76,14 @@ function NewSchema(props) {
                               </Link>
                             </Box>
                             <Typography variant="h5">
-                                create new schema
+                                Create new schema
                             </Typography>      
                             </Box>
                          </Grid>
-                  <Grid item container xs={6}
+                  <Grid item container xs={12}
                         justify='center'
                         component={Paper}>
-                        <Grid item container xs={12} spacing={4}>
+                        <Grid item container xs={6} spacing={4}>
                         <Grid item container xs={12} justify='center'>
                           <Grid item xs={6}>
                               <TextField id="schemaNameInput" fullWidth 
