@@ -154,22 +154,19 @@ render() {
                         </Grid>
                         <Grid item xs={12}>
                             {Object.keys(this.state.attributes).map((key) => {
-                            return(
-                                <Box mt={2}>
-                                <Grid item xs={12}>
-                                <TextField hintText={'Enter ' +  this.state.attributes[key][0]}
-                                floatingLabelText={this.state.attributes[key][0]} 
-                                onChange={(event, newValue) => {
-                                    let values = this.state.attributes;
-                                    values[key][1] = newValue;
-                                    this.setState({ attributes: values})
-                                }
-                            
-                            }
-                                    />
-                                   </Grid>
-                                   </Box> 
-                                    );     
+                              return(
+                              <Box mt={2}>
+                              <Grid item xs={12}>
+                              <TextField hintText={'Enter ' +  this.state.attributes[key][0]}
+                              floatingLabelText={this.state.attributes[key][0]} 
+                              onChange={(event, newValue) => {
+                              let values = this.state.attributes;
+                              values[key][1] = newValue;
+                              this.setState({ attributes: values})}}
+                              />
+                              </Grid>
+                              </Box> 
+                              );     
                                    
                             })}
                          <Grid item xs={12} >

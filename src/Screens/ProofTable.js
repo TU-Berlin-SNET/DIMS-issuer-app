@@ -39,6 +39,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import { amber, green, red } from '@material-ui/core/colors';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import CircularVerification from "./../components/CircularVerification"
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
@@ -118,7 +119,6 @@ function ProofDialog(props) {
   const [proofState, setProofState] = React.useState("pending")
   const [verificationMessage, setVerificationMessage] = React.useState("The proof is pending")
  
- 
    function handleSnackbarOpen() {
      setSnackbarOpen(true);
    }
@@ -170,7 +170,7 @@ async function verifyProof(proofId){
     setProofState("error")
     setVerificationMessage("Verification error. Please try again!")
     handleSnackbarOpen()
-   console.log(error);
+    console.log(error);
  })
  }
 
@@ -179,8 +179,8 @@ async function verifyProof(proofId){
   }
   
   let proof = selectedValue
-
   let proofVis = null
+
   if(proof === undefined){
     proofVis = "no proof selected"
   } if(proof === null){
@@ -189,9 +189,7 @@ async function verifyProof(proofId){
     
     proofVis = <List>
          <ListItem>
-          <Button variant="outlined" color="primary" primary={true} onClick={() => verifyProof(proof.id)}>
-           Verify
-          </Button>
+         <CircularVerification proofId={proof.id}/>
           </ListItem>
           <ListItem>
           Sender DID: {proof.did}
@@ -223,13 +221,8 @@ async function verifyProof(proofId){
             )})}
             </List>
           </ListItem>
-          <ListItem>
-          <Button variant="outlined" color="primary" primary={true} onClick={() => verifyProof(proof.id)}>
-           Verify
-          </Button>
-          </ListItem>
         </List>
-        } else {
+    } else {
       proofVis = <List>
           <ListItem>
           Sender DID: {proof.did}
@@ -244,9 +237,7 @@ async function verifyProof(proofId){
           Proof ID: {proof.id}
           </ListItem>
           <ListItem>
-          <Button variant="outlined" color="primary" primary={true} onClick={() => verifyProof(proof.id)}>
-           Verify
-          </Button>
+          <CircularVerification proofId={proof.id}/>
           </ListItem>
         </List>
     }
@@ -715,15 +706,6 @@ async function listProofs(){
     setOrderBy(property);
   }
 
-  function handleSelectAllClick(event) {
-    if (event.target.checked) {
-      const newSelecteds = proofs.map(n => n.id);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  }
-
   function handleClick(event, proofId) {
     setProofId(proofId)
     let newSelected = [selected.indexOf(proofId)];
@@ -762,7 +744,6 @@ async function listProofs(){
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={proofs.length}
             />

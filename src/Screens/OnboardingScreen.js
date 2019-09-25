@@ -80,9 +80,15 @@ class OnboardingScreen extends Component {
           alert('onboarded new Citizen succsessfully')
             self.setState({citizen_did: response.data.theirDid})
             self.addDidToCitizenInformation()
+            if(self.state.sendCredentialOfferCheck === false){
             self.props.history.push({
               pathname: '/citizens',
-            })
+            })} else {
+              this.props.history.push({
+                pathname: '/sendCredOffer',
+                state: { myDid: self.state.myDid, citizen_id: self.state.citizen_id }
+              })
+          }
           //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
             //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
