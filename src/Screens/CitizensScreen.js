@@ -157,9 +157,13 @@ class CitizenScreen extends Component {
         (citizen) => {
           if(citizen.hasOwnProperty('picture') && citizen.picture !== ""){
             let base64Img = citizen['picture']
-            citizen['photo'] = <Avatar src={base64Img}/>
+            citizen['photo'] = <Grid container justify="center" alignItems="center">
+                                  <Avatar src={base64Img}/>
+                               </Grid>
           } else {
-            citizen['photo'] = <Avatar>{citizen.firstName[0]}</Avatar>
+            citizen['photo'] = <Grid container justify="center" alignItems="center">
+                                  <Avatar>{citizen.firstName[0]}</Avatar>
+                               </Grid>
           }
           citizen['first name'] = citizen.firstName
           citizen['family name'] = citizen.familyName
