@@ -31,6 +31,8 @@ import AddIcon from '@material-ui/icons/Add';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
 import SearchIcon from '@material-ui/icons/Message';
+import Avatar from '@material-ui/core/Avatar';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -80,7 +82,7 @@ class CitizenScreen extends Component {
       issuerDB : 'hallo',
       verifierDB : 'Tschüss',
       selected: '',
-      credReq: null
+      credReq: null,
     }
   }
   /*
@@ -131,8 +133,20 @@ class CitizenScreen extends Component {
     }
       ]}
 
-      data={response.data} 
-      showAttr={["id", 'firstName', 'familyName']}/>
+      data={response.data.map(
+        (citizen) => {
+          if(citizen.hasOwnProperty('picture') && citizen.picture !== ""){
+            let base64Img = citizen['picture']
+            citizen['photo'] = <Avatar src={base64Img}/>
+          } else {
+            citizen['photo'] = <Avatar>{citizen.firstName[0]}</Avatar>
+          }
+          citizen['first name'] = citizen.firstName
+          citizen['family name'] = citizen.familyName
+          return(citizen)
+        }
+      )} 
+      showAttr={['id', 'first name', 'family name','photo']}/>
       self.setState({citizensTable: citizens})
     }
   }).catch(function (error) {
@@ -164,6 +178,8 @@ async removeCitizen(selected) {
 
 
 openCitizenView(selected){
+  //the photo field cannot be cloned
+  delete selected['photo']
   this.props.history.push({
     pathname: '/citizen',
     state: { citizen: selected}
@@ -260,9 +276,9 @@ async sendCredential(selected){
 handleEdit(event, selected){ //Fuction 
   this.setState({ selected: selected}); 
 } 
-
  componentDidMount(){
   this.listCitizens();
+  document.title = "issuer app";
 }
 
  handleTabChange(newTab){

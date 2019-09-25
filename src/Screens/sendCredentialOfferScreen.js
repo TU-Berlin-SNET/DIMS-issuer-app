@@ -97,7 +97,6 @@ class CredentialOfferScreen extends Component {
      }).catch(function (error) {
        //alert(error);
        console.log(error);
-       alert(error)
      });
      return(citizen)
    }
@@ -124,7 +123,6 @@ async sendCredentialOffer(){
     if(self.state.sendCredentialCheck === true){
       self.getCitizen(self.state.citizen_id).then((citizen) =>
       {
-      alert(JSON.stringify(citizen))
         self.props.history.push({
           pathname: '/citizen',
           state: { citizen: citizen}

@@ -38,10 +38,7 @@ import Footer from "./../components/footer"
 import MoreAttributes from './../components/moreAttributesDialog'
 import {Table, TableBody, TableRow, TableCell, TableHead } from '@material-ui/core';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
-
-
-
-
+import Avatar from '@material-ui/core/Avatar';
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -54,8 +51,10 @@ Module:superagent
 superagent is used to handle post/get requests to server
 */
 //var request = require('superagent');
-
-
+const avatarImageStyle = {
+  width: 200,
+  height: 200,
+};
 
 function CredentialRequestsTable(props) {
     return(
@@ -138,6 +137,15 @@ console.log(props.location.state.citizen)
       this.getCredentialRequests()
       this.getConnectionDetails()
       this.getIssuedCredentials()
+      this.timer = setInterval(() => {
+        this.getCredentialRequests()
+        this.getIssuedCredentials()
+        }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    this.timer = null;
   }
 
 
@@ -303,6 +311,14 @@ console.log(props.location.state.citizen)
       let year = dateOfBirth.getFullYear()
       let month= dateOfBirth.getMonth() + 1
       let day = dateOfBirth.getDate()
+      
+    let pictureAvatar = <Avatar>{this.state.citizen.firstName[0]}</Avatar>
+      if(this.state.citizen.hasOwnProperty('picture') && this.state.citizen.picture !== ""){
+        let base64Img = this.state.citizen['picture']
+        pictureAvatar = <Avatar src={base64Img} style={avatarImageStyle}/>
+      } else {
+        pictureAvatar  = null
+      }
     return (
       <MuiThemeProvider>
         <div className='App'>
@@ -334,14 +350,13 @@ console.log(props.location.state.citizen)
           component={Paper}
           spacing={8}
           >
+          {pictureAvatar}
          <Grid item xs={12}>
             <Typography variant="h6">
                Attributes 
             </Typography>    
          </Grid>
-        
           <Grid item container xs={4} justify='center'   >
-              
                 <Grid  item xs={6} >
                     <Typography align='left'> personal identifier:  {this.state.citizen.id}</Typography>
                     <Typography align='left'> first name: {this.state.citizen.firstName}</Typography>

@@ -66,6 +66,10 @@ class newUserScreen extends Component {
       base64ProfilePic: ""
     }
   }
+
+  componentDidMount(){
+      document.title = "issuer app"
+  }
   
   componentWillUnmount() {
     clearInterval(this.timer);
@@ -105,14 +109,14 @@ class newUserScreen extends Component {
             "seed": self.state.seed,
             "sic": self.state.sic,
             "did":"",
-            //"picture": self.state.base64ProfilePic,
+            "picture": self.state.base64ProfilePic,
         }
-        
         await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
           console.log(response);
                 console.log(response.status);
                 if (response.status === 200) {
                   alert("new Citizen added sucessfully !")
+                  console.log(JSON.stringify(citizen_payload))
                   if(self.state.onboardChecked===true){
                     self.props.history.push({
                         pathname: '/onboarding',
