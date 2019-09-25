@@ -4,7 +4,6 @@ Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
 hitting logout
 */
-import './../CSS/App.css';
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
@@ -23,7 +22,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-
+import Paper from '@material-ui/core/Paper'
 import OnboardIcon from "@material-ui/icons/Work"
 import DeleteIcon from "@material-ui/icons/Delete"
 import EditIcon from '@material-ui/icons/Edit'
@@ -37,20 +36,41 @@ function SchemaTable(props) {
   <div className="grid">
     <Grid item xs={12}  style={{margin:"auto"}}>
         <Container maxWidth='false' className="tableContainer">
-        <Box position="relative" >
-          <Typography  variant="h5">
+        <Grid container   
+      direction="row"
+      justify='space-evenly'
+      spacing={4}
+      xs={12} style={{margin:"auto"}}>
+        <Grid item container spacing={0} xs={12}>
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+            <Typography variant="h5">
               Schemas
-          </Typography>
-          <Box position="absolute" top={0} right={0}>
-            <Button component={Link}             to={{
+            </Typography> 
+            </Grid>
+            <Grid item xs={1} position='relative'>
+              <Box position='absolute' right={16}>
+            <Button
+              component={Link} 
+              to={{
               pathname: "newSchema",
               state: {selected: props.this.state.selected, tabNr:props.this.props.tabNr},
               }}>
               <AddIcon style={{color:'white'}} fontSize="large" /> 
             </Button>
-          </Box>
-        </Box>
-          {props.this.state.schemas}
+            </Box>
+        </Grid> 
+        </Grid>
+      <Grid item xs={12} />
+      <Grid item container xs={12}
+        justify='center'
+        component={Paper}
+        spacing={8}
+        >
+                    {props.this.state.schemas}
+          </Grid>
+        <Grid item xs={12} />
+          </Grid>
         </Container>
     </Grid>
   </div>

@@ -21,7 +21,7 @@ import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import {makeStyles} from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
 import Footer from "./../components/footer"
 // var request = require('superagent');
@@ -36,12 +36,26 @@ function CredentialDefTable(props) {
   <div className="grid">
     <Grid item xs={12} >
         <Container  maxWidth='false' className="tableContainer" >
-        <Box position="relative" >
-          <Typography  variant="h5">
-            Credential Defintions 
-          </Typography>
-        </Box>
-          {props.this.state.credDefs}
+        <Grid container   
+      direction="row"
+      justify='space-evenly'
+      spacing={4}
+      xs={12} style={{margin:"auto"}}>
+        <Grid item xs={12}>
+            <Typography variant="h5">
+              Credential Definitions
+            </Typography> 
+        </Grid>
+      <Grid item xs={12} />
+      <Grid item container xs={12}
+        justify='center'
+        component={Paper}
+        spacing={8}
+        >
+                     {props.this.state.credDefs}
+          </Grid>
+          <Grid item xs={12} />
+          </Grid>
         </Container>
     </Grid>
   </div>

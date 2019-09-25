@@ -9,7 +9,7 @@ Module:Material-UI
 Material-UI is used for designing ui of the app
 */
 
-import './../CSS/App.css';
+
 
 import {withRouter, Link} from "react-router-dom";
 import TextField from 'material-ui/TextField';
@@ -24,8 +24,6 @@ import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -37,23 +35,6 @@ import Footer from "./../components/footer"
 import Divider from '@material-ui/core/Divider'
 
 const apiBaseUrl = Constants.apiBaseUrl;
-
-
-const useStyles = makeStyles(() => ({
-  headline: {
-    border: 0,
-    fontSize: 24,
-    borderRadius: 3,
-    textAlign: 'center'
-  },
-  attributeList: {
-    color:'#FFFFFF' , 
-    textAlign:'center', 
-    marginTop: '30px',
-    marginBottom: '30px',
-  },
-}));
-
 
 
 class addASchemaScreen extends Component {
@@ -157,14 +138,15 @@ console.log(schema)
                               </Link>
                             </Box>
                             <Typography variant="h5">
-                                create new credential definiton
+                                Create new credential definiton
                             </Typography>      
                             </Box>
                          </Grid>
+                         <Grid item xs={12} />
     <Grid item container xs={10}
           justify='center'
           component={Paper}
-          spacing={4}
+          spacing={8}
           >
         
           <Grid item container xs={12} justify='center'   >
@@ -225,7 +207,7 @@ console.log(schema)
           </Grid>
 
           </Grid>
-
+          <Grid item xs={12} />
     <Grid item container 
           justify='center'
           xs={12}>

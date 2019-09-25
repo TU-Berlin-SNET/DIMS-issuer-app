@@ -93,13 +93,14 @@ TablePaginationActions.propTypes = {
 const useStyles2 = makeStyles(theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing(3),
+
   },
   table: {
   
   },
   tableWrapper: {
     overflowX: 'auto',
+    width: '100%'
   },
 }));
 
@@ -151,8 +152,7 @@ export default function CustomPaginationActionsTable(props) {
       setRowsPerPage(parseInt(event.target.value, 10));
     }
     if(props.data.length===0){
-      return(
-        <Paper className={classes.root}>  
+      return( 
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
@@ -185,12 +185,10 @@ export default function CustomPaginationActionsTable(props) {
             </TableFooter>
           </Table>
         </div>
-      </Paper>
       )
     }
     else {
       return (
-      <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableHead>
@@ -288,7 +286,6 @@ export default function CustomPaginationActionsTable(props) {
             </TableFooter>
           </Table>
         </div>
-      </Paper>
     );
     }
   }

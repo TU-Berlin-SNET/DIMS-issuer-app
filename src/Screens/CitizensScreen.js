@@ -27,7 +27,7 @@ import OnboardIcon from "@material-ui/icons/Work";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@material-ui/icons/Edit';
 import CredentialIcon from '@material-ui/icons/Assignment';
-import AddIcon from '@material-ui/icons/Add';
+import Paper from '@material-ui/core/Paper';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
 import SearchIcon from '@material-ui/icons/Message';
@@ -48,19 +48,29 @@ function CitizensTable(props) {
   <div className="grid">
     <Grid item xs={12}  style={{margin:"auto"}}>
         <Container maxWidth='false' className="tableContainer">
-        <Box position="relative" >
-          <Typography  variant="h5">
+        <Grid container   
+      direction="row"
+      justify='space-evenly'
+      spacing={4}
+      xs={12} style={{margin:"auto"}}>
+        <Grid item xs={12}>
+          <Box position='relative'>
+            <Typography variant="h5">
               Citizens
-          </Typography>
-          <Box position="absolute" top={0} right={0}>
-            <Button  onClick={(event)=> props.this.newCitizen()}>
-              <AddIcon style={{color:'white'}} fontSize="large" />
-            </Button>
-          </Box>
-        </Box>
-          <Box >
-          {props.this.state.citizensTable}
-          </Box>
+            </Typography> 
+            </Box>   
+        </Grid>
+      <Grid item xs={12} />
+      <Grid item container xs={12}
+        justify='center'
+        component={Paper}
+        spacing={8}
+        >
+                    {props.this.state.citizensTable}
+          </Grid>
+          <Grid item xs={12} />
+          </Grid>
+     
         </Container>
     </Grid>
     <Footer />
