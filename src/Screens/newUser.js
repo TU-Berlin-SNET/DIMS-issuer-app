@@ -63,7 +63,10 @@ class newUserScreen extends Component {
       sic: userdata.sic,
       did: "",
       profilePictureSrc: null,
-      base64ProfilePic: ""
+      base64ProfilePic: "",
+      snackbarOpen: false,
+      snackbarMessage: "",
+      snackbarVariant: "sent",
     }
   }
 
@@ -112,10 +115,7 @@ class newUserScreen extends Component {
             "picture": self.state.base64ProfilePic,
         }
         await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
-          console.log(response);
-                console.log(response.status);
                 if (response.status === 200) {
-                  alert("new Citizen added sucessfully !")
                   console.log(JSON.stringify(citizen_payload))
                   if(self.state.onboardChecked===true){
                     self.props.history.push({
@@ -130,13 +130,14 @@ class newUserScreen extends Component {
                 else{
                     self.props.history.push({
                         pathname: '/citizens',
-                })
-
+                        state: {
+                            newCitizen: true,
+                        }
+                    })
                 }
-                }
+         
+            }
         }).catch(function (error) {
-          //alert(JSON.stringify(schema_payload))
-          //alert(error);
           console.log(error);
       });
     
@@ -380,7 +381,6 @@ readUploadedFileAsDataURL(inputFile){
                 </Box>
         </Grid>
         </div> 
-        <Footer />
      </div>
     </MuiThemeProvider>
           

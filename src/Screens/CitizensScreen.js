@@ -7,7 +7,8 @@ hitting logout
 import './../CSS/App.css';
 
 /*
-Module:Material-UI
+Module:Material-UIimport Snackbar from './../components/customizedSnackbar'
+
 Material-UI is used for designing ui of the app
 */
 
@@ -34,6 +35,8 @@ import SearchIcon from '@material-ui/icons/Message';
 import Avatar from '@material-ui/core/Avatar';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
+import Snackbar from './../components/customizedSnackbar'
+
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -95,6 +98,22 @@ class CitizenScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
+    if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
+    this.state={
+      citizensData:[],
+      citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+      selected: '',
+      credReq: null,
+      checkIfNewCitizen:  props.location.state.hasOwnProperty("newCitizen") ?  props.location.state.newCitizen  : false, 
+      justOnboarded: props.location.state.hasOwnProperty("justOnboarded") ? props.location.state.justOnboarded : false,
+      justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
+      justIssuedCredentials: props.location.state.hasOwnProperty("justIssuedCredentials") ? props.location.state.justIssuedCredentials : false,
+      snackbarOpen: false,
+      snackbarMessage: "",
+      snackbarVariant: "sent",
+    }
+  }
+  else{
     this.state={
       citizensData:[],
       citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
@@ -103,14 +122,31 @@ class CitizenScreen extends Component {
       verifierDB : 'Tschüss',
       selected: '',
       credReq: null,
+      CheckIfNewCitizen: false,
     }
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
+  }
+
+  componentDidMount(){
+    this.listCitizens();
+    if(this.state.checkIfNewCitizen === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new citizen successfully"});
+      this.forceUpdate()
+    }
+    if(this.state.justOnboarded === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to citizen established"});
+      this.forceUpdate()
+    }
+    if(this.state.justSentCredentialOffer === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credential offer sent"});
+      this.forceUpdate()
+    }
+    if(this.state.justIssuedCredentials === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credentials sent"});
+      this.forceUpdate()
+    }
+    document.title = "DIMS"
+  }
 
  async  listCitizens(){
    let self = this
@@ -174,7 +210,6 @@ class CitizenScreen extends Component {
       self.setState({citizensTable: citizens})
     }
   }).catch(function (error) {
-    //alert(error);
     console.log(error);
   });
 }
@@ -189,12 +224,11 @@ async removeCitizen(selected) {
 
   await axios.delete(mongoDBBaseUrl + "citizens/" + selected.id, {headers}).then(function (response) {
           if (response.status === 204) {
-            alert("new Citizen sucessfully removed!")
+            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed citizen successfully"});
+            self.forceUpdate()
             self.listCitizens()
           }
   }).catch(function (error) {
-    //alert(JSON.stringify(schema_payload))
-    //alert(error);
     console.log(error);
 });
 
@@ -234,40 +268,6 @@ editCitizen(selected){
   })
 }
 
-async getLastCredentialRequest(senderDid){
-  var self = this;
-  var headers = {
-   'Content-Type': 'application/json',
-   'Authorization': localStorage.getItem("token") 
-  }
-  let credentialRequests = []
-  await axios.get(apiBaseUrl + 'credentialrequest/' , {headers: headers}).then(function (response) {
-     console.log(response);
-     console.log(self.state.theirDid)
-     console.log(response.status);
-     if (response.status === 200) {
-       
-    /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
-         //const {credentialValues} = self.state;
-         credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
-       }) */
-      let allCredReq = response.data
-      credentialRequests = allCredReq.filter(credReq => senderDid === self.state.theirDid)
-     }
-   }).catch(function (error) {
-   //alert(error);
-   console.log(error);
- })
- let lastCredentialRequest = null
- if(credentialRequests.length > 0){
-   credentialRequests.sort(function(a,b){
-   return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-  lastCredentialRequest = credentialRequests[0]
-}
- return(lastCredentialRequest)
-}
-
 onboardCitizen(selected){
   this.props.history.push({
     pathname: '/onboarding',
@@ -285,25 +285,9 @@ sendCredentialOffer(selected){
   })
 }
 
-async sendCredential(selected){
-  this.props.history.push({
-    pathname: '/sendCredentials',
-    state: 
-    { myDid: selected.did,
-      credReq: await this.getLastCredentialRequest(selected.did)
-    }
-  })
-}
-
-
-
 handleEdit(event, selected){ //Fuction 
   this.setState({ selected: selected}); 
 } 
- componentDidMount(){
-  this.listCitizens();
-  document.title = "issuer app";
-}
 
  handleTabChange(newTab){
   this.props.onTabChange(newTab)
@@ -333,19 +317,13 @@ changeActiveDB(event){
   }
 }
 
-
-
 newCitizen(){
   this.props.history.push({
     pathname: '/newCitizen',
-    state: {            
-     
+    state: {                
     }
   })
 }
-
-
-
 
   render() {
     return (
@@ -353,6 +331,11 @@ newCitizen(){
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <CitizensTable this={this} />
+          <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
         </div>
       </MuiThemeProvider>
     );

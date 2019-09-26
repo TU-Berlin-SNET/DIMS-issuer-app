@@ -11,7 +11,6 @@ Material-UI is used for designing ui of the app
 import './../CSS/App.css';
 import Button from '@material-ui/core/Button';
 import {withRouter, Link} from "react-router-dom";
-import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Select from '@material-ui/core/Select';
@@ -30,6 +29,7 @@ import Footer from "./../components/footer"
 import Chip from '@material-ui/core/Chip';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
 import Checkbox from '@material-ui/core/Checkbox';
+import Snackbar from './../components/customizedSnackbar';
 
 
 
@@ -54,14 +54,16 @@ class CredentialOfferScreen extends Component {
             label: ""},
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
           credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: [],
-          credentialRequestId: props.location.state.hasOwnProperty("credentialRequestId") ? props.location.state.credentialRequestId : "",
-          credentialRequests: [],
           credentialDefinitions: [],
-          pairwiseConnectionsOptions: [],
           myDid: props.location.state.myDid,
           sendCredentialCheck: true,
           citizen_id: props.location.state.citizen_id,
           citizen: null,
+          snackbarOpen: false,
+          snackbarMessage: "",
+          snackbarVariant: "sent",
+          justOnboarded: props.location.state.hasOwnProperty("justOnboarded") ? props.location.state.justOnboarded : false,
+
         }
       } else {
         this.state={
@@ -69,13 +71,15 @@ class CredentialOfferScreen extends Component {
           credDef: {attributes: [],
                     value: "",
                     label: ""},
-          credentialRequestId: "",
-          credentialRequests:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
           credentialDefinitions: [],
           selected: "",
           myDid: props.location.state.myDid,
           sendCredentialCheck: true,
           citizen: null,
+          snackbarOpen: false,
+          snackbarMessage: "",
+          snackbarVariant: "sent",
+          justOnboarded: false,
         }
       }
     }
@@ -119,20 +123,25 @@ async sendCredentialOffer(){
 }
  await axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
-    alert("Credential offer successfully sent")
     if(self.state.sendCredentialCheck === true){
       self.getCitizen(self.state.citizen_id).then((citizen) =>
       {
         self.props.history.push({
           pathname: '/citizen',
-          state: { citizen: citizen}
+          state: { citizen: citizen,
+                   justSentCredentialOffer: true,
+                }
         })
-    })
-  }
+      })
+    }
+    else{
+      self.props.history.push({
+        pathname: '/citizens',
+        state: { justSentCredentialOffer: true}
+      })
+    }
   }
 }).catch(function (error) {
-//alert(error);
-//alert(JSON.stringify(payload))
 console.log(error);
 });
 
@@ -167,6 +176,10 @@ componentDidMount(){
   document.title = "issuer app"
   this.listCredDefs()
   this.getTheirDid()
+  if(this.state.justOnboarded === true){
+    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to citizen established"});
+    this.forceUpdate()
+  }
   this.timer = setInterval(() => {
     this.listCredDefs()}, 5000
     );
@@ -328,6 +341,11 @@ render() {
       </Container>
     </div>
   <Footer />
+  <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
   </div>
 </MuiThemeProvider>
   )

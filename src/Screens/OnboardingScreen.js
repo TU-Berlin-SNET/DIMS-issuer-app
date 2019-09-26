@@ -79,16 +79,20 @@ class OnboardingScreen extends Component {
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-          alert('onboarded new Citizen succsessfully')
             self.setState({citizen_did: response.data.theirDid})
             self.addDidToCitizenInformation()
             if(self.state.sendCredentialOfferCheck === false){
             self.props.history.push({
               pathname: '/citizens',
+              state : {
+                justOnboarded: true,
+              }
             })} else {
               this.props.history.push({
                 pathname: '/sendCredOffer',
-                state: { myDid: self.state.myDid, citizen_id: self.state.citizen_id }
+                state: { myDid: self.state.myDid, 
+                         citizen_id: self.state.citizen_id,
+                         justOnboarded: true}
               })
           }
           //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)

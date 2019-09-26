@@ -108,13 +108,14 @@ async acceptCredentialRequestAndSendCred(){
     console.log(response);
     console.log(response.status);
     if (response.status === 201) {
-      alert("credential succesfully issued")
       self.props.history.push({
         pathname: '/citizens',
+        state:{
+          justIssuedCredentials : true,
+        }
         })
     }
   }).catch(function (error) {
-      alert(error);
       console.log(error);
   });
 }

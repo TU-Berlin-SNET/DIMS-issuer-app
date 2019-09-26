@@ -39,6 +39,8 @@ import MoreAttributes from './../components/moreAttributesDialog'
 import {Table, TableBody, TableRow, TableCell, TableHead } from '@material-ui/core';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import Avatar from '@material-ui/core/Avatar';
+import Snackbar from './../components/customizedSnackbar'
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -116,6 +118,7 @@ class addASchemaScreen extends Component {
     super(props);
     Utils.checkLogin(this)
 console.log(props.location.state.citizen)
+if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
     this.state={ 
         citizen: props.location.state.citizen,
         myDid: props.location.state.citizen.did,
@@ -126,6 +129,22 @@ console.log(props.location.state.citizen)
         issuedCredentials:[],
         theirDid: '',
         connection: '',
+        justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
+    }
+    }
+    else{
+      this.state={ 
+        citizen: props.location.state.citizen,
+        myDid: props.location.state.citizen.did,
+        ownDid: '',
+        connectionState: 'notConnected',
+        credentialOffers: '',
+        credentialRequests: [],
+        issuedCredentials:[],
+        theirDid: '',
+        connection: '',
+        justSentCredentialOffer: false,
+    }
     }
   }
 
@@ -137,6 +156,10 @@ console.log(props.location.state.citizen)
       this.getCredentialRequests()
       this.getConnectionDetails()
       this.getIssuedCredentials()
+      if(this.state.justSentCredentialOffer === true){
+        this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credential offer sent"});
+        this.forceUpdate()
+      }
       this.timer = setInterval(() => {
         this.getCredentialRequests()
         this.getIssuedCredentials()
@@ -345,10 +368,10 @@ console.log(props.location.state.citizen)
             </Box>   
         </Grid>
         <Grid item xs={12} />
-    <Grid item container xs={12}
-          justify='center'
-          component={Paper}
-          spacing={8}
+      <Grid item container xs={12}
+            justify='center'
+            component={Paper}
+            spacing={8}
           >
           {pictureAvatar}
          <Grid item xs={12}>
@@ -356,6 +379,7 @@ console.log(props.location.state.citizen)
                Attributes 
             </Typography>    
          </Grid>
+         <Grid item container xs={8}>
           <Grid item container xs={4} justify='center'   >
                 <Grid  item xs={6} >
                     <Typography align='left'> personal identifier:  {this.state.citizen.id}</Typography>
@@ -387,7 +411,7 @@ console.log(props.location.state.citizen)
                     <Typography align='left'> sic:  {this.state.citizen.sic}</Typography>
               </Grid>
           </Grid>
-
+          </Grid>
           <Grid item container xs={12} justify='center'>
             <Grid item xs={12}>
               <Typography variant="h6">
@@ -425,8 +449,13 @@ console.log(props.location.state.citizen)
 
   </div>
   <Footer />
-        </div>
-      </MuiThemeProvider> 
+  <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
+    </div>
+  </MuiThemeProvider> 
     );
   }
 }
