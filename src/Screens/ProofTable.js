@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -118,7 +118,9 @@ function ProofDialog(props) {
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [proofState, setProofState] = React.useState("pending")
   const [verificationMessage, setVerificationMessage] = React.useState("The proof is pending")
- 
+  const [proofVis, setProofVis] = React.useState(null)
+  const [proof, setProof] = React.useState(props.selectedValue)
+  
    function handleSnackbarOpen() {
      setSnackbarOpen(true);
    }
@@ -131,6 +133,9 @@ function ProofDialog(props) {
    }  
 
   function handleClose() {
+    setProofVis(null)
+    setProof(null)
+    setProofState("pending")
     onClose(selectedValue);
   }
 
@@ -177,70 +182,190 @@ async function verifyProof(proofId){
   function handleListItemClick(value) {
     onClose(value);
   }
-  
-  let proof = selectedValue
-  let proofVis = null
 
-  if(proof === undefined){
-    proofVis = "no proof selected"
-  } if(proof === null){
-    proofVis = "no proof selected"
-  } else if(proof.status === "received"){
-    
-    proofVis = <List>
-         <ListItem>
-         <CircularVerification proofId={proof.id}/>
-          </ListItem>
-          <ListItem>
-          Sender DID: {proof.did}
-          </ListItem>
-          <ListItem>
-          Status: {proof.status}
-          </ListItem>
-          <ListItem>
-          Credetial definition: {proof.cred_def_id}
-          </ListItem>
-          <ListItem>
-          Schema: {proof.schema_id}
-          </ListItem>
-          <ListItem>
-          Wallet: {proof.wallet}
-          </ListItem>
-          <ListItem>
-          Created at: {proof.createdAt}
-          </ListItem>
-          <ListItem>
-          Proof ID: {proof.id}
-          </ListItem>
-          <ListItem>
-            <List>
-            {proof.attrs.map((attr) => {return(
-              <ListItem>
-              {attr[0].replace("_referent","").replace(/_/g, " ") + ": " + attr[1]}
-              </ListItem>
-            )})}
-            </List>
-          </ListItem>
-        </List>
-    } else {
-      proofVis = <List>
-          <ListItem>
-          Sender DID: {proof.did}
-          </ListItem>
-          <ListItem>
-          Status: {proof.status}
-          </ListItem>
-          <ListItem>
-          Created at: {proof.createdAt}
-          </ListItem>
-          <ListItem>
-          Proof ID: {proof.id}
-          </ListItem>
-          <ListItem>
-          <CircularVerification proofId={proof.id}/>
-          </ListItem>
-        </List>
-    }
+  useEffect(() => {
+    //For avoiding setting the proof once the value is set
+      setProof(selectedValue)
+    if(proof === undefined){
+      setProofVis("no proof selected")
+    } if(proof === null){
+      setProofVis("no proof selected")
+    } else if(proof.status === "received"){
+      if(proof.hasOwnProperty("attrs")){
+      setProofVis(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Credential definition: {proof.cred_def_id}
+            </ListItem>
+            <ListItem>
+            Schema: {proof.schema_id}
+            </ListItem>
+            <ListItem>
+            Wallet: {proof.wallet}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+              <List>
+              {proof.attrs.map((attr) => {return(
+                <ListItem>
+                {attr[0].replace("_referent","").replace(/_/g, " ") + ": " + attr[1]}
+                </ListItem>
+              )})}
+              </List>
+            </ListItem>
+            <ListItem>
+           <CircularVerification proofId={proof.id}/>
+            </ListItem>
+          </List>)
+          } else {
+            setProofVis(<List>
+               <ListItem>
+               Sender DID: {proof.did}
+               </ListItem>
+               <ListItem>
+               Status: {proof.status}
+               </ListItem>
+               <ListItem>
+               Credential definition: {proof.proof.identifiers[0].cred_def_id}
+               </ListItem>
+               <ListItem>
+               Schema: {proof.proof.identifiers[0].schema_id}
+               </ListItem>
+               <ListItem>
+               Wallet: {proof.wallet}
+               </ListItem>
+               <ListItem>
+               Created at: {proof.createdAt}
+               </ListItem>
+               <ListItem>
+               Proof ID: {proof.id}
+               </ListItem>
+               <ListItem>
+                 <List>
+                 {Object.keys(proof.proof.requested_proof.revealed_attrs).map((key) => {
+                   let attr = proof.proof.requested_proof.revealed_attrs[key]
+                   return(
+                   <ListItem>
+                   {key.replace("_referent","").replace(/_/g, " ") + ": " + attr["raw"]}
+                   </ListItem>
+                 )})}
+                 </List>
+               </ListItem>
+               <ListItem>
+                  <CircularVerification proofId={proof.id}/>
+               </ListItem>
+             </List>)
+          }
+      } else {
+        setProofVis(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+            <CircularVerification proofId={proof.id}/>
+            </ListItem>
+          </List>)
+      }
+      /*const timeout = setTimeout(() => {
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem("token") 
+         }
+         if(proof !== undefined && proof !== null){
+         axios.get(apiBaseUrl + 'proof/' + proof.id , {headers: headers}).then(function (response) {
+            console.log(response);
+            console.log(response.status);
+            if (response.status === 200) {
+              let proof = response.data
+               setProof(proof)
+               if(proof === undefined){
+                setProofVis("no proof selected")
+              } if(proof === null){
+                setProofVis("no proof selected")
+              } else if(proof.status === "received"){
+                setProofVis(<List>
+                   <ListItem>
+                   Sender DID: {proof.did}
+                   </ListItem>
+                   <ListItem>
+                   Status: {proof.status}
+                   </ListItem>
+                   <ListItem>
+                   Credential definition: {proof.proof.identifiers[0].cred_def_id}
+                   </ListItem>
+                   <ListItem>
+                   Schema: {proof.proof.identifiers[0].schema_id}
+                   </ListItem>
+                   <ListItem>
+                   Wallet: {proof.wallet}
+                   </ListItem>
+                   <ListItem>
+                   Created at: {proof.createdAt}
+                   </ListItem>
+                   <ListItem>
+                   Proof ID: {proof.id}
+                   </ListItem>
+                   <ListItem>
+                     <List>
+                     {Object.keys(proof.proof.requested_proof.revealed_attrs).map((key) => {
+                       let attr = proof.proof.requested_proof.revealed_attrs[key]
+                       return(
+                       <ListItem>
+                       {key.replace("_referent","").replace(/_/g, " ") + ": " + attr["raw"]}
+                       </ListItem>
+                     )})}
+                     </List>
+                   </ListItem>
+                   <ListItem>
+                  <CircularVerification proofId={proof.id}/>
+                   </ListItem>
+                 </List>)
+                } else {
+                  setProofVis(<List>
+                      <ListItem>
+                      Sender DID: {proof.did}
+                      </ListItem>
+                      <ListItem>
+                      Status: {proof.status}
+                      </ListItem>
+                      <ListItem>
+                      Created at: {proof.createdAt}
+                      </ListItem>
+                      <ListItem>
+                      Proof ID: {proof.id}
+                      </ListItem>
+                      <ListItem>
+                      <CircularVerification proofId={proof.id}/>
+                      </ListItem>
+                    </List>)
+                }
+            }
+          }).catch(function (error) {
+           console.log(error);
+        })
+      }
+      }, 5000 );
+      return () => clearTimeout(timeout);*/
+  },[proof,selectedValue,props.selectedValue]);
 
   return (
     <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>

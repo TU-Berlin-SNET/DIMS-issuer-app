@@ -296,7 +296,7 @@ render() {
                       <Divider /> 
                    
                   </Grid>
-                    <Grid container spacing={4} justify='space-evenly' item xs={12}>
+                    <Grid container spacing={4} justify='space-evenly' item xs={4}>
                       
                     {this.state.credDef.attributes.map((attr, index) => {
                         return( this.currentAttribute(attr, index) )
