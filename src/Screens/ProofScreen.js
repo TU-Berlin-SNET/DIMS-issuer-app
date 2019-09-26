@@ -45,12 +45,18 @@ class ProofScreen extends Component {
     constructor(props){
         super(props);
         Utils.redirectToLogin(this)
+        /*
         let proofOfIncome = [
           ["Bank"], ["Last name"], ["First name"], ["Date of birth"] ,
           ["Month 1"], ["Income month 1"],["Balance month 1"],
           ["Month 2"], ["Income month 2"],["Balance month 2"],
           ["Month 3"], ["Income month 3"],["Balance month 3"]
-        ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income"])
+        ]
+        */
+        let proofOfIncome = [
+          ["bank"], ["last_name"], ["first_name"], ["date_of_birth"] ,
+          ["month"], ["income"],["balance"]
+        ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"4zQUw7VESVNQifgqjES2Ef:3:CL:139:Proof_of_Income"])
         let IDCard = [["Issuing municipality"], ["Last name"], 
         ["Given name"], ["Place of birth"], ["Date of birth"] ,["Sex"]
         ,["Number of birth registration"],["Height"],["Municipality of residence"],
@@ -60,7 +66,7 @@ class ProofScreen extends Component {
         this.state={
           recipientDid: props.location.state.hasOwnProperty("recipientDid") ? props.location.state.recipientDid : "",
           recipientUsername: "",
-          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+          credDefId: props.location.state.hasOwnProperty("credDefId")  ? props.location.state.credDefId: "4zQUw7VESVNQifgqjES2Ef:3:CL:139:Proof_of_Income",
           credentialValues: {},
           credentialRequests: [],
           credentialDefinitions: [],
@@ -70,7 +76,7 @@ class ProofScreen extends Component {
           proofs: [],
           pairwiseConnectionsOptions: [],
           credDef: {attributes: [],
-          value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+          value: "4zQUw7VESVNQifgqjES2Ef:3:CL:139:Proof_of_Income",
           label: ""},
           snackbarOpen: false,
           snackbarMessage: "",
@@ -80,7 +86,7 @@ class ProofScreen extends Component {
         this.state={
           recipientDid: "",
           recipientUsername: "",
-          credDefId: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+          credDefId: "4zQUw7VESVNQifgqjES2Ef:3:CL:139:Proof_of_Income",
           proofId: "",
           credentialDefinitions: [],
           requested_attributes: requestedAttrs,
@@ -89,7 +95,7 @@ class ProofScreen extends Component {
           proofs: [],
           pairwiseConnectionsOptions: [],
           credDef: {attributes: [],
-          value: "Tv17sXzVYtbjgs7cmKh3WW:3:CL:106:Proof_of_Income",
+          value: "4zQUw7VESVNQifgqjES2Ef:3:CL:139:Proof_of_Income",
           label: ""},
           snackbarOpen: false,
           snackbarMessage: "",
@@ -360,17 +366,6 @@ currentAttribute(attr, index){
 </Grid> )
 }
 
-/* POST 
-{
-	"credentialRequestId": "5c7071b8db4eb00010a3779d",
-	"values": {
-		"given_name@string": "Jesse Digital",
-        "address@string": "Digitalstreet 0101",
-        "birth_date@date": "1998-01-19"
-	}
-}
-*/
-
 render() {
   return(
     <div className="App">
@@ -452,13 +447,13 @@ render() {
           </Grid>
         </Grid>
 
-        <Grid item container xs={12} justify='center'>
+        <Grid item container xs={12} justify='center' >
           <Grid item xs={12}>
             <Typography variant="h6">
               Attributes
             </Typography>   
           </Grid> 
-          <Grid container spacing={4} justify='space-evenly' item xs={12}>
+          <Grid container wrap spacing={2} justify='center' alignContent="center" alignItems="center" item xs={4}>
 
           {this.state.requested_attributes.map((attr, index) => {
                        return( this.currentAttribute(attr, index) )
