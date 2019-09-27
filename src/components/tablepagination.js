@@ -110,7 +110,7 @@ var rowsDefault=['-','-','no..','-','-','-']
 
 export default function CustomPaginationActionsTable(props) {
 
-  //if(props.data.length !== rows.length){
+  //if(props.data.length !== rows.length){More
       rows = props.data
   //}
 
@@ -199,7 +199,7 @@ export default function CustomPaginationActionsTable(props) {
                   )
                 }
               )}
-              <TableCell align='center'> all attributes</TableCell>
+              <TableCell align='center'> JSON</TableCell>
               <TableCell align='center'> actions</TableCell>
               </TableRow>
             </TableHead>

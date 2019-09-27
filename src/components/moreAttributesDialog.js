@@ -6,21 +6,25 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import Box from '@material-ui/core/Box';
 import ReactJson from 'react-json-view'
 
 
-const useStyles = makeStyles(theme => ({
-  subList: {
-    marginLeft: '50px',
-    paddingLeft: '50px',
-  },
-}));
-
 export default function AlertDialog(props) {
   const [open, setOpen] = React.useState(false);
   let row =props;
+  let raw = row.row
+  let keys = Object.keys(raw).filter(key => key !== 'picture');
+
+
+  var obj = {}
+  for(let attr in raw){
+    if(attr !== 'picture' && attr !== 'photo'){
+      obj[attr] = raw[attr]
+    }
+  }
+
+  console.log(obj)
   function handleClickOpen() {
     setOpen(true);
   }
@@ -36,6 +40,7 @@ export default function AlertDialog(props) {
     <Box>
       <IconButton color='primary'  size='small' onClick={handleClickOpen}>
         {props.iconText} {props.icon}
+
       </IconButton>
       <Dialog
         open={open}
@@ -45,7 +50,7 @@ export default function AlertDialog(props) {
       >
         <DialogTitle id="alert-dialog-title">{"Attributes"}</DialogTitle>
         <DialogContent>
-        <ReactJson src={row.row} />
+        <ReactJson src={obj} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
