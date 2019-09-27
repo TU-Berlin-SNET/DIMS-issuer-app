@@ -19,10 +19,7 @@ import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
@@ -70,10 +67,14 @@ console.log(schema)
       console.log(response);
             console.log(response.status);
             if (response.status === 201) {
-              alert("credential definition sucessfully created!")
+              self.props.history.push({
+                pathname: '/credentialdef',
+                state: {
+                    newCredDef: true,
+                }
+            })
             }
     }).catch(function (error) {
-      alert(error);
       console.log(error);
   });
   }

@@ -18,45 +18,44 @@ import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
 import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
-import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
 import Footer from "./../components/footer"
-// var request = require('superagent');
-const apiBaseUrl = Constants.apiBaseUrl;
+import Snackbar from "./../components/customizedSnackbar"
 
-//var apiBaseUrl = ""REPLACE"";
-//var apiBaseUrl = ""REPLACE"";
+const apiBaseUrl = Constants.apiBaseUrl;
 
 
 function CredentialDefTable(props) {
   return(
   <div className="grid">
     <Grid item xs={12} >
-        <Container  maxWidth='false' className="tableContainer" >
+      <Container  maxWidth='false' className="tableContainer" >
         <Grid container   
-      direction="row"
-      justify='space-evenly'
-      spacing={4}
-      xs={12} style={{margin:"auto"}}>
-        <Grid item xs={12}>
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} 
+              style={{margin:"auto"}}
+        >
+          <Grid item xs={12}>
             <Typography variant="h5">
               Credential Definitions
             </Typography> 
-        </Grid>
-      <Grid item xs={12} />
-      <Grid item container xs={12}
-        justify='center'
-        component={Paper}
-        spacing={8}
-        >
-                     {props.this.state.credDefs}
           </Grid>
           <Grid item xs={12} />
+          <Grid item container xs={12}
+                justify='center'
+                component={Paper}
+                spacing={8}
+          >
+            {props.this.state.credDefs}
           </Grid>
-        </Container>
+          <Grid item xs={12} />
+        </Grid>
+      </Container>
     </Grid>
   </div>
   );
@@ -73,12 +72,31 @@ class CredentialDefScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
-    this.state={
-      credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} />,
-      schemaId: "Click on the schema to select ID",
-      tag: "Add your tag",
-      supportRevocation: false,
-      selected: "",
+    if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
+      this.state={
+        credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} />,
+        schemaId: "Click on the schema to select ID",
+        tag: "Add your tag",
+        supportRevocation: false,
+        selected: "",
+        snackbarOpen: false,
+        snackbarMessage: "",
+        snackbarVariant: "sent",
+        checkIfNewCredDef:  props.location.state.hasOwnProperty("newCredDef") ?  props.location.state.newCredDef  : false, 
+      }
+    }
+    else{
+      this.state={
+        credDefs: <CUSTOMPAGINATIONACTIONSTABLE data={[]} />,
+        schemaId: "Click on the schema to select ID",
+        tag: "Add your tag",
+        supportRevocation: false,
+        selected: "",
+        snackbarOpen: false,
+        snackbarMessage: "",
+        snackbarVariant: "sent",
+        checkIfNewCredDef:  false, 
+      }
     }
   }
   
@@ -106,7 +124,6 @@ class CredentialDefScreen extends Component {
         self.setState({credDefs: credDefs})
       }
     }).catch(function (error) {
-      //alert(error);
       console.log(error);
     });
   }
@@ -115,24 +132,19 @@ class CredentialDefScreen extends Component {
     this.setState({ selected: selected}); 
  } 
 
-  componentWillMount(){
-
-  }
-
   componentDidMount(){
-    document.title = "issuer app"
+    document.title = "DIMS"
     this.listCredDefs()
+    if(this.state.checkIfNewCredDef === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "new credential definition created"});
+      this.forceUpdate()
+    }
   }
 
   handleClickNewCredDef(event){
     this.createCredentialDef(event)
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
+
 
  handleTabChange(newTab){
   this.props.onTabChange(newTab)
@@ -144,22 +156,14 @@ class CredentialDefScreen extends Component {
 
       <MuiThemeProvider>
         <div className="App">
-        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <CredentialDefTable this={this}/>
-           {/* 
-            <TextField
-                hintText="Enter the schema id or click on the schema to select it"
-                floatingLabelText="Schema id"
-                value={this.state.schemaId}
-                onChange={(event, newValue) => this.setState({ schemaId: newValue })}
-            />
-            <br />
-
-
-            <RaisedButton label="Submit" primary={true} style={style}  />
-
-            */}
-                   <Footer />  
+          <Footer />  
+          <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
         </div>
 
 

@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-/*
-Screen:LoginScreen
-Loginscreen is the main screen which the user is shown on first visit to page and after
-hitting logout
-*/
+
 import './../CSS/App.css';
 
 /*
@@ -40,14 +36,6 @@ import Snackbar from './../components/customizedSnackbar'
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
-
-
-
-/*
-Module:superagent
-superagent is used to handle post/get requests to server
-*/
-// var request = require('superagent');
 
 function CitizensTable(props) {
   return(
@@ -129,6 +117,8 @@ class CitizenScreen extends Component {
 
   componentDidMount(){
     this.listCitizens();
+    document.title = "DIMS"
+    
     if(this.state.checkIfNewCitizen === true){
       this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new citizen successfully"});
       this.forceUpdate()
@@ -145,7 +135,7 @@ class CitizenScreen extends Component {
       this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credentials sent"});
       this.forceUpdate()
     }
-    document.title = "DIMS"
+
   }
 
  async  listCitizens(){

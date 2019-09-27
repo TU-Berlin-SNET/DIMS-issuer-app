@@ -1,9 +1,5 @@
 import React, { Component} from 'react';
-/*
-Screen:LoginScreen
-Loginscreen is the main screen which the user is shown on first visit to page and after
-hitting logout
-*/
+
 /*
 Module:Material-UI
 Material-UI is used for designing ui of the app
@@ -23,11 +19,10 @@ import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper'
-import OnboardIcon from "@material-ui/icons/Work"
-import DeleteIcon from "@material-ui/icons/Delete"
-import EditIcon from '@material-ui/icons/Edit'
 import CredentialIcon from '@material-ui/icons/Assignment'
 import Button from '@material-ui/core/Button'
+import Snackbar from './../components/customizedSnackbar'
+
 const apiBaseUrl = Constants.apiBaseUrl;
 
 
@@ -78,28 +73,32 @@ function SchemaTable(props) {
 }
 
 
-//var apiBaseUrl = ""REPLACE"";
-//var apiBaseUrl = ""REPLACE"";
-
-/*
-Module:superagent
-superagent is used to handle post/get requests to server
-*/
-//var request = require('superagent');
-
-
 class SchemaScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
-
-    this.state={
-      schemas: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={["name","version", "schemaId"]}/>,
-      selected: "",
+    if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
+      this.state={
+        schemas: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={["name","version", "schemaId"]}/>,
+        selected: "",
+        checkIfNewSchema:  props.location.state.hasOwnProperty("newSchema") ?  props.location.state.newSchema  : false, 
+        snackbarOpen: false,
+        snackbarMessage: "",
+        snackbarVariant: "sent",
+      }
+    }
+    else{
+      this.state={
+        schemas: <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={["name","version", "schemaId"]}/>,
+        selected: "",
+        checkIfNewSchema: false, 
+        snackbarOpen: false,
+        snackbarMessage: "",
+        snackbarVariant: "sent",
+      }
     }
   }
 
-  
   async listSchemas(){
     var self = this;
     var headers = {
@@ -113,11 +112,6 @@ class SchemaScreen extends Component {
         showAttr={["name","version", "schemaId"]}
         rowFunctions={[
          { 
-           rowFunction: function(selected){self.editSchema(selected)},
-           rowFunctionName: 'Edit',
-           rowFunctionIcon: <EditIcon />,
-         },
-         {
           rowFunction: function(selected){self.createCredDef(selected)},
           rowFunctionName: 'create Credential Definition',
           rowFunctionIcon: <CredentialIcon />,
@@ -126,19 +120,17 @@ class SchemaScreen extends Component {
         self.setState({schemas: schemas});
       }
     }).catch(function (error) {
-      //alert(error);
       console.log(error);
     });
   }
 
   componentDidMount(){
-    document.title = "issuer app"
+    document.title = "DIMS"
     this.listSchemas()
-  }
-
-
-  editSchema(selected){
-
+    if(this.state.checkIfNewSchema === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "new schema created"});
+      this.forceUpdate()
+    }
   }
 
   createCredDef(selected){
@@ -151,7 +143,6 @@ class SchemaScreen extends Component {
               attributes: selected.attrNames
         }
     })
-
   }
 
   handleClickNewSchema(event){
@@ -173,6 +164,11 @@ class SchemaScreen extends Component {
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <SchemaTable this={this}/>
           <Footer />
+          <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
         </div>
       </MuiThemeProvider> 
     );

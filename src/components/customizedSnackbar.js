@@ -11,16 +11,12 @@ Material-UI is used for designing ui of the app
 */
 
 import PropTypes from 'prop-types';
-import { Link, withRouter, Redirect} from "react-router-dom";
-
 import { orange, amber, green, red } from '@material-ui/core/colors';
 
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
 import Snackbar from '@material-ui/core/Snackbar';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -117,7 +113,7 @@ class CustomizedSnackbar extends Component {
             horizontal: 'left',
             }}
             open={this.state.snackbarOpen}
-            autoHideDuration={2000}
+            autoHideDuration={1000}
             onClose={() => this.handleSnackbarClose()}
         >
             <SnackbarContentWrapper

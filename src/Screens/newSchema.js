@@ -33,6 +33,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container'
 import Footer from "./../components/footer"
+import Snackbar from './../components/customizedSnackbar'
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -96,7 +97,8 @@ function NewSchema(props) {
                         </Grid>
                         <Grid item container xs={12} justify='center'>
                           <Grid item xs={6}>
-                            <TextField id="versionInput" fullWidth 
+                            <TextField id="versionInput"
+                              fullWidth 
                               hintText="Enter the version of the schema"
                               floatingLabelText="Version"
                               defaultValue={props.this.state.schema_version}
@@ -151,7 +153,10 @@ class addASchemaScreen extends Component {
       newAttrName: "",
       schema_attrNames: 
       [
-      ].map((elem) => elem.replace(/\s/g, "_"))
+      ].map((elem) => elem.replace(/\s/g, "_")),
+      snackbarOpen: false,
+      snackbarMessage: "",
+      snackbarVariant: "sent",
     }
   }
 
@@ -171,23 +176,22 @@ class addASchemaScreen extends Component {
       console.log(response);
             console.log(response.status);
             if (response.status === 201) {
-              alert("new schema sucessfully created!")
               self.setState({schema_attrNames: []});
               document.getElementById('schemaNameInput').value="";
               document.getElementById('versionInput').value=""
-              self.props.history.push("/schemas");
+              self.props.history.push({
+                pathname: '/schemas',
+                state: {
+                    newSchema: true,
+                }
+            })
             }
     }).catch(function (error) {
-      //alert(JSON.stringify(schema_payload))
-      //alert(error);
-      console.log(error);
+      self.setState({snackbarVariant: "error", snackbarOpen: true, snackbarMessage: error.message});
+      self.forceUpdate()
   });
   }
-  
-
-  componentWillMount(){
-  }
-
+ 
   componentDidMount(){
     document.title = "issuer app"
   }
@@ -195,14 +199,6 @@ class addASchemaScreen extends Component {
   handleClickNewSchema(event){
     this.createSchema(event)
   }
-  /*
-  Function:handleCloseClick
-  Parameters: event,index
-  Usage:This fxn is used to remove file from filesPreview div
-  if user clicks close icon adjacent to selected file
-  */
-
-
 
  addAttribute(){
   return(
@@ -231,9 +227,7 @@ class addASchemaScreen extends Component {
 
 
   currentAttribute(attr, index){
-    
     return(
-   
       <Grid key={index} item>
         <Card>
           <Box position= 'relative' minWidth={100} minHeight={100}>
@@ -267,6 +261,11 @@ class addASchemaScreen extends Component {
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <NewSchema this={this}/>
           <Footer />
+          <Snackbar message={this.state.snackbarMessage}
+                  variant={this.state.snackbarVariant} 
+                  snackbarOpen={this.state.snackbarOpen} 
+                  closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
         </div>
       </MuiThemeProvider> 
     );
