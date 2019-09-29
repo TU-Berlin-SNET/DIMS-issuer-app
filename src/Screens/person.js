@@ -117,11 +117,10 @@ class addASchemaScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
-console.log(props.location.state.citizen)
 if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
     this.state={ 
-        citizen: props.location.state.citizen,
-        myDid: props.location.state.citizen.did,
+        person: props.location.state.person,
+        myDid: props.location.state.person.did,
         ownDid: '',
         connectionState: 'notConnected',
         credentialOffers: '',
@@ -134,8 +133,8 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
     }
     else{
       this.state={ 
-        citizen: props.location.state.citizen,
-        myDid: props.location.state.citizen.did,
+        person: props.location.state.person,
+        myDid: props.location.state.person.did,
         ownDid: '',
         connectionState: 'notConnected',
         credentialOffers: '',
@@ -330,14 +329,14 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
 
 
   render() {
-      let dateOfBirth = new Date(this.state.citizen.dateOfBirth)
+      let dateOfBirth = new Date(this.state.person.dateOfBirth)
       let year = dateOfBirth.getFullYear()
       let month= dateOfBirth.getMonth() + 1
       let day = dateOfBirth.getDate()
       
-    let pictureAvatar = <Avatar>{this.state.citizen.firstName[0]}</Avatar>
-      if(this.state.citizen.hasOwnProperty('picture') && this.state.citizen.picture !== ""){
-        let base64Img = this.state.citizen['picture']
+    let pictureAvatar = <Avatar>{this.state.person.firstName[0]}</Avatar>
+      if(this.state.person.hasOwnProperty('picture') && this.state.person.picture !== ""){
+        let base64Img = this.state.person['picture']
         pictureAvatar = <Avatar src={base64Img} style={avatarImageStyle}/>
       } else {
         pictureAvatar  = null
@@ -358,12 +357,12 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         <Grid item xs={12}>
           <Box position='relative'>
             <Box position="absolute" top={0} left={0}>
-                <Link  to={"citizens"}>
+                <Link  to={"db"}>
                    <ArrowBackRounded style={{color:'white'}} fontSize="large" />
                 </Link>  
             </Box>
             <Typography variant="h5">
-               Citizen  {this.state.citizen.firstName} {this.state.citizen.familyName}
+               {this.state.person.firstName} {this.state.person.familyName}
             </Typography> 
             </Box>   
         </Grid>
@@ -382,33 +381,33 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
          <Grid item container xs={8}>
           <Grid item container xs={4} justify='center'   >
                 <Grid  item xs={6} >
-                    <Typography align='left'> personal identifier:  {this.state.citizen.id}</Typography>
-                    <Typography align='left'> first name: {this.state.citizen.firstName}</Typography>
-                    <Typography align='left'> family name:  {this.state.citizen.familyName}</Typography>
+                    <Typography align='left'> personal identifier:  {this.state.person.id}</Typography>
+                    <Typography align='left'> first name: {this.state.person.firstName}</Typography>
+                    <Typography align='left'> family name:  {this.state.person.familyName}</Typography>
                     <Typography align='left'> date of birth:  {day + "." + month + "." + year}</Typography>
-                    <Typography align='left'> place of birth:  {this.state.citizen.placeOfBirth}</Typography>
-                    <Typography align='left'> adress:  {this.state.citizen.adress}</Typography>
-                    <Typography align='left'> gender:  {this.state.citizen.gender}</Typography>
+                    <Typography align='left'> place of birth:  {this.state.person.placeOfBirth}</Typography>
+                    <Typography align='left'> adress:  {this.state.person.adress}</Typography>
+                    <Typography align='left'> gender:  {this.state.person.gender}</Typography>
                 </Grid>
               
           </Grid>
 
           <Grid item container xs={4} justify='center'   >
               <Grid xs={6}>
-                    <Typography align='left'> legal ID:  {this.state.citizen.legalId}</Typography>
-                    <Typography align='left'> legal name: {this.state.citizen.legalName}</Typography>
-                    <Typography align='left'> legal adress:  {this.state.citizen.legalAdress}</Typography>
+                    <Typography align='left'> legal ID:  {this.state.person.legalId}</Typography>
+                    <Typography align='left'> legal name: {this.state.person.legalName}</Typography>
+                    <Typography align='left'> legal adress:  {this.state.person.legalAdress}</Typography>
               </Grid>
           </Grid>
 
           <Grid item container xs={4} justify='center'   >
               <Grid  xs={6}>
-                    <Typography align='left'> vatRegistration:  {this.state.citizen.vatRegistration}</Typography>
-                    <Typography align='left'> taxReference: {this.state.citizen.taxReference}</Typography>
-                    <Typography align='left'> lei:  {this.state.citizen.lei}</Typography>
-                    <Typography align='left'> eori:  {this.state.citizen.eori}</Typography>
-                    <Typography align='left'> seed:  {this.state.citizen.seed}</Typography>
-                    <Typography align='left'> sic:  {this.state.citizen.sic}</Typography>
+                    <Typography align='left'> vatRegistration:  {this.state.person.vatRegistration}</Typography>
+                    <Typography align='left'> taxReference: {this.state.person.taxReference}</Typography>
+                    <Typography align='left'> lei:  {this.state.person.lei}</Typography>
+                    <Typography align='left'> eori:  {this.state.person.eori}</Typography>
+                    <Typography align='left'> seed:  {this.state.person.seed}</Typography>
+                    <Typography align='left'> sic:  {this.state.person.sic}</Typography>
               </Grid>
           </Grid>
           </Grid>

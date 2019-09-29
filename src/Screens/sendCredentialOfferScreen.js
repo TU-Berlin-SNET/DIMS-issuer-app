@@ -34,6 +34,8 @@ import Snackbar from './../components/customizedSnackbar';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
+const kindOfPerson = localStorage.getItem('kindOfPerson')
+
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
@@ -57,8 +59,8 @@ class CredentialOfferScreen extends Component {
           credentialDefinitions: [],
           myDid: props.location.state.myDid,
           sendCredentialCheck: true,
-          citizen_id: props.location.state.citizen_id,
-          citizen: null,
+          person_id: props.location.state.person_id,
+          person: null,
           snackbarOpen: false,
           snackbarMessage: "",
           snackbarVariant: "sent",
@@ -75,7 +77,7 @@ class CredentialOfferScreen extends Component {
           selected: "",
           myDid: props.location.state.myDid,
           sendCredentialCheck: true,
-          citizen: null,
+          person: null,
           snackbarOpen: false,
           snackbarMessage: "",
           snackbarVariant: "sent",
@@ -85,24 +87,24 @@ class CredentialOfferScreen extends Component {
     }
 
 
-    async getCitizen(citizen_id){
+    async getPerson(person_id){
       let self = this
-      let citizen = null
+      let person = null
      var headers = {
        'Content-Type': 'application/json',
        'Authorization': localStorage.getItem("token") 
      }
-     await axios.get(Constants.mongoDBBaseUrl + "citizens?id=" + citizen_id, {headers}).then(function (response) {
+     await axios.get(Constants.mongoDBBaseUrl + kindOfPerson + "?id=" + person_id, {headers}).then(function (response) {
        console.log(response);
        if (response.status === 200) {
-         citizen = response.data[0]
-         self.setState({citizen: citizen})
+         person = response.data[0]
+         self.setState({person: person})
        }
      }).catch(function (error) {
        //alert(error);
        console.log(error);
      });
-     return(citizen)
+     return(person)
    }
 
 /* POST /api/credentialoffer
@@ -124,11 +126,11 @@ async sendCredentialOffer(){
  await axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
     if(self.state.sendCredentialCheck === true){
-      self.getCitizen(self.state.citizen_id).then((citizen) =>
+      self.getPerson(self.state.person_id).then((person) =>
       {
         self.props.history.push({
-          pathname: '/citizen',
-          state: { citizen: citizen,
+          pathname: '/person',
+          state: { person: person,
                    justSentCredentialOffer: true,
                 }
         })
@@ -136,7 +138,7 @@ async sendCredentialOffer(){
     }
     else{
       self.props.history.push({
-        pathname: '/citizens',
+        pathname: '/db',
         state: { justSentCredentialOffer: true}
       })
     }
@@ -177,7 +179,7 @@ componentDidMount(){
   this.listCredDefs()
   this.getTheirDid()
   if(this.state.justOnboarded === true){
-    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to citizen established"});
+    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + kindOfPerson + " established"});
     this.forceUpdate()
   }
   this.timer = setInterval(() => {
@@ -262,7 +264,7 @@ render() {
         <Grid item xs={12}>
           <Box position='relative'>
             <Box position="absolute" top={0} left={0}>
-                <Link  to={"citizens"}>
+                <Link  to={"db"}>
                   <ArrowBackRounded style={{color:'white'}} fontSize="large" />
                 </Link>  
             </Box>

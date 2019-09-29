@@ -36,8 +36,11 @@ import Snackbar from './../components/customizedSnackbar'
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
+const model = localStorage.getItem('model')
 
-function CitizensTable(props) {
+
+
+function DB(props) {
   return(
   <div className="grid">
     <Grid item xs={12}  style={{margin:"auto"}}>
@@ -51,17 +54,16 @@ function CitizensTable(props) {
             <Grid item xs={1} />
             <Grid item xs={10}>
             <Typography variant="h5">
-              Citizens
+              {model[0].toUpperCase() +  model.slice(1)}
             </Typography> 
             </Grid>
           <Grid item xs={1} position='relative'>
             <Box position='absolute' right={16}>
-              <Button onClick={(event) => props.this.newCitizen()}>
+              <Button onClick={(event) => props.this.newPerson()}>
                 <AddIcon style={{color:'white'}} fontSize="large" /> 
               </Button>
             </Box>
-          </Grid> 
-          
+          </Grid>        
         </Grid>
       <Grid item xs={12} />
       <Grid item container xs={12}
@@ -69,7 +71,7 @@ function CitizensTable(props) {
         component={Paper}
         spacing={8}
         >
-                    {props.this.state.citizensTable}
+                    {props.this.state.db}
           </Grid>
           <Grid item xs={12} />
           </Grid>
@@ -82,49 +84,49 @@ function CitizensTable(props) {
 }
 
 
-class CitizenScreen extends Component {
+class DBScreen extends Component {
   constructor(props){
     super(props);
     Utils.checkLogin(this)
     if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
     this.state={
-      citizensData:[],
-      citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+      db:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
       selected: '',
       credReq: null,
-      checkIfNewCitizen:  props.location.state.hasOwnProperty("newCitizen") ?  props.location.state.newCitizen  : false, 
+      checkIfNewPerson:  props.location.state.hasOwnProperty("newEntry") ?  props.location.state.newEntry  : false, 
       justOnboarded: props.location.state.hasOwnProperty("justOnboarded") ? props.location.state.justOnboarded : false,
       justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
       justIssuedCredentials: props.location.state.hasOwnProperty("justIssuedCredentials") ? props.location.state.justIssuedCredentials : false,
       snackbarOpen: false,
       snackbarMessage: "",
       snackbarVariant: "sent",
+      model: "",
     }
   }
   else{
     this.state={
-      citizensData:[],
-      citizensTable:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
+      db:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
       activeDB: 'Issuer DB',
       issuerDB : 'hallo',
       verifierDB : 'Tschüss',
       selected: '',
       credReq: null,
-      CheckIfNewCitizen: false,
+      CheckIfNewPerson: false,
+      model: "",
     }
   }
   }
 
   componentDidMount(){
-    this.listCitizens();
+    this.getDB();
     document.title = "DIMS"
     
-    if(this.state.checkIfNewCitizen === true){
-      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new citizen successfully"});
+    if(this.state.checkIfNewPerson === true){
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new " + model + " successfully"});
       this.forceUpdate()
     }
     if(this.state.justOnboarded === true){
-      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to citizen established"});
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + model + " established"});
       this.forceUpdate()
     }
     if(this.state.justSentCredentialOffer === true){
@@ -138,32 +140,32 @@ class CitizenScreen extends Component {
 
   }
 
- async  listCitizens(){
+ async  listPersons(){
    let self = this
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token") 
   }
-  await axios.get(Constants.mongoDBBaseUrl + "citizens", {headers}).then(function (response) {
+  await axios.get(Constants.mongoDBBaseUrl + model, {headers}).then(function (response) {
     console.log(response);
     if (response.status === 200) {
-      let citizens = <CUSTOMPAGINATIONACTIONSTABLE 
+      let persons = <CUSTOMPAGINATIONACTIONSTABLE 
       onEdit={(event, selected) => self.handleEdit(event, selected)} 
-      onDoubleClick={(selected) => self.openCitizenView(selected)}
+      onDoubleClick={(selected) => self.openPersonView(selected)}
       
       rowFunctions= {[
      { 
-       rowFunction: function (selected){self.removeCitizen(selected)},
+       rowFunction: function (selected){self.removePerson(selected)},
       rowFunctionName : 'Delete',
       rowFunctionIcon : <DeleteIcon />
      },
     { 
-      rowFunction: function(selected){self.editCitizen(selected)},
+      rowFunction: function(selected){self.editPerson(selected)},
       rowFunctionName: 'Edit',
       rowFunctionIcon: <EditIcon />,
     },
     {
-      rowFunction: function (selected){self.onboardCitizen(selected)},
+      rowFunction: function (selected){self.onboardPerson(selected)},
       rowFunctionName: 'Onboard',
       rowFunctionIcon: <OnboardIcon />,
     },
@@ -173,38 +175,38 @@ class CitizenScreen extends Component {
       rowFunctionIcon: <CredentialIcon />,
     },
     {
-      rowFunction: function (selected){self.openCitizenView(selected)},
+      rowFunction: function (selected){self.openPersonView(selected)},
       rowFunctionName: 'send and view credentials',
       rowFunctionIcon: <MessageIcon />,
     }
       ]}
 
       data={response.data.map(
-        (citizen) => {
-          if(citizen.hasOwnProperty('picture') && citizen.picture !== ""){
-            let base64Img = citizen['picture']
-            citizen['photo'] = <Grid container justify="center" alignItems="center">
+        (person) => {
+          if(person.hasOwnProperty('picture') && person.picture !== ""){
+            let base64Img = person['picture']
+            person['photo'] = <Grid container justify="center" alignItems="center">
                                   <Avatar src={base64Img}/>
                                </Grid>
           } else {
-            citizen['photo'] = <Grid container justify="center" alignItems="center">
-                                  <Avatar>{citizen.firstName[0]}</Avatar>
+            person['photo'] = <Grid container justify="center" alignItems="center">
+                                  <Avatar>{person.firstName[0]}</Avatar>
                                </Grid>
           }
-          citizen['first name'] = citizen.firstName
-          citizen['family name'] = citizen.familyName
-          return(citizen)
+          person['first name'] = person.firstName
+          person['family name'] = person.familyName
+          return(person)
         }
       )} 
       showAttr={['id', 'first name', 'family name','photo']}/>
-      self.setState({citizensTable: citizens})
+      self.setState({db: persons})
     }
   }).catch(function (error) {
     console.log(error);
   });
 }
 
-async removeCitizen(selected) {
+async removePerson(selected) {
 
   let self = this
   let headers = {
@@ -212,11 +214,11 @@ async removeCitizen(selected) {
     'Authorization': localStorage.getItem("token") 
   }
 
-  await axios.delete(mongoDBBaseUrl + "citizens/" + selected.id, {headers}).then(function (response) {
+  await axios.delete(mongoDBBaseUrl + model + "/" + selected.id, {headers}).then(function (response) {
           if (response.status === 204) {
-            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed citizen successfully"});
+            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed " + model + " successfully"});
             self.forceUpdate()
-            self.listCitizens()
+            self.listPersons()
           }
   }).catch(function (error) {
     console.log(error);
@@ -225,18 +227,18 @@ async removeCitizen(selected) {
 }
 
 
-openCitizenView(selected){
+openPersonView(selected){
   //the photo field cannot be cloned
   delete selected['photo']
   this.props.history.push({
-    pathname: '/citizen',
-    state: { citizen: selected}
+    pathname: '/person',
+    state: { person: selected}
   })
 }
 
-editCitizen(selected){
+editPerson(selected){
   this.props.history.push({
-    pathname: '/newCitizen',
+    pathname: '/newPerson',
     state: {            
       "id": selected.id,
       "familyName": selected.familyName,
@@ -258,20 +260,20 @@ editCitizen(selected){
   })
 }
 
-onboardCitizen(selected){
+onboardPerson(selected){
   this.props.history.push({
     pathname: '/onboarding',
-    state: { citizen_id: selected.id,
-             citizen_firstName: selected.firstName,
-             citizen_familyName: selected.familyName,
-             citizen_did: selected.did }
+    state: { person_id: selected.id,
+             person_firstName: selected.firstName,
+             person_familyName: selected.familyName,
+             person_did: selected.did }
   })
 }
 
 sendCredentialOffer(selected){
   this.props.history.push({
     pathname: '/sendCredOffer',
-    state: { myDid: selected.did, citizen_id: selected.id, }
+    state: { myDid: selected.did, person_id: selected.id, }
   })
 }
 
@@ -282,37 +284,23 @@ handleEdit(event, selected){ //Fuction
  handleTabChange(newTab){
   this.props.onTabChange(newTab)
 }
-openIssuerDB(event){
-  this.changeActiveDB(event)
-    this.setState({db: this.state.issuerDB})
-}
 
-openVerifierDB(event){
-    this.changeActiveDB(event)
-    this.setState({db: this.state.verifierDB})
-}
 
-changeActiveDB(event){
-
-  let issuerButton = document.getElementById('issuerButton')
-  let verifierButton = document.getElementById('verifierButton')
-
-  if(event.target.innerHTML === 'Issuer DB'){
-      verifierButton.style.backgroundColor = '#6980ff'
-      issuerButton.style.backgroundColor = '#FF7C7C' 
-  }
-  else if(event.target.innerHTML =='Verifier DB'){
-    verifierButton.style.backgroundColor =  '#FF7C7C' 
-    issuerButton.style.backgroundColor = '#6980ff'
-  }
-}
-
-newCitizen(){
+newPerson(){
   this.props.history.push({
-    pathname: '/newCitizen',
+    pathname: '/newPerson',
     state: {                
     }
   })
+}
+
+getDB(){
+  console.log(localStorage.getItem('role'))
+  switch(localStorage.getItem('role')){
+    case 'government' :
+
+      this.listPersons()
+  }
 }
 
   render() {
@@ -320,7 +308,7 @@ newCitizen(){
       <MuiThemeProvider>
         <div className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <CitizensTable this={this} />
+          <DB this={this} />
           <Snackbar message={this.state.snackbarMessage}
                   variant={this.state.snackbarVariant} 
                   snackbarOpen={this.state.snackbarOpen} 
@@ -332,4 +320,4 @@ newCitizen(){
   }
 }
 
-export default withRouter(CitizenScreen);
+export default withRouter(DBScreen);

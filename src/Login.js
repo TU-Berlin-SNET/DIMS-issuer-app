@@ -4,10 +4,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import axios from 'axios';
 import {withRouter} from "react-router-dom";
-import IssuerBar from "./components/IssuerBar"
 import * as Constants from "./Constants"
-import { Button } from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
+import RadioButtons from './components/radioButtons'
+
 import Box from '@material-ui/core/Box'
 
 
@@ -37,6 +36,7 @@ function LoginForm(props) {
          onChange={(event, newValue) => props.this.setState({ password: newValue })}
      />
      </Box>
+     <RadioButtons roleChanged={(role) => {props.this.setRole(role)}} />
      <RaisedButton label="Submit"  onClick={(event) => props.this.handleLoginClick(event)} />
      </Box>
     );
@@ -66,14 +66,28 @@ handleDrawerClose = () => {
 
 componentDidMount(){
     document.title = "issuer app"
+            localStorage.setItem('model', 'citizens')
   }
 
+setRole(role){
+    localStorage.setItem('role', role)
+
+    switch(role){
+     case 'government' :
+         localStorage.setItem('model', 'citizens')
+         break;
+    case 'bank' :
+        localStorage.setItem('model', 'bankCustomers')
+        break;
+    default:
+         case 'government' :
+         localStorage.setItem('model', 'citizens')
+         break;
 
 
-    componentWillMount(){
-        
-    }
-
+}
+console.log(localStorage.getItem('model'))
+}
     handleLoginClick(event) {
         var self = this;
         var payload = {
@@ -91,7 +105,7 @@ componentDidMount(){
                     //issuerScreen.push(<IssuerScreen appContext={self.props.appContext} />)
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
-                    self.props.history.push("/citizens");
+                    self.props.history.push("/db");
 
 
                 }

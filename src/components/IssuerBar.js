@@ -6,19 +6,17 @@ import './../CSS/App.css';
 import { Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
 import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import DIMSLogo from'./DIMSLogo';
 import AccountIcon from '@material-ui/icons/AccountBox'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton'
 
 var activeTab = 0;
 
 const links=[
-  {label: "Citizens", to: 'citizens'},
+  {label: "Database", to: 'db'},
   {label:'Cred. definition',  to:'credentialdef'},
   {label:'Proofs',  to:'proofs'},
   {label:'Schemas', to:'schemas'},

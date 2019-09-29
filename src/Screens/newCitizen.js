@@ -25,10 +25,11 @@ import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
 import * as Constants from "./../Constants";
 import Footer from "./../components/footer"
-import AppCanvas from 'material-ui/internal/AppCanvas';
+import Container from '@material-ui/core/Container';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
-
+const modelName = localStorage.getItem('model')
+const modelSingular = modelName[0].toUpperCase() +  modelName.slice(1, modelName.length-1)
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
 
@@ -39,39 +40,26 @@ class newUserScreen extends Component {
     super(props);
     Utils.checkLogin(this)
     this.state={
-      citizens: '',
       connection_message: '',
-      citizen_did:'',
-      citizen_verkey:'',
+      person_did:'',
+      person_verkey:'',
       onboardChecked: false,
       personIdentitfier: userdata.id,
       familyName: userdata.familyName,
       firstName: userdata.firstName,
-      dateOfBirth: userdata.dateOfBirth,
-      birthName: userdata.birthName,
-      placeOfBirth: userdata.placeOfBirth,
-      currentAddress: userdata.currentAddress,
-      gender: userdata.gender,
-      legalPersonIdentifier: userdata.legalPersonIdentifier,
-      legalName: userdata.legalName,
-      legalAdress: userdata.legalAddress,
-      vatRegistration: userdata.vatRegistration,
-      taxReference: userdata.taxReference,
-      lei: userdata.lei,
-      eori: userdata.eori,
-      seed: userdata.seed,
-      sic: userdata.sic,
       did: "",
       profilePictureSrc: null,
       base64ProfilePic: "",
       snackbarOpen: false,
       snackbarMessage: "",
       snackbarVariant: "sent",
+      model: {},
     }
   }
 
   componentDidMount(){
-      document.title = "issuer app"
+      document.title = "DIMS"
+      this.getModel()
   }
   
   componentWillUnmount() {
@@ -94,7 +82,7 @@ class newUserScreen extends Component {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem("token") 
         }
-        var citizen_payload = { 
+        var person_payload = { 
             "id": self.state.personIdentitfier,
             "familyName": self.state.familyName,
             "firstName": self.state.firstName,
@@ -114,24 +102,24 @@ class newUserScreen extends Component {
             "did":"",
             "picture": self.state.base64ProfilePic,
         }
-        await axios.post(mongoDBBaseUrl + "citizens", citizen_payload, {headers}).then(function (response) {
+        await axios.post(mongoDBBaseUrl + modelName , person_payload, {headers}).then(function (response) {
                 if (response.status === 200) {
-                  console.log(JSON.stringify(citizen_payload))
+                  console.log(JSON.stringify(person_payload))
                   if(self.state.onboardChecked===true){
                     self.props.history.push({
                         pathname: '/onboarding',
-                        state: { citizen_id: self.state.personIdentitfier,
-                                citizen_did: self.state.did,
-                                citizen_firstName: self.state.firstName,
-                                citizen_familyName: self.state.familyName
+                        state: { person_id: self.state.personIdentitfier,
+                                person_did: self.state.did,
+                                person_firstName: self.state.firstName,
+                                person_familyName: self.state.familyName
                              }
                       })
                 }
                 else{
                     self.props.history.push({
-                        pathname: '/citizens',
+                        pathname: '/db',
                         state: {
-                            newCitizen: true,
+                            newPerson: true,
                         }
                     })
                 }
@@ -140,9 +128,35 @@ class newUserScreen extends Component {
         }).catch(function (error) {
           console.log(error);
       });
-    
-        
 }
+
+
+async getModel(event){
+    var self = this;
+    var model = {};
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
+    var person_payload = { 
+    }
+    await axios.get(mongoDBBaseUrl + "models" , {headers}).then(function (response) {
+            if (response.status === 200) {
+                console.log(response.data)
+                
+                for(let model_name in response.data){
+                    console.log(model_name)
+                    if(model_name === modelName){
+                        model = response.data[model_name]
+                    }
+                }
+                console.log(model) 
+                self.setState({model}) 
+            }
+        }).catch(function (error) {
+        console.log(error);
+    });
+}   
 
 readUploadedFileAsDataURL(inputFile){
     const temporaryFileReader = new FileReader();
@@ -168,222 +182,123 @@ readUploadedFileAsDataURL(inputFile){
       <MuiThemeProvider>
         <div className="App">
             <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-            <div className={styles.grid}>
-            <Grid item xs={10} md={8} xl={6} style={{margin:"auto"}}>
-            <Box position='relative' mt='5%'>
-                <Grid
-                    component= {Paper}
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="flex-start"
-                    >
-                    {/*padding*/}
-                    <Grid item xs={12} >
-                        <Box height='2vh' />     
-                        <Typography variant= 'h5' children={'New Citizen'} />
-                        <Box height='2vh' />  
-                    </Grid>
-                    <Grid>
-                    <Grid
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="flex-start"
-                    >
-                    {profilePicture}
-                    </Grid>
-                        <Typography children={'Natural Person'}></Typography>
-                        <Box>
-                            <TextField
-                                hintText="Enter PersonIdentitfier"
-                                floatingLabelText="PersonIdentitfier"
-                                value={this.state.personIdentitfier}
-                                onChange={(event, newValue) => {this.setState({ personIdentitfier: newValue })}}
-                            />
-                            *
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter FamilyName"
-                                floatingLabelText="FamilyName"
-                                value={this.state.familyName}
-                                onChange={(event, newValue) => {this.setState({ familyName: newValue })}}
-                                />
-                                *
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter FirstName"
-                                floatingLabelText="FirstName"
-                                value={this.state.firstName}
-                                onChange={(event, newValue) => {this.setState({ firstName: newValue })}}
-                                />
-                                *
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter DateOfBirth"
-                                floatingLabelText="DateOfBirth"
-                                value={this.state.dateOfBirth}
-                                onChange={(event, newValue) => {this.setState({ dateOfBirth: newValue })}}
-                                />
-                        </Box>
+            <div className="grid">
 
-                        <Box>
-                            <TextField
-                                hintText="Enter PlaceOfBirth"
-                                floatingLabelText="PlaceOfBirth"
-                                value={this.state.placeOfBirth}
-                                onChange={(event, newValue) => {this.setState({ placeOfBirth: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                        <TextField
-                                hintText="Enter CurrentAddress"
-                                floatingLabelText="CurrentAddress"
-                                value={this.state.currentAddress}
-                                onChange={(event, newValue) => {this.setState({ currentAddress: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter Gender"
-                                floatingLabelText="Gender"
-                                value={this.state.gender}
-                                onChange={(event, newValue) => {this.setState({ gender: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <Button
-                            variant="outlined"
-                            component="label"
-                            onChange={(event) => {
-                                let blobURLref = URL.createObjectURL(event.target.files[0])
-                                if(event.target.files[0] !== ""){
-                                    this.readUploadedFileAsDataURL(event.target.files[0]).then(
-                                        (base64img) => {
-                                            this.setState({base64ProfilePic: base64img})
-                                        })
-                                    this.setState({ profilePictureSrc: blobURLref })
-                                }
-                            }}
+            <Grid item xs={12}  style={{margin:"auto"}}>
+                <Container maxWidth='false' className="tableContainer">
+                    <Grid 
+                        container   
+                        direction="row"
+                        justify='space-evenly'
+                        spacing={4}
+                        xs={12} 
+                        style={{margin:"auto"}}
+                    >
+                        <Grid item container spacing={0}>
+                            <Grid item xs={1} />
+                            <Grid item xs={10}>
+                                <Typography variant="h5">
+                                    {"New " + modelSingular}
+                                </Typography> 
+                            </Grid>
+                            <Grid item xs={1} position='relative'>
+                            </Grid>       
+                        </Grid> 
+                        <Grid item xs={12} /> 
+                        <Grid
+                            component= {Paper}
+                            container
+                            item
+                            xs={12}
+                            direction="row"
+                            justify="center"
+                            spacing={8}
+                        >
+    
+                            <Grid 
+                            item
+                            container
+                            direction="row"
+                            justify="center"
+                            xs={12}
                             >
-                            Upload picture 
-                            <input
-                            accept="image/*"
-                            type="file"
-                            style={{ display: "none" }}
-                            />
-                            </Button>
-                        </Box>
+                                {profilePicture}
+                            </Grid>
+                            <Grid container item xs={12} justify='center'>
+
+                                <Grid container 
+                                    item xs={6}
+                                    justify='center'>
+                                    {Object.keys(this.state.model).map((key) => {
+                                    return(
+                                        
+                                        <Grid item xs={6}>
+                                            <TextField 
+                                            
+                                                hintText={'Enter ' +  key}
+                                                floatingLabelText={key} 
+                                                onChange={(event, newValue) => {
+                                                let temp_model = this.state.model;
+                                                temp_model[key] = newValue;
+                                                this.setState({ model: temp_model})}}
+                                                />
+                                        </Grid>  )}) }  
+                                </Grid>
+                            </Grid>
+
+                            <Grid item xs={3}>
+                                    All marked fields (*) are mandatory fields
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <Button
+                                variant="outlined"
+                                component="label"
+                                onChange={(event) => {
+                                    let blobURLref = URL.createObjectURL(event.target.files[0])
+                                    if(event.target.files[0] !== ""){
+                                        this.readUploadedFileAsDataURL(event.target.files[0]).then(
+                                            (base64img) => {
+                                                this.setState({base64ProfilePic: base64img})
+                                            })
+                                        this.setState({ profilePictureSrc: blobURLref })
+                                    }
+                                }}
+                                >
+                                Upload picture 
+                                <input
+                                accept="image/*"
+                                type="file"
+                                style={{ display: "none" }}
+                                />
+                                </Button>
+                            </Grid>
+                                    
+                        
+                            <Grid item xs={3}>
+                                Onboard User?
+                                <Checkbox  
+                                    onChange={this.handleOnboardCheckChange}
+                                    color='primary'
+                                    checked={this.state.onboardChecked}
+                                    value="onboardChecked"
+                                />
+                            </Grid> 
+                        </Grid>
+                        <Grid item xs={12} />
+                        <Grid item container 
+                        justify='center'
+                        xs={12}>
+                            <Button  style={{color:'white'}}  onClick={(event) => this.handleClickAdd(event)} >
+                                Submit
+                            </Button>       
+                        </Grid>
                     </Grid>
-                    <Box display='inline-block' ml='10%'>
-                        <Typography children={'Legal Person'}></Typography>
-                        <Box>
-                            <TextField
-                                hintText="Enter LegalPersonIdentifier"
-                                floatingLabelText="LegalPersonIdentifier"
-                                value={this.state.legalPersonIdentifier}
-                                onChange={(event, newValue) => {this.setState({ legalPersonIdentifier: newValue })}}
-                            />
-                            *
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter LegalName"
-                                floatingLabelText="LegalName"
-                                value={this.state.legalName}
-                                onChange={(event, newValue) => {this.setState({ legalName: newValue })}}
-                                />
-                                *
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter LegalAddress"
-                                floatingLabelText="LegalAddress"
-                                value={this.state.legalAddress}
-                                onChange={(event, newValue) => {this.setState({ legalAddress: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter VATRegistration"
-                                floatingLabelText="VATRegistration"
-                                value={this.state.vatRegistration}
-                                onChange={(event, newValue) => {this.setState({ vatRegistration: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter TaxReference"
-                                floatingLabelText="TaxReference"
-                                value={this.state.taxReference}
-                                onChange={(event, newValue) => {this.setState({ taxReference: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter LEI "
-                                floatingLabelText="LEI"
-                                value={this.state.lei}
-                                onChange={(event, newValue) => {this.setState({ lei: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter EORI"
-                                floatingLabelText="EORI"
-                                value={this.state.eori}
-                                onChange={(event, newValue) => {this.setState({ eori: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter SEED"
-                                floatingLabelText="SEED"
-                                value={this.state.seed}
-                                onChange={(event, newValue) => {this.setState({ seed: newValue })}}
-                                />
-                        </Box>
-                        <Box>
-                            <TextField
-                                hintText="Enter SIC"
-                                floatingLabelText="SIC"
-                                value={this.state.sic}
-                                onChange={(event, newValue) => {this.setState({ sic: newValue })}}
-                                />
-                        </Box>
-                    </Box>  
-                    {/*padding*/}
-                    <Grid item xs={12} >
-                        <Box height='5vh' />
-                    </Grid>
-                    
-                    <Box position='absolute' bottom='8%' right= {8}>
-                        Onboard User?
-                        <Checkbox  
-                            onChange={this.handleOnboardCheckChange}
-                            color='primary'
-                            checked={this.state.onboardChecked}
-                            value="onboardChecked"
-                        />
-                    </Box>
-                    <Box position='absolute' bottom='1%' right= {8} style={{width:'10%' }}>
-                    <Button variant='contained' color= 'primary' fullWidth onClick={(event) => this.handleClickAdd(event)} >
-                        Submit
-                    </Button>
-                    </Box>
-                    <Box position='absolute' bottom={8} left= {16} >
-                        All marked fields (*) are mandatory fields
-                    </Box>
-                </Grid>
-                </Box>
-        </Grid>
+                </Container>
+            </Grid>
         </div> 
-     </div>
-    </MuiThemeProvider>
-          
+    </div>
+</MuiThemeProvider>       
     );
   }
 }

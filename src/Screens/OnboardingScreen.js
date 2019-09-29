@@ -30,6 +30,8 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+const kindOfPerson = localStorage.getItem('kindOfPerson')
+
 var username =''
 
 
@@ -49,14 +51,14 @@ class OnboardingScreen extends Component {
     this.state={
       //TODO: change username
       connection_message: '',
-      citizen_id: props.location.state.citizen_id,
-      citizen_did:'',
-      citizen_firstName: props.location.state.citizen_firstName,
-      citizen_familyName: props.location.state.citizen_familyName,
-      citizen_verkey:'',
+      person_id: props.location.state.person_id,
+      person_did:'',
+      person_firstName: props.location.state.person_firstName,
+      person_familyName: props.location.state.person_familyName,
+      person_verkey:'',
       username: '',
       onboarded:true,
-      myDid: props.location.state.citizen_did,
+      myDid: props.location.state.person_did,
       sendCredentialOfferCheck: true,
     }
   }
@@ -79,11 +81,11 @@ class OnboardingScreen extends Component {
         if(response.status === 200){
           let status = JSON.parse(response.data.acknowledged)
           if(status === true){
-            self.setState({citizen_did: response.data.theirDid})
-            self.addDidToCitizenInformation()
+            self.setState({person_did: response.data.theirDid})
+            self.addDidToPersonInformation()
             if(self.state.sendCredentialOfferCheck === false){
             self.props.history.push({
-              pathname: '/citizens',
+              pathname: '/db',
               state : {
                 justOnboarded: true,
               }
@@ -91,7 +93,7 @@ class OnboardingScreen extends Component {
               this.props.history.push({
                 pathname: '/sendCredOffer',
                 state: { myDid: self.state.myDid, 
-                         citizen_id: self.state.citizen_id,
+                         person_id: self.state.person_id,
                          justOnboarded: true}
               })
           }
@@ -102,25 +104,13 @@ class OnboardingScreen extends Component {
       })
     }
 
-    getCitizenVerkey_DiD(){
-        var self = this;
-        var headers = {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem("token") 
-        }
-        axios.get(apiBaseUrl + "wallet/default", {headers: headers}).then((response) => {
-          console.log(response)
-          if(response.status === 200){
 
-          }
-        })
-      }
 
     handleOnboarding(event) {
       var self = this;
       var payload = {
-          "did": this.state.citizen_did,
-          "verkey": this.state.citizen_verkey,
+          "did": this.state.person_did,
+          "verkey": this.state.person_verkey,
           "role": "NONE"
       }
       var headers = {
@@ -157,7 +147,7 @@ class OnboardingScreen extends Component {
     console.log(self.state.username)
      let payload_conn = {
       "meta":{
-        "username" : self.state.citizen_firstName + "_" + self.state.citizen_familyName
+        "username" : self.state.person_firstName + "_" + self.state.person_familyName
        },
        "data":{
          "app": username
@@ -204,7 +194,7 @@ handleCredentialOfferCheckChange =  event => {
   Parameters: event
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
- async addDidToCitizenInformation() {
+ async addDidToPersonInformation() {
 
   let self = this
   let headers = {
@@ -212,9 +202,9 @@ handleCredentialOfferCheckChange =  event => {
     'Authorization': localStorage.getItem("token") 
   }
 
-  let citizen_payload={did: self.state.myDid}
+  let person_payload={did: self.state.myDid}
 
-  await axios.put(mongoDBBaseUrl + "citizens/" + self.state.citizen_id, citizen_payload, {headers}).then(function (response) {
+  await axios.put(mongoDBBaseUrl + kindOfPerson + self.state.person_id, person_payload, {headers}).then(function (response) {
           if (response.status === 200) {
           }
   }).catch(function (error) {
@@ -253,14 +243,14 @@ goTosendCredentialScreen(){
           <Grid item container spacing={0} xs={12}>
             <Grid item xs={1} position='relative'>
               <Box position='absolute' left={16}>
-                <Link  to={"citizens"}>
+                <Link  to={"db"}>
                   <ArrowBackRounded style={{color:'white'}} fontSize="large" />
                 </Link>
               </Box>
             </Grid>
             <Grid item xs={10}>
               <Typography variant="h5">
-                  Onboard Citizen {this.props.location.state.citizen_firstName} {this.props.location.state.citizen_familyName}
+                  Onboard {this.props.location.state.person_firstName} {this.props.location.state.person_familyName}
               </Typography> 
             </Grid>
           <Grid item xs={1} position='relative'>

@@ -11,7 +11,7 @@ Material-UI is used for designing ui of the app
 */
 
 import {withRouter} from "react-router-dom";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import ThemeProvider, { __esModule } from '@material-ui/styles/ThemeProvider';
 import IssuerBar from "./../components/IssuerBar";
 import * as Utils from "./../Utils";
 import Box from '@material-ui/core/Box'
@@ -32,11 +32,13 @@ const apiBaseUrl = Constants.apiBaseUrl;
 
 class newUserScreen extends Component {
   constructor(props){
+    console.log(props)
     super(props);
     Utils.checkLogin(this)
     this.state={
         username:"",
-        wallet: ""
+        wallet: "",
+        theme: "",
     }
   }
   
@@ -80,15 +82,20 @@ class newUserScreen extends Component {
   }
 
 
+
+
   render() {
+
     return (
-      <MuiThemeProvider>
+      <ThemeProvider>
+           
         <div className="App">
+        
             <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
             <div className={styles.grid}>              
             <Box position='relative' mt={3} width='100%'>
               <Container  maxWidth='false' className='tableContainer'>
-              <Grid container  xs={12}  style={{margin:"auto"}}
+              <Grid container spacing={4} xs={12}  style={{margin:"auto"}}
                   justify='center' spacing={4}>
                     <Grid item xs={12} justify='center'>
                           <Typography  variant="h5">
@@ -105,7 +112,7 @@ class newUserScreen extends Component {
                     spacing={8}
                     xs={12}
                     >
-                    <Grid item justify='center' item xs={10}>
+                    <Grid  justify='center' item xs={10}>
                          username:  
                          <Typography color='primary'> {this.state.username} </Typography>
                     </Grid>
@@ -114,21 +121,20 @@ class newUserScreen extends Component {
                         <Typography color='primary'> {this.state.wallet} </Typography>
                     </Grid>
                     </Grid>
-                </Grid>
-
+                    <Grid item xs={12} />
                 <Grid container item xs={12} justify='center'>
                   <Grid item xs={4}>
                   <Button  color="primary" style={{color:'white'}} onClick={(event) => this.handleLogout(event)}>Logout</Button>
                   </Grid>
                 </Grid>
+                </Grid>
+
+    
             </Container>
             </Box>
-           
-         
         </div> 
-        
      </div>
-    </MuiThemeProvider>
+    </ThemeProvider>
           
     );
   }
