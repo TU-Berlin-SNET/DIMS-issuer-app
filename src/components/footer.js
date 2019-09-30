@@ -6,14 +6,10 @@ import './../CSS/App.css';
 import { Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
 import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import DIMSLogo from'./DIMSLogo';
-import AccountIcon from '@material-ui/icons/AccountBox'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton'
+import Button from '@material-ui/core/Button'
+import { palette } from '@material-ui/system';
 
 var activeTab = 0;
 
@@ -46,10 +42,13 @@ handleTabChange(event,newValue) {
 
   render() {
     return (
-        <Box   width="100%" position='fixed' bottom='0'>
-              
+        <Box   width="100%" position='fixed' zIndex='-1' bottom='0'>         
               <Container  maxWidth='false' >
-                  <Box height='4vh' />
+                  <Box height='4vh' >
+                    <Grid container justify='flex-end'>
+                      <Button style={{color: 'white'}} component={Link} to={'about'}>Information</Button>
+                    </Grid>
+                  </Box>
             </Container>
         </Box>
     );

@@ -33,7 +33,12 @@ const modelSingular = modelName[0].toUpperCase() +  modelName.slice(1, modelName
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
 
+const avatarImageStyle = {
+    width: 200,
+    height: 200,
+  };
 
+  
 class newUserScreen extends Component {
   constructor(props){
      let userdata =  props.location.state
@@ -82,29 +87,10 @@ class newUserScreen extends Component {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem("token") 
         }
-        var person_payload = { 
-            "id": self.state.personIdentitfier,
-            "familyName": self.state.familyName,
-            "firstName": self.state.firstName,
-            "dateOfBirth": self.state.dateOfBirth,
-            "placeOfBirth": self.state.placeOfBirth,
-            "address": self.state.currentAddress,
-            "gender": self.state.gender,
-            "legalId": self.state.legalPersonIdentifier,
-            "legalName": self.state.legalName,
-            "legalAdress":self.state.legalAdress,
-            "vatRegistration": self.state.vatRegistration,
-            "taxReference": self.state.taxReference,
-            "lei": self.state.lei,
-            "eori": self.state.eori,
-            "seed": self.state.seed,
-            "sic": self.state.sic,
-            "did":"",
-            "picture": self.state.base64ProfilePic,
-        }
-        await axios.post(mongoDBBaseUrl + modelName , person_payload, {headers}).then(function (response) {
+
+        await axios.post(mongoDBBaseUrl + modelName , self.state.model, {headers}).then(function (response) {
                 if (response.status === 200) {
-                  console.log(JSON.stringify(person_payload))
+                  console.log(JSON.stringify(self.state.model))
                   if(self.state.onboardChecked===true){
                     self.props.history.push({
                         pathname: '/onboarding',
@@ -138,8 +124,6 @@ async getModel(event){
       'Content-Type': 'application/json',
       'Authorization': localStorage.getItem("token") 
     }
-    var person_payload = { 
-    }
     await axios.get(mongoDBBaseUrl + "models" , {headers}).then(function (response) {
             if (response.status === 200) {
                 console.log(response.data)
@@ -148,6 +132,10 @@ async getModel(event){
                     console.log(model_name)
                     if(model_name === modelName){
                         model = response.data[model_name]
+                        for(let attribute in  model){
+                            model[attribute] = "";
+                        }
+   
                     }
                 }
                 console.log(model) 
@@ -177,7 +165,7 @@ readUploadedFileAsDataURL(inputFile){
 
 
   render() {
-    let profilePicture = this.state.profilePictureSrc !== null ? <Avatar alt="Profile picture" src={this.state.profilePictureSrc} className={styles.bigAvatar}/> : ""
+    let profilePicture = this.state.profilePictureSrc !== null ? <Avatar style={avatarImageStyle} alt="Profile picture" src={this.state.profilePictureSrc} /> :  <Avatar style={avatarImageStyle} alt="Profile picture">A</Avatar>
     return (
       <MuiThemeProvider>
         <div className="App">
@@ -224,34 +212,9 @@ readUploadedFileAsDataURL(inputFile){
                             >
                                 {profilePicture}
                             </Grid>
-                            <Grid container item xs={12} justify='center'>
-
-                                <Grid container 
-                                    item xs={6}
-                                    justify='center'>
-                                    {Object.keys(this.state.model).map((key) => {
-                                    return(
-                                        
-                                        <Grid item xs={6}>
-                                            <TextField 
-                                            
-                                                hintText={'Enter ' +  key}
-                                                floatingLabelText={key} 
-                                                onChange={(event, newValue) => {
-                                                let temp_model = this.state.model;
-                                                temp_model[key] = newValue;
-                                                this.setState({ model: temp_model})}}
-                                                />
-                                        </Grid>  )}) }  
-                                </Grid>
-                            </Grid>
-
-                            <Grid item xs={3}>
-                                    All marked fields (*) are mandatory fields
-                            </Grid>
-
                             <Grid item xs={6}>
                                 <Button
+                                color= 'primary'
                                 variant="outlined"
                                 component="label"
                                 onChange={(event) => {
@@ -273,6 +236,31 @@ readUploadedFileAsDataURL(inputFile){
                                 />
                                 </Button>
                             </Grid>
+                            <Grid container item xs={12} justify='center'>
+
+                                <Grid container 
+                                    item xs={6}
+                                    justify='center'>
+                                    {Object.keys(this.state.model).map((key) => {
+                                        return(
+                                            <Grid item xs={6}>
+                                                <TextField 
+                                                    hintText={'Enter ' +  key}
+                                                    floatingLabelText={key} 
+                                                    onChange={(event, newValue) => {
+                                                        let temp_model = this.state.model;
+                                                        temp_model[key] = newValue;
+                                                        this.setState({ model: temp_model})}}
+                                                    />
+                                            </Grid>  )}) }  
+                                </Grid>
+                            </Grid>
+
+                            <Grid item xs={3}>
+                                    All marked fields (*) are mandatory fields
+                            </Grid>
+
+                            <Grid item xs={6}></Grid>
                                     
                         
                             <Grid item xs={3}>
@@ -289,7 +277,7 @@ readUploadedFileAsDataURL(inputFile){
                         <Grid item container 
                         justify='center'
                         xs={12}>
-                            <Button  style={{color:'white'}}  onClick={(event) => this.handleClickAdd(event)} >
+                            <Button  style={{color: 'white'}} onClick={(event) => this.handleClickAdd(event)} >
                                 Submit
                             </Button>       
                         </Grid>
@@ -297,6 +285,7 @@ readUploadedFileAsDataURL(inputFile){
                 </Container>
             </Grid>
         </div> 
+        <Footer />
     </div>
 </MuiThemeProvider>       
     );

@@ -30,7 +30,7 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
-const kindOfPerson = localStorage.getItem('kindOfPerson')
+const modelName = localStorage.getItem('model')
 
 var username =''
 
@@ -204,7 +204,7 @@ handleCredentialOfferCheckChange =  event => {
 
   let person_payload={did: self.state.myDid}
 
-  await axios.put(mongoDBBaseUrl + kindOfPerson + self.state.person_id, person_payload, {headers}).then(function (response) {
+  await axios.put(mongoDBBaseUrl + modelName + '/' + self.state.person_id, person_payload, {headers}).then(function (response) {
           if (response.status === 200) {
           }
   }).catch(function (error) {

@@ -15,17 +15,16 @@ import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
-import Select from 'react-select';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
-import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Footer from "./../components/footer"
 
-import AcceptIcon from '@material-ui/icons/Done'
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -109,7 +108,7 @@ async acceptCredentialRequestAndSendCred(){
     console.log(response.status);
     if (response.status === 201) {
       self.props.history.push({
-        pathname: '/citizens',
+        pathname: '/db',
         state:{
           justIssuedCredentials : true,
         }
@@ -132,14 +131,28 @@ render() {
     <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
     <div className= {styles.grid}>
 
-        <Grid container  xs={4}  style={{margin:"auto"}}>
+        <Grid container  xs={6}  style={{margin:"auto"}}>
             <Container className='tableContainer'>
-                <Box position='relative' >
-                    <Typography variant="h6">
-                            Send Credentials
-                    </Typography>
-                </Box>
-                <Box mt={3}>
+ 
+            <Grid container   
+              direction="row"
+              justify='space-evenly'
+              spacing={4}
+              xs={12} style={{margin:"auto"}}>
+                <Grid item container spacing={0} xs={12}>
+                  <Grid item xs={1} position='relative'>
+                    <Box position='absolute' left={16}>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Typography variant="h5">
+                        Send Credentials to {this.props.location.state.person_firstName} {this.props.location.state.person_familyName}
+                    </Typography> 
+                  </Grid>
+                  <Grid item xs={1} position='relative'>
+                  </Grid>     
+                </Grid>
+                <Grid item xs={12} />
                     <Grid
                         item
                         component={Paper}
@@ -147,42 +160,39 @@ render() {
                         direction="row"
                         justify="center"
                         alignItems="flex-start"
+                        spacing={8}
                         xs={12}
                         >
                         {/*padding*/}
-                        <Grid item xs={12} >
-                            <Box height='8vh' />     
-                        </Grid>
-                        <Grid item xs={12}>
+                        <Grid container item xs={12} direction='column' alignContent='center' spacing={2}>
                             {Object.keys(this.state.attributes).map((key) => {
                               return(
-                              <Box mt={2}>
-                              <Grid item xs={12}>
+                        
+                              <Grid item xs={6}>
                               <TextField hintText={'Enter ' +  this.state.attributes[key][0]}
                               floatingLabelText={this.state.attributes[key][0]} 
+                              fullWidth
                               onChange={(event, newValue) => {
                               let values = this.state.attributes;
                               values[key][1] = newValue;
                               this.setState({ attributes: values})}}
                               />
                               </Grid>
-                              </Box> 
+               
                               );     
                                    
                             })}
-                         <Grid item xs={12} >
-                            <Box height='8vh' />     
-                        </Grid>
                         </Grid>
                     </Grid>
-                    </Box>
-                <Box>
-                    <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialsClick(event)}>Send</Button>
-                </Box>
-            
+                    <Grid item xs={12} />
+                    <Grid item xs={12}>
+                        <Button  color='primary' style={{color:'white'}} onClick={(event) => this.sendCredentialsClick(event)}>Send</Button>
+                    </Grid>
+                  </Grid>        
             </Container>
         </Grid>
       </div>
+      <Footer />
       </div>         
     </MuiThemeProvider>
     

@@ -35,6 +35,8 @@ import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from './../components/customizedSnackbar';
+import Footer from "./../components/footer";
+
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -473,12 +475,15 @@ render() {
       </Box>
       </Container>
     </div>
+
       </div>
+
       <Snackbar message={this.state.snackbarMessage}
                   variant={this.state.snackbarVariant} 
                   snackbarOpen={this.state.snackbarOpen} 
                   closeSnackbar={() => this.setState({snackbarOpen: false})} 
         />
+            <Footer />
       </ThemeProvider>
     </div>
   )

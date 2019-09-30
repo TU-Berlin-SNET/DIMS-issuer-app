@@ -34,7 +34,7 @@ import Snackbar from './../components/customizedSnackbar';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
-const kindOfPerson = localStorage.getItem('kindOfPerson')
+const model = localStorage.getItem('model')
 
 
 //var apiBaseUrl = ""REPLACE"";
@@ -74,7 +74,6 @@ class CredentialOfferScreen extends Component {
                     value: "",
                     label: ""},
           credentialDefinitions: [],
-          selected: "",
           myDid: props.location.state.myDid,
           sendCredentialCheck: true,
           person: null,
@@ -94,7 +93,7 @@ class CredentialOfferScreen extends Component {
        'Content-Type': 'application/json',
        'Authorization': localStorage.getItem("token") 
      }
-     await axios.get(Constants.mongoDBBaseUrl + kindOfPerson + "?id=" + person_id, {headers}).then(function (response) {
+     await axios.get(Constants.mongoDBBaseUrl + model + "?id=" + person_id, {headers}).then(function (response) {
        console.log(response);
        if (response.status === 200) {
          person = response.data[0]
@@ -179,7 +178,7 @@ componentDidMount(){
   this.listCredDefs()
   this.getTheirDid()
   if(this.state.justOnboarded === true){
-    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + kindOfPerson + " established"});
+    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + model.slice(0, model.length -1) + " established"});
     this.forceUpdate()
   }
   this.timer = setInterval(() => {
@@ -196,9 +195,6 @@ sendCredentialOfferClick(){
   this.sendCredentialOffer()
 }
 
-handleEdit(event, selected){ //Fuction 
-  this.setState({ selected: selected}); 
-} 
 
 handleTabChange(newTab){
   this.props.onTabChange(newTab)

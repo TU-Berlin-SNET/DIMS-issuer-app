@@ -1,11 +1,13 @@
 .App {
   text-align: center;
-	width: 100%;
+  width: 100%;
+  height: 100vh;
+  position: absolute;
 }
 
 .bigAvatar{
-  width: 200;
-  height: 200;
+  width: 400px;
+  height: 400px;
 }
 
 .App-logo {
@@ -43,9 +45,8 @@
 
 .tableContainer {
   margin-top: 8vh;
-  margin-bottom: 8vh;
+  margin-bottom: 12vh;
   padding: 8px;
-  border-radius: 8px;
 }
 
 .centeredItem {

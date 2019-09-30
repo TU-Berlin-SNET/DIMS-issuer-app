@@ -26,15 +26,24 @@ var theme;
               backgroundColor: '#6980FF',
               color: '#FFFFFF'
             }
+          },
+          MuiAvatar: {
+            root:{
+              width: "50px",
+              height: "50px",
+            }
+          },
+          MuiButton: {
+            root:{
+              primary: {
+                color: '#6980FF',
+              },
+              secondary:{
+                color: '#FFF'
+              }
+              
+            }
           }
-      },
-      avatar: {
-        margin: 10,
-      },
-      bigAvatar: {
-        margin: 10,
-        width: 200,
-        height: 200,
       },
     typography: {
       useNextVariants: true,
@@ -48,7 +57,6 @@ var theme;
       },
       secondary:{
           main: '#FF7C7C',
-          light: '#000000',
           contrastText:'#FFFFFF'
       },
       colorDefault:{

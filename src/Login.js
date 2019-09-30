@@ -77,7 +77,7 @@ setRole(role){
          localStorage.setItem('model', 'citizens')
          break;
     case 'bank' :
-        localStorage.setItem('model', 'bankCustomers')
+        localStorage.setItem('model', 'bank-customers')
         break;
     default:
          case 'government' :

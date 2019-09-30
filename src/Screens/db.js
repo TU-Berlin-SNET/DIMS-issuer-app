@@ -27,9 +27,7 @@ import CredentialIcon from '@material-ui/icons/Assignment';
 import Paper from '@material-ui/core/Paper';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
-import SearchIcon from '@material-ui/icons/Message';
 import Avatar from '@material-ui/core/Avatar';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
 import Snackbar from './../components/customizedSnackbar'
 
@@ -78,7 +76,6 @@ function DB(props) {
      
         </Container>
     </Grid>
-    <Footer />
   </div>
   );
 }
@@ -118,6 +115,7 @@ class DBScreen extends Component {
   }
 
   componentDidMount(){
+    console.log(model)
     this.getDB();
     document.title = "DIMS"
     
@@ -296,17 +294,15 @@ newPerson(){
 
 getDB(){
   console.log(localStorage.getItem('role'))
-  switch(localStorage.getItem('role')){
-    case 'government' :
 
       this.listPersons()
-  }
+  
 }
 
   render() {
     return (
       <MuiThemeProvider>
-        <div className="App">
+        <Box  className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
           <DB this={this} />
           <Snackbar message={this.state.snackbarMessage}
@@ -314,7 +310,8 @@ getDB(){
                   snackbarOpen={this.state.snackbarOpen} 
                   closeSnackbar={() => this.setState({snackbarOpen: false})} 
         />
-        </div>
+            <Footer />
+        </Box>
       </MuiThemeProvider>
     );
   }
