@@ -37,6 +37,38 @@ handleTabChange(event,newValue) {
   this.props.onTabChange(activeTab)
 }
 
+showTabs(){
+  if(this.props.showTabs === false && this.props.showTabs !== null){
+    return(
+    <Grid item container xs={9}>
+      <Tabs />
+    </Grid>)
+  }
+  else{
+    return(
+      <Grid item container xs={9}>
+        <Grid item xs={10}>
+        <Tabs
+        indicatorColor="#FFFFFF"
+        value={this.props.tabNr}
+        onChange={this.handleTabChange.bind(this)}
+        centered
+      >
+        {links.map((link, key) => {return (
+            <Tab key={key} component={Link} value={key} label={link.label} to={link.to}/>
+        )})}
+          </Tabs>
+          </Grid>
+          <Grid item xs={2}> 
+                  <Link to={"account"}>
+                     < AccountIcon style={{color:'white'}} fontSize='large'/>
+                  </Link>  
+          </Grid>
+      </Grid>
+  )
+  }
+}
+
 
   render() {
     return (
@@ -50,22 +82,8 @@ handleTabChange(event,newValue) {
             <Grid xs={2} item  >
               <DIMSLogo />
             </Grid>
-            <Grid item xs={8}>
-              <Tabs
-                value={this.props.tabNr}
-                onChange={this.handleTabChange.bind(this)}
-                centered
-              >
-                {links.map((link, key) => {return (
-                    <Tab key={key} component={Link} value={key} label={link.label} to={link.to}/>
-                )})}
-                  </Tabs>
-            </Grid>
-            <Grid item xs={1}> 
-                <Link to={"account"}>
-                   < AccountIcon style={{color:'white'}} fontSize='large'/>
-                </Link>  
-            </Grid>
+
+              {this.showTabs()}
             <Grid item xs={1} >
                   <Link underline='none' style= {{color: '#ffffff' }}   to={''}>Login</Link>
             </Grid>

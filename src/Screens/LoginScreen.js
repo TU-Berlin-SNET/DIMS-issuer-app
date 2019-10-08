@@ -105,11 +105,11 @@ class Loginscreen extends Component {
   render() {
     return (
       <Box  position='relative' height='100vh' className="loginscreen" key="loginscreen">
-                  <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+                  <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} showTabs={false}/>
 
           {this.state.loginscreen}
-          <Box position='absolute' left= '0' right= '0' top='50%' >
-          <Box mb='5vh'>{this.state.loginmessage}</Box>
+          <Box position='absolute' left= '0' right= '0' top='55%' >
+          <Box  mb='5vh'>{this.state.loginmessage}</Box>
           <Box>{this.state.loginButtons}</Box>
           </Box>
       </Box>

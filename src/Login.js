@@ -70,6 +70,8 @@ componentDidMount(){
   }
 
 setRole(role){
+    
+    
     localStorage.setItem('role', role)
 
     switch(role){
@@ -85,8 +87,11 @@ setRole(role){
          break;
 
 
+
 }
+window.location.reload(true)
 console.log(localStorage.getItem('model'))
+  
 }
     handleLoginClick(event) {
         var self = this;
@@ -105,6 +110,7 @@ console.log(localStorage.getItem('model'))
                     //issuerScreen.push(<IssuerScreen appContext={self.props.appContext} />)
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
+  
                     self.props.history.push("/db");
 
 
