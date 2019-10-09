@@ -21,7 +21,7 @@ import * as Constants from "./../Constants";
 import axios from 'axios';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import Footer from './../components/footer'
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
@@ -99,7 +99,7 @@ class newUserScreen extends Component {
                   justify='center' spacing={4}>
                     <Grid item xs={12} justify='center'>
                           <Typography  variant="h5">
-                            User
+                            Account
                           </Typography>
                    </Grid>
                 <Grid item xs={12} />
@@ -122,16 +122,12 @@ class newUserScreen extends Component {
                     </Grid>
                     </Grid>
                     <Grid item xs={12} />
-                <Grid container item xs={12} justify='center'>
-                  <Grid item xs={4}>
-                  <Button  color="primary" style={{color:'white'}} onClick={(event) => this.handleLogout(event)}>Logout</Button>
-                  </Grid>
-                </Grid>
                 </Grid>
 
     
             </Container>
             </Box>
+            <Footer />
         </div> 
      </div>
     </ThemeProvider>
