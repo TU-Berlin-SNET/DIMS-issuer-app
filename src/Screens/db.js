@@ -38,7 +38,11 @@ import Snackbar from './../components/customizedSnackbar'
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
 const models = JSON.parse(localStorage.getItem('model'))
-var model = Object.values(models)[0]
+var model
+if(models !== null){
+  model = Object.values(models)[0]
+
+}
 
 
 
@@ -278,7 +282,9 @@ onboardPerson(selected){
     state: { person_id: selected.id,
              person_firstName: selected.firstName,
              person_familyName: selected.familyName,
-             person_did: selected.did }
+             person_did: selected.did,
+             modelName: model[0].toUpperCase() +  model.slice(1, model.length-1)
+            }
   })
 }
 
@@ -318,7 +324,7 @@ getDB(){
     return (
       <MuiThemeProvider>
         <Box  className="App">
-          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
           <div className="grid">
             <Grid item xs={12}  style={{margin:"auto"}}>
                 <Container maxWidth='false' className="tableContainer">

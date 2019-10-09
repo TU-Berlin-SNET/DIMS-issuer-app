@@ -12,6 +12,11 @@ import DIMSLogo from'./DIMSLogo';
 import AccountIcon from '@material-ui/icons/AccountBox'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button'
+import governmentIcon from './../Icons/Government.png';
+import bankIcon from './../Icons/Bank.png';
+import shopIcon from './../Icons/Shop.png';
+
 
 var activeTab = 0;
 
@@ -37,17 +42,41 @@ handleTabChange(event,newValue) {
   this.props.onTabChange(activeTab)
 }
 
+roleIcon(){
+  switch(localStorage.getItem('role')){
+    case 'government':
+      return <img height='40' src={governmentIcon} alt="Logo" />
+      break;
+    case 'bank' :
+        return <img height='40' src={bankIcon} alt="Logo" />
+        break;
+    case 'shop' :
+        return <img height='40' src={shopIcon} alt="Logo" />
+        break;
+    default :
+        return <img height='40' src={governmentIcon} alt="Logo" />
+        break;
+  }
+}
+
 showTabs(){
   if(this.props.showTabs === false && this.props.showTabs !== null){
     return(
-    <Grid item container xs={9}>
-      <Tabs />
+    <Grid item container xs={10}>
+        <Grid item xs={9} />
+        <Grid container alignItems='center' item xs={2}> 
+                  <Link to={"account"}>
+                      {this.roleIcon()}
+                  </Link>  
+        </Grid>
+        <Grid item xs={1} />
+        
     </Grid>)
   }
   else{
     return(
-      <Grid item container xs={9}>
-        <Grid item xs={10}>
+      <Grid item container xs={10}>
+        <Grid item xs={9}>
         <Tabs
         indicatorColor="#FFFFFF"
         value={this.props.tabNr}
@@ -59,14 +88,24 @@ showTabs(){
         )})}
           </Tabs>
           </Grid>
-          <Grid item xs={2}> 
+          <Grid container alignItems='center' item xs={2}> 
                   <Link to={"account"}>
-                     < AccountIcon style={{color:'white'}} fontSize='large'/>
+                      {this.roleIcon()}
                   </Link>  
           </Grid>
+          <Grid item container alignItems='center' xs={1} >
+            <Button  color="primary" style={{color:'white'}} onClick={(event) => this.handleLogout(event)}>Logout</Button>
+          </Grid>
       </Grid>
+
   )
   }
+}
+
+handleLogout(event){
+  // console.log("logout event fired",this.props);
+  localStorage.clear();
+  this.props.parentContext.props.history.push("/");
 }
 
 
@@ -84,9 +123,6 @@ showTabs(){
             </Grid>
 
               {this.showTabs()}
-            <Grid item xs={1} >
-                  <Link underline='none' style= {{color: '#ffffff' }}   to={''}>Login</Link>
-            </Grid>
             </Grid>
             </Container>
         </Box>

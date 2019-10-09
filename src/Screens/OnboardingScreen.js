@@ -250,7 +250,7 @@ goTosendCredentialScreen(){
             </Grid>
             <Grid item xs={10}>
               <Typography variant="h5">
-                  Onboard {this.props.location.state.person_firstName} {this.props.location.state.person_familyName}
+                  Onboard {this.props.location.state.modelName}
               </Typography> 
             </Grid>
           <Grid item xs={1} position='relative'>
