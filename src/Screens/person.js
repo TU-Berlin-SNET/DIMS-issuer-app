@@ -341,6 +341,7 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
       } else {
         pictureAvatar  = null
       }
+      console.log(this.props)
     return (
       <MuiThemeProvider>
         <div className='App'>
@@ -362,7 +363,7 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
                 </Link>  
             </Box>
             <Typography variant="h5">
-               {this.state.person.firstName} {this.state.person.familyName}
+               {this.props.location.state.modelName}
             </Typography> 
             </Box>   
         </Grid>

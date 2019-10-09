@@ -65,32 +65,34 @@ handleDrawerClose = () => {
 };
 
 componentDidMount(){
-    document.title = "issuer app"
-            localStorage.setItem('model', 'citizens')
+    document.title = "DIMS"
+        localStorage.setItem('model', '{"citizens": "citizens", "naturalPersons": "natural-persons", "legalPersons": "legal-persons"}')
+
   }
 
 setRole(role){
-    
+    window.location.reload()
     
     localStorage.setItem('role', role)
 
     switch(role){
      case 'government' :
-         localStorage.setItem('model', 'citizens')
+         localStorage.setItem('model', '{"citizens": "citizens", "naturalPersons": "natural-persons", "legalPersons": "legal-persons"}')
          break;
     case 'bank' :
-        localStorage.setItem('model', 'bank-customers')
+        localStorage.setItem('model', '{"bankCustomers": "bank-customers"}')
         break;
     default:
          case 'government' :
-         localStorage.setItem('model', 'citizens')
+         localStorage.setItem('model', '["citizens", "abc"]')
          break;
 
 
 
 }
-window.location.reload(true)
 console.log(localStorage.getItem('model'))
+
+
   
 }
     handleLoginClick(event) {

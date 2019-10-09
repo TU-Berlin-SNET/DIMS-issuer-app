@@ -29,56 +29,17 @@ import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
 import Avatar from '@material-ui/core/Avatar';
 import AddIcon from '@material-ui/icons/Add';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext'
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore'
+
 import Snackbar from './../components/customizedSnackbar'
 
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
-const model = localStorage.getItem('model')
+const models = JSON.parse(localStorage.getItem('model'))
+var model = Object.values(models)[0]
 
-
-
-function DB(props) {
-  return(
-  <div className="grid">
-    <Grid item xs={12}  style={{margin:"auto"}}>
-        <Container maxWidth='false' className="tableContainer">
-        <Grid container   
-              direction="row"
-              justify='space-evenly'
-              spacing={4}
-              xs={12} style={{margin:"auto"}}>
-       <Grid item container spacing={0} xs={12}>
-            <Grid item xs={1} />
-            <Grid item xs={10}>
-            <Typography variant="h5">
-              {model[0].toUpperCase() +  model.slice(1)}
-            </Typography> 
-            </Grid>
-          <Grid item xs={1} position='relative'>
-            <Box position='absolute' right={16}>
-              <Button onClick={(event) => props.this.newPerson()}>
-                <AddIcon style={{color:'white'}} fontSize="large" /> 
-              </Button>
-            </Box>
-          </Grid>        
-        </Grid>
-      <Grid item xs={12} />
-      <Grid item container xs={12}
-        justify='center'
-        component={Paper}
-        spacing={8}
-        >
-                    {props.this.state.db}
-          </Grid>
-          <Grid item xs={12} />
-          </Grid>
-     
-        </Container>
-    </Grid>
-  </div>
-  );
-}
 
 
 class DBScreen extends Component {
@@ -97,7 +58,6 @@ class DBScreen extends Component {
       snackbarOpen: false,
       snackbarMessage: "",
       snackbarVariant: "sent",
-      model: "",
     }
   }
   else{
@@ -109,7 +69,7 @@ class DBScreen extends Component {
       selected: '',
       credReq: null,
       CheckIfNewPerson: false,
-      model: "",
+
     }
   }
   }
@@ -135,8 +95,55 @@ class DBScreen extends Component {
       this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credentials sent"});
       this.forceUpdate()
     }
-
   }
+
+  nextModel(){
+    var modelNames = Object.values(models)
+    console.log(modelNames.indexOf(model))
+    if(modelNames.indexOf(model) < modelNames.length-1){
+      return(
+        <Grid  item  xs={4} >
+          <Button style={{color:'white'}} onClick={() => this.handleNextModelClick()}> 
+            <NavigateNextIcon />
+          </Button>
+        </Grid>
+      )
+    }
+    else return( <Grid item xs={4} />)
+  }
+
+  handleNextModelClick(){
+    var modelNames = Object.values(models)
+    var nextModel = modelNames[modelNames.indexOf(model) +1]
+    console.log(nextModel)
+    model= nextModel
+    this.getDB()
+    this.forceUpdate()
+  }
+
+
+  prevModel(){
+    var modelNames = Object.values(models)
+    if(modelNames.indexOf(model) > 0){
+      return(
+        <Grid alignContent='center' item  xs={4} >
+          <Button style={{color:'white'}} onClick={() => this.handlePrevModelClick()}> 
+            <NavigateBeforeIcon />
+          </Button>
+        </Grid>
+      )
+    }
+    else return( <Grid item xs={4} />)
+  }
+
+  handlePrevModelClick(){
+    var modelNames = Object.values(models)
+    var prevModel = modelNames[modelNames.indexOf(model) - 1]
+    model= prevModel
+    this.getDB()
+    this.forceUpdate()
+  }
+
 
  async  listPersons(){
    let self = this
@@ -201,6 +208,12 @@ class DBScreen extends Component {
     }
   }).catch(function (error) {
     console.log(error);
+    var db = <CUSTOMPAGINATIONACTIONSTABLE 
+                  data={[]}
+                  showAttr={['id', 'first name', 'family name','photo']}
+              />
+    self.setState({db})
+    self.forceUpdate()
   });
 }
 
@@ -230,7 +243,8 @@ openPersonView(selected){
   delete selected['photo']
   this.props.history.push({
     pathname: '/person',
-    state: { person: selected}
+    state: { person: selected,
+             modelName: model[0].toUpperCase() +  model.slice(1, model.length-1)}
   })
 }
 
@@ -287,15 +301,16 @@ handleEdit(event, selected){ //Fuction
 newPerson(){
   this.props.history.push({
     pathname: '/newPerson',
-    state: {                
+    state: {          
+      modelName: model      
     }
   })
 }
 
 getDB(){
   console.log(localStorage.getItem('role'))
-
       this.listPersons()
+      
   
 }
 
@@ -304,7 +319,47 @@ getDB(){
       <MuiThemeProvider>
         <Box  className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-          <DB this={this} />
+          <div className="grid">
+            <Grid item xs={12}  style={{margin:"auto"}}>
+                <Container maxWidth='false' className="tableContainer">
+                <Grid container   
+                      direction="row"
+                      justify='space-evenly'
+                      spacing={4}
+                      xs={12} style={{margin:"auto"}}>
+              <Grid item container spacing={0} xs={12}>
+                    <Grid item xs={1} />
+                    <Grid container  item xs={10}>
+                      {this.prevModel()}
+                      <Grid item xs={4}>
+                        <Typography variant="h5">
+                          {model[0].toUpperCase() +  model.slice(1)}
+                        </Typography> 
+                      </Grid>
+                      {this.nextModel()}
+                    </Grid>
+                  <Grid item xs={1} position='relative'>
+                    <Box position='absolute' right={16}>
+                      <Button onClick={(event) => this.newPerson()}>
+                        <AddIcon style={{color:'white'}} fontSize="large" /> 
+                      </Button>
+                    </Box>
+                  </Grid>        
+                </Grid>
+              <Grid item xs={12} />
+              <Grid item container xs={12}
+                justify='center'
+                component={Paper}
+                spacing={8}
+                >
+                            {this.state.db}
+                  </Grid>
+                  <Grid item xs={12} />
+                  </Grid>
+            
+                </Container>
+            </Grid>
+          </div>
           <Snackbar message={this.state.snackbarMessage}
                   variant={this.state.snackbarVariant} 
                   snackbarOpen={this.state.snackbarOpen} 

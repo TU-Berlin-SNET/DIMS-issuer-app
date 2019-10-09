@@ -28,8 +28,6 @@ import Footer from "./../components/footer"
 import Container from '@material-ui/core/Container';
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
-const modelName = localStorage.getItem('model')
-const modelSingular = modelName[0].toUpperCase() +  modelName.slice(1, modelName.length-1)
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
 
@@ -42,6 +40,7 @@ const avatarImageStyle = {
 class newUserScreen extends Component {
   constructor(props){
      let userdata =  props.location.state
+     let modelName = props.location.state.modelName
     super(props);
     Utils.checkLogin(this)
     this.state={
@@ -59,8 +58,14 @@ class newUserScreen extends Component {
       snackbarMessage: "",
       snackbarVariant: "sent",
       model: {},
+      modelName: modelName,
+      modelSingular: modelName[0].toUpperCase() +  modelName.slice(1, modelName.length-1)
+
+
     }
+
   }
+
 
   componentDidMount(){
       document.title = "DIMS"
@@ -88,7 +93,7 @@ class newUserScreen extends Component {
           'Authorization': localStorage.getItem("token") 
         }
 
-        await axios.post(mongoDBBaseUrl + modelName , self.state.model, {headers}).then(function (response) {
+        await axios.post(mongoDBBaseUrl + this.state.modelName , self.state.model, {headers}).then(function (response) {
                 if (response.status === 200) {
                   console.log(JSON.stringify(self.state.model))
                   if(self.state.onboardChecked===true){
@@ -130,7 +135,8 @@ async getModel(event){
                 
                 for(let model_name in response.data){
                     console.log(model_name)
-                    if(model_name === modelName){
+                    console.log(self.state.modelName)
+                    if(model_name === self.state.modelName){
                         model = response.data[model_name]
                         for(let attribute in  model){
                             model[attribute] = "";
@@ -186,7 +192,7 @@ readUploadedFileAsDataURL(inputFile){
                             <Grid item xs={1} />
                             <Grid item xs={10}>
                                 <Typography variant="h5">
-                                    {"New " + modelSingular}
+                                    {"New " + this.state.modelSingular}
                                 </Typography> 
                             </Grid>
                             <Grid item xs={1} position='relative'>
