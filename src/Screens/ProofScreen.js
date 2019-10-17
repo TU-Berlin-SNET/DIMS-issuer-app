@@ -204,6 +204,58 @@ async listPairwiseConnectionOptions(){
     });
 }
 
+async sendFullTextQuery(query){
+  //select?q=txn.data.text:
+  var self = this;
+  var headers = {
+      'Content-Type': 'application/json',
+  }
+  await axios.get(Constants.solrBaseUrl + "select?q=text:" + query + "~2  AND txn.type:102", {headers: headers}).then(function (response) {
+    console.log(response);
+    console.log(response.status);
+    if (response.status === 200) {
+      //todo: extract credential definitions from response
+      console.log(JSON.stringify(response.data.response.docs))
+      let credentialDefinitions = self.preprocessCredDefs(response.data.response.docs,5,self)
+      //TODO: merge credential definitions with existing options
+    }
+  }).catch(function (error) {
+    console.log(error);
+  });
+  
+}
+
+preprocessCredDefs(credDefs, head = 5,self = this){
+  let credDefsVis = <List>{credDefs.slice(0,head).map((credDef) => {
+    let credAttrs = Object.keys(credDef).filter((attr) => attr.startsWith("txn.data.data.primary.r."))
+    .map((attr) => JSON.stringify(attr).replace("txn.data.data.primary.r.","").replace(/"/g,""))
+    .filter(attr => (attr !== "master_secret"))
+    .map((attr) => [attr,credDef["txnMetadata.txnId"]])
+    let credVisElem = <div>
+      Credential Definition ID: {credDef["txnMetadata.txnId"]}
+      <br />
+      <List 
+      //onClick={() => {self.setState({ credDefId: credDef["txnMetadata.txnId"], requested_attributes: self.state.requested_attributes.concat(credAttrs)})}}
+      >
+        {credAttrs.map(
+          (attr) => {
+            return(
+              <ListItem onClick={() => {self.setState({ credDefId: credDef["txnMetadata.txnId"], requested_attributes: self.state.requested_attributes.concat([attr])})}}>
+                {attr[0]}
+              </ListItem>
+            )
+          }
+        )}
+        </List>
+        </div>
+        return(<ListItem>{credVisElem}</ListItem>)
+      })}
+      </List>
+      return(credDefsVis)
+    }
+  
+
+
 
 sendProofRequestClick(){
   this.sendProofRequest()
