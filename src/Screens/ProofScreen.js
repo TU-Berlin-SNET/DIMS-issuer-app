@@ -253,7 +253,7 @@ preprocessCredDefs(credDefs, head = 10){
             return( elem.startsWith("txn.data.data.primary.r.") && elem !== 'txn.data.data.primary.r.master_secret')
           })
           return(
-            {label: credDef["txn.data.tag"], value: credDef["txnMetadata.txnId"], attributes: attributes.map(
+            {label: credDef["txn.data.tag"], value: String(credDef["txnMetadata.txnId"]), attributes: attributes.map(
               (attr) => [attr.replace("txn.data.data.primary.r.",""),credDef["txnMetadata.txnId"]]
             )}
           )
@@ -264,7 +264,7 @@ preprocessCredDefs(credDefs, head = 10){
             return( elem.startsWith("txn.data.data.primary.r.") && elem !== 'txn.data.data.primary.r.master_secret')
           })
           return(
-            {label: credDef["txn.data.tag"], value: credDef["txnMetadata.txnId"], attributes: attributes.map(
+            {label: credDef["txn.data.tag"], value: String(credDef["txnMetadata.txnId"]), attributes: attributes.map(
               (attr) => attr.replace("txn.data.data.primary.r.","")
             )}
           )
@@ -559,7 +559,7 @@ render() {
               Attributes
             </Typography>   
           </Grid> 
-          <Grid container wrap spacing={2} justify='center' alignContent="center" alignItems="center" item xs={4}>
+          <Grid container wrap spacing={2} justify='center' alignContent="center" alignItems="center" item xs={6}>
 
           {this.state.requested_attributes.map((attr, index) => {
                        return( this.currentAttribute(attr, index) )
