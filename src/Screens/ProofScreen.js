@@ -16,7 +16,7 @@ import ProofTable from './ProofTable'
 import PropTypes from 'prop-types';
 import { Link, withRouter, Redirect} from "react-router-dom";
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import {List, ListItem} from '@material-ui/core'
+import {List, ListItem, Input} from '@material-ui/core'
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar"
 import Grid from '@material-ui/core/Grid'
@@ -36,11 +36,24 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from './../components/customizedSnackbar';
 import Footer from "./../components/footer";
+import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
 
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
 
+const IfResults = (retrievedCredentialDefinitions) => {
+  if(retrievedCredentialDefinitions.length > 0){
+    return(
+      <Typography variant="h6">
+              Results
+            </Typography> 
+    )
+  } else {
+    return("")
+  }
+}
 
 class ProofScreen extends Component {
 
@@ -83,6 +96,9 @@ class ProofScreen extends Component {
           snackbarOpen: false,
           snackbarMessage: "",
           snackbarVariant: "sent",
+          fullTextQuery: "",
+          retrievedCredentialDefinitions: [],
+          ifResults: null,
         }
       } else {
         this.state={
@@ -102,6 +118,9 @@ class ProofScreen extends Component {
           snackbarOpen: false,
           snackbarMessage: "",
           snackbarVariant: "sent",
+          fullTextQuery: "",
+          retrievedCredentialDefinitions: [],
+          ifResults: null,
         }
       }
       }
@@ -216,7 +235,10 @@ async sendFullTextQuery(query){
     if (response.status === 200) {
       //todo: extract credential definitions from response
       console.log(JSON.stringify(response.data.response.docs))
-      let credentialDefinitions = self.preprocessCredDefs(response.data.response.docs,5,self)
+      let [credentialDefinitions,credentialDefinitionsState] = self.preprocessCredDefs(response.data.response.docs,10)
+      console.log(credentialDefinitions)
+      let ifResults = <IfResults retrievedCredentialDefinitions={credentialDefinitions}/>
+      self.setState({ifResults:  ifResults, retrievedCredentialDefinitions: credentialDefinitions, credentialDefinitions: credentialDefinitionsState})
       //TODO: merge credential definitions with existing options
     }
   }).catch(function (error) {
@@ -225,33 +247,30 @@ async sendFullTextQuery(query){
   
 }
 
-preprocessCredDefs(credDefs, head = 5,self = this){
-  let credDefsVis = <List>{credDefs.slice(0,head).map((credDef) => {
-    let credAttrs = Object.keys(credDef).filter((attr) => attr.startsWith("txn.data.data.primary.r."))
-    .map((attr) => JSON.stringify(attr).replace("txn.data.data.primary.r.","").replace(/"/g,""))
-    .filter(attr => (attr !== "master_secret"))
-    .map((attr) => [attr,credDef["txnMetadata.txnId"]])
-    let credVisElem = <div>
-      Credential Definition ID: {credDef["txnMetadata.txnId"]}
-      <br />
-      <List 
-      //onClick={() => {self.setState({ credDefId: credDef["txnMetadata.txnId"], requested_attributes: self.state.requested_attributes.concat(credAttrs)})}}
-      >
-        {credAttrs.map(
-          (attr) => {
-            return(
-              <ListItem onClick={() => {self.setState({ credDefId: credDef["txnMetadata.txnId"], requested_attributes: self.state.requested_attributes.concat([attr])})}}>
-                {attr[0]}
-              </ListItem>
-            )
-          }
-        )}
-        </List>
-        </div>
-        return(<ListItem>{credVisElem}</ListItem>)
-      })}
-      </List>
-      return(credDefsVis)
+preprocessCredDefs(credDefs, head = 10){
+        let credDefsProc = credDefs.map((credDef) => {
+          let attributes = Object.keys(credDef).filter(elem => {
+            return( elem.startsWith("txn.data.data.primary.r.") && elem !== 'txn.data.data.primary.r.master_secret')
+          })
+          return(
+            {label: credDef["txn.data.tag"], value: credDef["txnMetadata.txnId"], attributes: attributes.map(
+              (attr) => [attr.replace("txn.data.data.primary.r.",""),credDef["txnMetadata.txnId"]]
+            )}
+          )
+        }
+        )
+        let credDefsProcState = credDefs.map((credDef) => {
+          let attributes = Object.keys(credDef).filter(elem => {
+            return( elem.startsWith("txn.data.data.primary.r.") && elem !== 'txn.data.data.primary.r.master_secret')
+          })
+          return(
+            {label: credDef["txn.data.tag"], value: credDef["txnMetadata.txnId"], attributes: attributes.map(
+              (attr) => attr.replace("txn.data.data.primary.r.","")
+            )}
+          )
+        }
+        )
+        return([credDefsProc,credDefsProcState])
     }
   
 
@@ -389,6 +408,8 @@ componentDidMount(){
   Utils.listCredDefs(this)
   this.listPairwiseConnectionOptions()
   this.timer = setInterval(() => {this.listPairwiseConnectionOptions()},5000)
+  let ifResults = <IfResults retrievedCredentialDefinitions={this.state.retrievedCredentialDefinitions}/>
+  this.setState({ifResults:  ifResults})
 }
 
 componentWillUnmount(){
@@ -445,6 +466,37 @@ render() {
         component={Paper}
         spacing={8}
         >
+        <Grid item container xs={10} direction="column" alignContent="center" justify='center' component={Paper}>
+        <Grid>
+        <Typography variant="h6">
+              Search for credential types...
+            </Typography> 
+        </Grid>
+        <Grid>
+        <TextField id="schemaNameInput"
+                                hintText="Search for credential definitions..."
+                                floatingLabelText="Query Credential Definitions"
+                                defaultValue={this.state.fullTextQuery}
+                                onChange={(event, newValue) => this.setState({ fullTextQuery: newValue })}
+                              />  
+          <Button variant="outlined" onClick={() => this.sendFullTextQuery(this.state.fullTextQuery)}>Query<SearchIcon /></Button>
+          </Grid>
+          {this.state.ifResults}
+          <Grid item justify='center' xs={10}>
+          <List>
+        {this.state.retrievedCredentialDefinitions.map(credDef => {
+          return(<ListItem>
+            <Chip
+        label={credDef.value}
+        onClick={() => this.setState({credDef: credDef, credDefId: credDef.value, requested_attributes: credDef.attributes})}
+        variant="outlined"
+        className="chip"
+        />
+          </ListItem>)})
+        }
+        </List>
+        </Grid>
+        </Grid>
         <Grid item container xs={4} justify='center'   >
         Credential definition ID:
           <Select value={this.state.credDef.value}

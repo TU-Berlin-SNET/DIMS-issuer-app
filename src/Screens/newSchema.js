@@ -90,7 +90,6 @@ function NewSchema(props) {
                               <TextField id="schemaNameInput" fullWidth 
                                 hintText="Enter the name of the schema"
                                 floatingLabelText="Schema name"
-                                defaultValue={props.this.state.schema_name}
                                 onChange={(event, newValue) => props.this.setState({ schema_name: newValue })}
                               />  
                           </Grid>
