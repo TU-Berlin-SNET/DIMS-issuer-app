@@ -23,7 +23,6 @@ var activeTab = 0;
 const links=[
   {label: "Database", to: 'db'},
   {label:'Cred. definition',  to:'credentialdef'},
-  {label:'Proofs',  to:'proofs'},
   {label:'Schemas', to:'schemas'},
 ]
 
@@ -78,7 +77,7 @@ showTabs(){
       <Grid item container xs={10}>
         <Grid item xs={9}>
         <Tabs
-        indicatorColor="#FFFFFF"
+        indicatorColor="primary"
         value={this.props.tabNr}
         onChange={this.handleTabChange.bind(this)}
         centered
@@ -113,8 +112,8 @@ handleLogout(event){
     return (
       <div className="grid">
                <Box position='relative'>
-              <Container  maxWidth='false' >
-        <Grid container xs={12}  
+              <Container  maxWidth={false} >
+        <Grid container  
               direction="row"
               justify="center"
               alignItems="center">

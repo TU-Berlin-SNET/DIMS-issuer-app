@@ -91,7 +91,7 @@ class newUserScreen extends Component {
            
         <div className="App">
         
-            <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+            <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
             <div className={styles.grid}>              
             <Box position='relative' mt={3} width='100%'>
               <Container  maxWidth='false' className='tableContainer'>
@@ -99,7 +99,7 @@ class newUserScreen extends Component {
                   justify='center' spacing={4}>
                     <Grid item xs={12} justify='center'>
                           <Typography  variant="h5">
-                            Account
+                            account
                           </Typography>
                    </Grid>
                 <Grid item xs={12} />

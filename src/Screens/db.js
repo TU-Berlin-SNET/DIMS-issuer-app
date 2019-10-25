@@ -24,6 +24,7 @@ import OnboardIcon from "@material-ui/icons/Work";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@material-ui/icons/Edit';
 import CredentialIcon from '@material-ui/icons/Assignment';
+import ProofRequestIcon from '@material-ui/icons/QuestionAnswer'
 import Paper from '@material-ui/core/Paper';
 import Footer from "./../components/footer";
 import MessageIcon from '@material-ui/icons/Message';
@@ -37,12 +38,9 @@ import Snackbar from './../components/customizedSnackbar'
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 const apiBaseUrl = Constants.apiBaseUrl;
-const models = JSON.parse(localStorage.getItem('model'))
-var model
-if(models !== null){
-  model = Object.values(models)[0]
+var role
+var numOfEntries = 0
 
-}
 
 
 
@@ -62,33 +60,36 @@ class DBScreen extends Component {
       snackbarOpen: false,
       snackbarMessage: "",
       snackbarVariant: "sent",
+      models: {},
+      modelName: ""
     }
   }
   else{
     this.state={
       db:  <CUSTOMPAGINATIONACTIONSTABLE data={[]} showAttr={[]}/>,
-      activeDB: 'Issuer DB',
-      issuerDB : 'hallo',
-      verifierDB : 'Tschüss',
       selected: '',
       credReq: null,
       CheckIfNewPerson: false,
+      models: {},
+      modelName: "",
+      snackbarOpen: false,
+      snackbarMessage: "",
+      snackbarVariant: "sent",
 
     }
   }
   }
 
   componentDidMount(){
-    console.log(model)
-    this.getDB();
+    this.getModels()
     document.title = "DIMS"
     
     if(this.state.checkIfNewPerson === true){
-      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new " + model + " successfully"});
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new " + this.state.modelName+ " successfully"});
       this.forceUpdate()
     }
     if(this.state.justOnboarded === true){
-      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + model + " established"});
+      this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + this.state.modelName+ " established"});
       this.forceUpdate()
     }
     if(this.state.justSentCredentialOffer === true){
@@ -101,10 +102,42 @@ class DBScreen extends Component {
     }
   }
 
+  getModels(){
+       role = localStorage.getItem('role')
+      let self = this
+      let headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token") 
+      }
+       axios.get(mongoDBBaseUrl + "models/" + role, {headers}).then(function (response) {
+              if (response.status === 200) {
+                self.handleModelsLoaded(response.data)
+              }
+      }).catch(function (error) {
+        console.log(error);
+    })
+  }
+
+
+  handleModelsLoaded = (data) => {
+    this.setState({
+        models: data,
+        modelName: Object.keys(data)[0]
+    }, () => {
+     this.getDB()
+    })
+}
+
+handleNewModel = (modelName) => {
+  this.setState({
+    modelName
+  }, () => { this.getDB()})
+}
+
+
   nextModel(){
-    var modelNames = Object.values(models)
-    console.log(modelNames.indexOf(model))
-    if(modelNames.indexOf(model) < modelNames.length-1){
+    var modelNames = Object.keys(this.state.models)
+    if(modelNames.indexOf(this.state.modelName) < modelNames.length-1){
       return(
         <Grid  item  xs={4} >
           <Button style={{color:'white'}} onClick={() => this.handleNextModelClick()}> 
@@ -114,23 +147,21 @@ class DBScreen extends Component {
       )
     }
     else return( <Grid item xs={4} />)
-  }
+}
 
   handleNextModelClick(){
-    var modelNames = Object.values(models)
-    var nextModel = modelNames[modelNames.indexOf(model) +1]
-    console.log(nextModel)
-    model= nextModel
-    this.getDB()
-    this.forceUpdate()
+    var modelNames = Object.keys(this.state.models)
+    var nextModel = modelNames[modelNames.indexOf(this.state.modelName) +1]
+    this.handleNewModel(nextModel)
   }
 
 
   prevModel(){
-    var modelNames = Object.values(models)
-    if(modelNames.indexOf(model) > 0){
+    if(this.state.models !== null){
+    var modelNames = Object.keys(this.state.models)
+    if(modelNames.indexOf(this.state.modelName) > 0){
       return(
-        <Grid alignContent='center' item  xs={4} >
+        <Grid  item  xs={4} >
           <Button style={{color:'white'}} onClick={() => this.handlePrevModelClick()}> 
             <NavigateBeforeIcon />
           </Button>
@@ -139,24 +170,24 @@ class DBScreen extends Component {
     }
     else return( <Grid item xs={4} />)
   }
+}
 
   handlePrevModelClick(){
-    var modelNames = Object.values(models)
-    var prevModel = modelNames[modelNames.indexOf(model) - 1]
-    model= prevModel
-    this.getDB()
-    this.forceUpdate()
+    var modelNames = Object.keys(this.state.models)
+    var prevModel = modelNames[modelNames.indexOf(this.state.modelName) - 1]
+    this.handleNewModel(prevModel)
   }
 
 
- async  listPersons(){
+ listPersons(){
+  numOfEntries = 0 
    let self = this
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token") 
   }
-  await axios.get(Constants.mongoDBBaseUrl + model, {headers}).then(function (response) {
-    console.log(response);
+   axios.get(Constants.mongoDBBaseUrl + self.state.modelName, {headers}).then(function (response) {
+     console.log(response)
     if (response.status === 200) {
       let persons = <CUSTOMPAGINATIONACTIONSTABLE 
       onEdit={(event, selected) => self.handleEdit(event, selected)} 
@@ -187,11 +218,21 @@ class DBScreen extends Component {
       rowFunction: function (selected){self.openPersonView(selected)},
       rowFunctionName: 'send and view credentials',
       rowFunctionIcon: <MessageIcon />,
+    },
+    {
+      rowFunction: function (selected){self.sendProofRequest(selected)},
+      rowFunctionName: 'send ProofRequest',
+      rowFunctionIcon: <ProofRequestIcon />,
     }
       ]}
 
+
       data={response.data.map(
         (person) => {
+console.log(person)
+          numOfEntries =  parseInt(person.id, 10)
+          console.log(numOfEntries)
+
           if(person.hasOwnProperty('picture') && person.picture !== ""){
             let base64Img = person['picture']
             person['photo'] = <Grid container justify="center" alignItems="center">
@@ -199,15 +240,13 @@ class DBScreen extends Component {
                                </Grid>
           } else {
             person['photo'] = <Grid container justify="center" alignItems="center">
-                                  <Avatar>{person.firstName[0]}</Avatar>
+                                  <Avatar>Photo</Avatar>
                                </Grid>
           }
-          person['first name'] = person.firstName
-          person['family name'] = person.familyName
           return(person)
         }
       )} 
-      showAttr={['id', 'first name', 'family name','photo']}/>
+      showAttr={['id','photo', 'firstname', 'lastname']}/>
       self.setState({db: persons})
     }
   }).catch(function (error) {
@@ -229,9 +268,9 @@ async removePerson(selected) {
     'Authorization': localStorage.getItem("token") 
   }
 
-  await axios.delete(mongoDBBaseUrl + model + "/" + selected.id, {headers}).then(function (response) {
+  await axios.delete(mongoDBBaseUrl + self.state.modelName + "/" + selected.id, {headers}).then(function (response) {
           if (response.status === 204) {
-            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed " + model + " successfully"});
+            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed " + self.state.modelName + " successfully"});
             self.forceUpdate()
             self.listPersons()
           }
@@ -244,34 +283,26 @@ async removePerson(selected) {
 
 openPersonView(selected){
   //the photo field cannot be cloned
+  console.log(selected)
   delete selected['photo']
   this.props.history.push({
     pathname: '/person',
     state: { person: selected,
-             modelName: model[0].toUpperCase() +  model.slice(1, model.length-1)}
+             modelName: this.state.modelName}
   })
 }
 
 editPerson(selected){
+  console.log(selected)
+  delete selected['photo']
+
   this.props.history.push({
     pathname: '/newPerson',
     state: {            
-      "id": selected.id,
-      "familyName": selected.familyName,
-      "firstName": selected.firstName,
-      "dateOfBirth": selected.dateOfBirth,
-      "placeOfBirth": selected.placeOfBirth,
-      "address": selected.currentAddress,
-      "gender": selected.gender,
-      "legalId": selected.legalId,
-      "legalName": selected.legalName,
-      "legalAdress":selected.legalAdress,
-      "vatRegistration": selected.vatRegistration,
-      "taxReference": selected.taxReference,
-      "lei": selected.lei,
-      "eori": selected.eori,
-      "seed": selected.seed,
-      "sic": selected.sic,
+      person: selected,
+      modelName : this.state.modelName,
+      updatePerson: true,
+      picture: selected.picture
     }
   })
 }
@@ -280,10 +311,10 @@ onboardPerson(selected){
   this.props.history.push({
     pathname: '/onboarding',
     state: { person_id: selected.id,
-             person_firstName: selected.firstName,
-             person_familyName: selected.familyName,
+             person_firstname: selected.firstname,
+             person_lastname: selected.lastname,
              person_did: selected.did,
-             modelName: model[0].toUpperCase() +  model.slice(1, model.length-1)
+             modelName: this.state.modelName
             }
   })
 }
@@ -291,7 +322,14 @@ onboardPerson(selected){
 sendCredentialOffer(selected){
   this.props.history.push({
     pathname: '/sendCredOffer',
-    state: { myDid: selected.did, person_id: selected.id, }
+    state: { myDid: selected.did, person_id: selected.id, modelName: this.state.modelName}
+  })
+}
+
+sendProofRequest(selected){
+  this.props.history.push({
+    pathname: '/proofs',
+    state: { myDid: selected.did, person_id: selected.id, modelName: this.state.modelName}
   })
 }
 
@@ -305,19 +343,54 @@ handleEdit(event, selected){ //Fuction
 
 
 newPerson(){
-  this.props.history.push({
-    pathname: '/newPerson',
-    state: {          
-      modelName: model      
-    }
-  })
+  if(role === 'government' || role === 'bank'){
+    this.props.history.push({
+      pathname: '/newPerson',
+      state: {          
+        modelName: this.state.modelName,
+        updatePerson: false
+      }
+    })
+  }
+  else{
+        
+      var self = this;
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem("token") 
+      }
+
+      var payload = {
+        id: numOfEntries +1,
+        firstname: " ",
+        lastname: " ",
+
+      }
+
+         axios.post(mongoDBBaseUrl + self.state.modelName , payload, {headers}).then(function (response) {
+              if (response.status === 200) {
+
+                self.props.history.push({
+                  pathname: '/onboarding',
+                  state: {          
+                    person_id: numOfEntries + 1,
+                    person_firstname: " ",
+                    person_lastname: " ",
+                    person_did:  undefined,
+                    modelName: self.state.modelName
+                  }
+                })
+              
+         
+              }
+          }).catch(function (error) {
+                  console.log(error);
+          });
+      }     
 }
 
 getDB(){
-  console.log(localStorage.getItem('role'))
-      this.listPersons()
-      
-  
+    this.listPersons() 
 }
 
   render() {
@@ -326,24 +399,25 @@ getDB(){
         <Box  className="App">
           <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
           <div className="grid">
-            <Grid item xs={12}  style={{margin:"auto"}}>
-                <Container maxWidth='false' className="tableContainer">
+            <Grid item xs={12} >
+                <Container maxWidth={false} className="tableContainer">
                 <Grid container   
                       direction="row"
                       justify='space-evenly'
                       spacing={4}
-                      xs={12} style={{margin:"auto"}}>
-              <Grid item container spacing={0} xs={12}>
-                    <Grid item xs={1} />
-                    <Grid container  item xs={10}>
-                      {this.prevModel()}
-                      <Grid item xs={4}>
-                        <Typography variant="h5">
-                          {model[0].toUpperCase() +  model.slice(1)}
-                        </Typography> 
+                      style={{margin:"auto"}}
+                      xs={12}>
+                    <Grid item container spacing={0} xs={12}>
+                      <Grid item xs={1} />
+                      <Grid container  item xs={10}>
+                        {this.prevModel()}
+                        <Grid item xs={4}>
+                          <Typography variant="h5">
+                            {this.state.modelName}
+                          </Typography> 
+                        </Grid>
+                        {this.nextModel()}
                       </Grid>
-                      {this.nextModel()}
-                    </Grid>
                   <Grid item xs={1} position='relative'>
                     <Box position='absolute' right={16}>
                       <Button onClick={(event) => this.newPerson()}>

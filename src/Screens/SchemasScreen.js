@@ -40,7 +40,7 @@ function SchemaTable(props) {
             <Grid item xs={1} />
             <Grid item xs={10}>
             <Typography variant="h5">
-              Schemas
+              schemas
             </Typography> 
             </Grid>
           <Grid item xs={1} position='relative'>
@@ -161,7 +161,7 @@ class SchemaScreen extends Component {
     return (
       <MuiThemeProvider>
         <div className='App'>
-        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}  parentContext={this}/>
           <SchemaTable this={this}/>
           <Footer />
           <Snackbar message={this.state.snackbarMessage}

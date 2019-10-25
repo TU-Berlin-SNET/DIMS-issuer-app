@@ -34,7 +34,6 @@ import Snackbar from './../components/customizedSnackbar';
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
-const model = localStorage.getItem('model')
 
 
 //var apiBaseUrl = ""REPLACE"";
@@ -65,6 +64,7 @@ class CredentialOfferScreen extends Component {
           snackbarMessage: "",
           snackbarVariant: "sent",
           justOnboarded: props.location.state.hasOwnProperty("justOnboarded") ? props.location.state.justOnboarded : false,
+          modelName: props.location.state.modelName,
 
         }
       } else {
@@ -81,6 +81,7 @@ class CredentialOfferScreen extends Component {
           snackbarMessage: "",
           snackbarVariant: "sent",
           justOnboarded: false,
+          modelName: null,
         }
       }
     }
@@ -93,7 +94,7 @@ class CredentialOfferScreen extends Component {
        'Content-Type': 'application/json',
        'Authorization': localStorage.getItem("token") 
      }
-     await axios.get(Constants.mongoDBBaseUrl + model + "?id=" + person_id, {headers}).then(function (response) {
+     await axios.get(Constants.mongoDBBaseUrl + this.state.modelName + "?id=" + person_id, {headers}).then(function (response) {
        console.log(response);
        if (response.status === 200) {
          person = response.data[0]
@@ -131,6 +132,7 @@ async sendCredentialOffer(){
           pathname: '/person',
           state: { person: person,
                    justSentCredentialOffer: true,
+                   modelName: self.state.modelName
                 }
         })
       })
@@ -178,7 +180,7 @@ componentDidMount(){
   this.listCredDefs()
   this.getTheirDid()
   if(this.state.justOnboarded === true){
-    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + model.slice(0, model.length -1) + " established"});
+    this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "connection to " + this.state.modelName.slice(0, this.state.modelName.length -1) + " established"});
     this.forceUpdate()
   }
   this.timer = setInterval(() => {
@@ -213,8 +215,6 @@ getTheirDid(){
           self.state.recipientDid = response.data.theirDid
       }
     }).catch(function (error) {
-    //alert(error);
-    //alert(JSON.stringify(payload))
     console.log(error);
     });
 }
@@ -223,6 +223,7 @@ currentAttribute(attr, index){
   return( 
     <Grid item  xs={3}>
         <Chip
+        style={{minWidth:'120px'}}
         label={attr.replace("_referent","").replace(/_/g, " ")}
         variant="outlined"
         className="chip"
@@ -240,16 +241,8 @@ render() {
   return(
     <MuiThemeProvider>
     <div className="App">
-    <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
-      
-          <div className="SendCredentialOffer">
-
-
-      </div>
-<div className= 'grid'>
-
-
-
+    <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
+    <div className= 'grid'>
     <Container maxWidth='false' className='tableContainer'>
       <Box>
       <Grid container   
@@ -265,7 +258,7 @@ render() {
                 </Link>  
             </Box>
             <Typography variant="h5">
-              Send Credential Offer
+              send credential offer
             </Typography> 
             </Box>   
         </Grid>
@@ -330,8 +323,8 @@ render() {
             <Grid item container 
                   justify='center'
                   xs={12}>
-                  <Button variant="outlined" style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick()}>
-                    Send
+                  <Button  style={{color:'white'}} onClick={(event) => this.sendCredentialOfferClick()}>
+                    send
                   </Button>
               </Grid>
           </Grid>

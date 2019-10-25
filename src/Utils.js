@@ -1,5 +1,8 @@
 import axios from 'axios';
 import * as Constants from "./Constants"
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
+const apiBaseUrl = Constants.apiBaseUrl;
+
 
 //Some API Rest Calls will come here
 /* POST /api/credentialoffer
@@ -29,6 +32,10 @@ export async function sendCredentialOffer(recipientDid, credDefId){
    console.log(error);
    });
    
+   }
+
+   export function getRole(){
+      return(localStorage.getItem('role'))
    }
 
    export async function listCredDefs(self){
@@ -71,14 +78,69 @@ export async function sendCredentialOffer(recipientDid, credDefId){
   return new Date(b.createdAt) - new Date(a.createdAt);
 }
 
-export function checkLogin(self){
-  if(localStorage.getItem('token') === null){
-    self.props.history.push("/");
+export   function  checkLogin(self){
+
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
   }
+  axios.get(apiBaseUrl + "user/me" , {headers: headers}).then((response) => {
+
+  }).catch((error)=> {
+    console.log('logout')
+    localStorage.clear()
+    self.props.history.push("/");
+
+  })
 }
+
+
+  
+
+
+
 
 export function redirectToLogin(self){
   if(localStorage.getItem('token') === null){
   self.props.history.push("/");
 }
 }
+
+
+
+
+export function getModel(modelName){
+  var self = this;
+  var rawModel = {};
+  var model ={};
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+  axios.get(mongoDBBaseUrl + "models" , {headers}).then(function (response) {
+          if (response.status === 200) {
+              console.log(response.data)
+              
+              for(let model_name in response.data){
+                  console.log(model_name)
+                  if(model_name === modelName){
+                      rawModel = response.data[model_name]
+                      for(let attr in rawModel){
+                        if(attr !== 'createdAt' && attr !== 'updatedAt' && attr !== 'did' && attr !== 'meta' && attr!== 'picture'){
+                          model[attr] = rawModel[attr]
+                        }
+                      }
+
+                      for(let attribute in  model){
+                          model[attribute] = "";
+                      }
+ 
+                  }
+              }
+              console.log(model)
+              return model
+          }
+      }).catch(function (error) {
+      console.log(error);
+  });
+}   

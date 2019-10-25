@@ -156,12 +156,12 @@ export default function CustomPaginationActionsTable(props) {
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
-              {rowsDefault.map((row) => {
+              {rowsDefault.map((row, index) => {
                 return(
-                  <TableRow>
-                  <TableCell align='center'>
-                    {row}
-                  </TableCell>
+                  <TableRow key={index}>
+                    <TableCell align='center'>
+                      {row}
+                    </TableCell>
                 </TableRow>
               )})}
             </TableBody>
@@ -199,7 +199,7 @@ export default function CustomPaginationActionsTable(props) {
                   )
                 }
               )}
-              <TableCell align='center'> JSON</TableCell>
+              <TableCell align='center'> {"{...}"}</TableCell>
               <TableCell align='center'> actions</TableCell>
               </TableRow>
             </TableHead>
@@ -244,7 +244,7 @@ export default function CustomPaginationActionsTable(props) {
                   <Grid container justify='center' spacing={0}>
                   { props.rowFunctions.map((func, index) => {
                   return(
-                      <Grid item >
+                      <Grid item key={index}>
                       <Tooltip title={func.rowFunctionName}>
                         <IconButton onClick={() => func.rowFunction(row)}>
                           {func.rowFunctionIcon} 

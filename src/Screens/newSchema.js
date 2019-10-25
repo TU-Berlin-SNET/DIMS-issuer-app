@@ -77,7 +77,7 @@ function NewSchema(props) {
                               </Link>
                             </Box>
                             <Typography variant="h5">
-                                Create new schema
+                                create new schema
                             </Typography>      
                             </Box>
                          </Grid>
@@ -212,14 +212,13 @@ class addASchemaScreen extends Component {
             }
           }
       />
-      <Button variant="contained" label="Add Atribute"  color='primary' onClick={(event) =>  {
+      <Button  label="Add Atribute"  color='primary' onClick={(event) =>  {
         var schema_attrNames = this.state.schema_attrNames;
         schema_attrNames.push(this.state.newAttrName);
         this.setState({ schema_attrNames: schema_attrNames}
 
         );   document.getElementById('attributeNameInput').value=""}} >
         <AddIcon/>
-        Add Atribute
       </Button>  
  
     </Paper>
@@ -258,7 +257,7 @@ class addASchemaScreen extends Component {
     return (
       <MuiThemeProvider>
         <div className='App'>
-        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
           <NewSchema this={this}/>
           <Footer />
           <Snackbar message={this.state.snackbarMessage}

@@ -8,7 +8,10 @@ import * as Constants from "./Constants"
 import RadioButtons from './components/radioButtons'
 
 import Box from '@material-ui/core/Box'
+import * as Utils from "./Utils";
+import { HardwareDesktopWindows } from 'material-ui/svg-icons';
 
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
@@ -66,34 +69,16 @@ handleDrawerClose = () => {
 
 componentDidMount(){
     document.title = "DIMS"
-        localStorage.setItem('model', '{"citizens": "citizens", "naturalPersons": "natural-persons", "legalPersons": "legal-persons"}')
+    if(localStorage.getItem('token') !== null )   this.props.history.push("/db");
+
 
   }
 
 setRole(role){
     window.location.reload()
-    
+    console.log(role)
     localStorage.setItem('role', role)
 
-    switch(role){
-     case 'government' :
-         localStorage.setItem('model', '{"citizens": "citizens", "naturalPersons": "natural-persons", "legalPersons": "legal-persons"}')
-         break;
-    case 'bank' :
-        localStorage.setItem('model', '{"bankCustomers": "bank-customers"}')
-        break;
-    default:
-         case 'government' :
-         localStorage.setItem('model', '["citizens", "abc"]')
-         break;
-
-
-
-}
-console.log(localStorage.getItem('model'))
-
-
-  
 }
     handleLoginClick(event) {
         var self = this;
@@ -112,8 +97,7 @@ console.log(localStorage.getItem('model'))
                     //issuerScreen.push(<IssuerScreen appContext={self.props.appContext} />)
                     //self.props.appContext.setState({ loginPage: [], issuerScreen: issuerScreen })
                     localStorage.setItem('token', response.data.token)
-  
-                    self.props.history.push("/db");
+        window.location.reload()
 
 
                 }

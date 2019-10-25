@@ -15,6 +15,7 @@ import ProofScreen from './Screens/ProofScreen'
 import User from './Screens/newCitizen'
 import SendCredentialOffer from './Screens/sendCredentialOfferScreen'
 import AccountScreen from './Screens/account'
+import Information from './Screens/information'
 import { Route,  BrowserRouter as Router } from 'react-router-dom';
 import withRoot from './withRoot';
 import PropTypes from 'prop-types';
@@ -44,19 +45,20 @@ handleTabChange(newTab){
         console.log(this)
         return(
           <Router>
-            <Route exact path="/"  render={(props)=> <App {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
-            <Route exact path="/sendCredentials"  render={(props)=> <SendCredentials {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
-            <Route path="/account" render={(props)=> <AccountScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route exact path="/newPerson" render={(props)=> <User {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/db" render={(props)=> <DBScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/person" render={(props)=> <PersonScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/onboarding" render={(props)=> <OnboardingScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/credentialdef" render={(props)=> <CredentialDefScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/newCredDef" render={(props)=> <NewCredDef {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/schemas" render={(props)=> <SchemasScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
-            <Route path="/newSchema"render={(props)=> <NewSchemaScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)}  tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />} />
-            <Route exact path="/sendCredOffer"  render={(props)=> <SendCredentialOffer {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab} loggedIn = {this.state.loggedIn} />}  />
-            <Route path="/proofs" render={(props)=> <ProofScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  loggedIn = {this.state.loggedIn} />} />
+            <Route exact path="/"  render={(props)=> <App {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  />}  />
+            <Route exact path="/sendCredentials"  render={(props)=> <SendCredentials {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  />}  />
+            <Route path="/account" render={(props)=> <AccountScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route exact path="/newPerson" render={(props)=> <User {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/db" render={(props)=> <DBScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/person" render={(props)=> <PersonScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/onboarding" render={(props)=> <OnboardingScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/credentialdef" render={(props)=> <CredentialDefScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/newCredDef" render={(props)=> <NewCredDef {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/schemas" render={(props)=> <SchemasScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/newSchema"render={(props)=> <NewSchemaScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)}  tabNr={this.state.activeTab}  />} />
+            <Route exact path="/sendCredOffer"  render={(props)=> <SendCredentialOffer {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}  />}  />
+            <Route path="/proofs" render={(props)=> <ProofScreen {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
+            <Route path="/information" render={(props)=> <Information {...props} onTabChange={(selected) => this.handleTabChange(selected)} tabNr={this.state.activeTab}   />} />
           </Router>
         )
     }  

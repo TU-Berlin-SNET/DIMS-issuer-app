@@ -42,7 +42,7 @@ function CredentialDefTable(props) {
         >
           <Grid item xs={12}>
             <Typography variant="h5">
-              Credential Definitions
+              credential definitions
             </Typography> 
           </Grid>
           <Grid item xs={12} />
@@ -156,7 +156,7 @@ class CredentialDefScreen extends Component {
 
       <MuiThemeProvider>
         <div className="App">
-          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+          <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}  parentContext={this}/>
           <CredentialDefTable this={this}/>
           <Footer />  
           <Snackbar message={this.state.snackbarMessage}

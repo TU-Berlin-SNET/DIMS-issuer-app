@@ -20,11 +20,11 @@ class Loginscreen extends Component {
     this.handler = this.authHandler.bind(this)
     var loginButtons=[];
     loginButtons.push(
-      <MuiThemeProvider>
-      <Box position='absolute' left='0' right='0' top='50%' >
-          <Button  variant = 'contained' color='primary'  onClick={(event) => this.handleClick(event,'issuer')}>Register as Issuer</Button>
-    </Box>
-    </MuiThemeProvider>
+      <MuiThemeProvider key={'register'}>
+        <Box position='absolute' left='0' right='0' top='50%' >
+            <Button  variant = 'contained' color='primary'  onClick={(event) => this.handleClick(event,'issuer')}>Register as Issuer</Button>
+        </Box>
+      </MuiThemeProvider>
     )
     this.state={
       username:'',
@@ -49,13 +49,14 @@ class Loginscreen extends Component {
 
   componentWillMount(){
     var loginscreen=[];
-    loginscreen.push(<Login parentContext={this} appContext={this.props.appContext } handler={this.handler}/>);
+    loginscreen.push(<Login key={'register now'} parentContext={this} appContext={this.props.appContext } handler={this.handler}/>);
     var loginmessage = "Not registered yet? Register Now!";
     this.setState({
                   loginscreen:loginscreen,
                   loginmessage:loginmessage
                     })
   }
+
   handleClick(event,userRole){
     console.log("event",userRole);
     var loginmessage;

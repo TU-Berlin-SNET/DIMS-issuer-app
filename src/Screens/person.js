@@ -1,4 +1,4 @@
-import React, { Component} from 'react';
+import React, { Component, isValidElement} from 'react';
 /*
 Screen:LoginScreen
 Loginscreen is the main screen which the user is shown on first visit to page and after
@@ -18,32 +18,26 @@ import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
 import * as Constants from "./../Constants";
 import * as Utils from "./../Utils";
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
 import ArrowBackRounded from '@material-ui/icons/ArrowBackRounded';
-import {createMuiTheme,  makeStyles} from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container'
 import AcceptIcon from '@material-ui/icons/Done'
-import CUSTOMPAGINATIONACTIONSTABLE from "./../components/tablepagination.js"
 import Footer from "./../components/footer"
 import MoreAttributes from './../components/moreAttributesDialog'
 import {Table, TableBody, TableRow, TableCell, TableHead } from '@material-ui/core';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import Avatar from '@material-ui/core/Avatar';
 import Snackbar from './../components/customizedSnackbar'
-
+import Button from '@material-ui/core/Button'
 
 const apiBaseUrl = Constants.apiBaseUrl;
+const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
 
+var rawModel ={}
 
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
@@ -73,7 +67,7 @@ function CredentialRequestsTable(props) {
         <TableBody>
               {props.this.state.credentialRequests.map((credentialReq, index) => {
                 return(
-                  <TableRow>
+                  <TableRow key={index}>
                       <TableCell children={index}/>
                       <TableCell children={credentialReq.meta.offer.cred_def_id}/>
                       <TableCell children={<MoreAttributes row={credentialReq} icon={<MoreHoriz/>} iconText=''/>} />
@@ -100,7 +94,7 @@ function CredentialRequestsTable(props) {
         <TableBody>
               {props.this.state.issuedCredentials.map((cred, index) => {
                 return(
-                  <TableRow>
+                  <TableRow key={index}>
                       <TableCell children={index}/>
                       <TableCell children={cred.message.message.cred_def_id}/>
                       <TableCell children={<MoreAttributes row={cred} icon={<MoreHoriz/>} iconText=''/>} />
@@ -113,9 +107,45 @@ function CredentialRequestsTable(props) {
   }
 
 
-class addASchemaScreen extends Component {
+  function ProofRequestTable(props) {
+    function isValid(req){
+      return req.isvalid === true ?  "true" : "false" 
+    }  
+    return(
+      <Grid item xs={12}  >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell children="pos." />
+              <TableCell children="status" />
+              <TableCell children="isvalid" />
+              <TableCell children="JSON" />
+              <TableCell children="verify" />
+            </TableRow>
+          </TableHead>
+        <TableBody>
+              {props.this.state.proofRequests.map((req, index) => {
+                console.log(req)
+                return(
+                  <TableRow>
+                      <TableCell children={index} />
+                      <TableCell children={req.status} />
+                      <TableCell children={isValid(req)} />
+                      <TableCell children={<MoreAttributes row={req} icon={<MoreHoriz/>} iconText=''/>} />
+                      <TableCell children={<Button onClick={(event) => props.this.verifyProofIdClick(event, req.id)}><AcceptIcon /></Button>} />
+                  </TableRow>
+                )} )}
+        </TableBody>
+        </Table>
+      </Grid>
+    );
+  }
+
+
+class PersonScreen extends Component {
   constructor(props){
     super(props);
+    console.log(props.location.state.person)
     Utils.checkLogin(this)
 if( props.location.hasOwnProperty("state") && props.location.state !== undefined){
     this.state={ 
@@ -127,10 +157,14 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         credentialRequests: [],
         issuedCredentials:[],
         theirDid: '',
+        proofRequests: [],
+        proofId: "",
         connection: '',
-        justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
+        model: {},
+        modelName: props.location.state.modelName,
+        justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false
     }
-    }
+  }
     else{
       this.state={ 
         person: props.location.state.person,
@@ -141,20 +175,30 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         credentialRequests: [],
         issuedCredentials:[],
         theirDid: '',
+        proofRequests: [],
+        proofId: "",
         connection: '',
+        model:  {},
         justSentCredentialOffer: false,
+        modelName: "",
+        picture: ""
     }
     }
   }
 
   componentDidMount(){
+    document.title = "DIMS"
+
+    this.getModel()
       this.getWallet()
       this.getTheirDid()
+      this.initPerson()
       this.getConnectionStatus()
       this.getCredentialOffers()
       this.getCredentialRequests()
       this.getConnectionDetails()
       this.getIssuedCredentials()
+      this.getProofRequests()
       if(this.state.justSentCredentialOffer === true){
         this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "credential offer sent"});
         this.forceUpdate()
@@ -162,14 +206,62 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
       this.timer = setInterval(() => {
         this.getCredentialRequests()
         this.getIssuedCredentials()
+        this.getProofRequests()
         }, 5000);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
     this.timer = null;
+
   }
 
+
+
+async getModel(event){
+  var self = this;
+  var model ={};
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+  }
+  await axios.get(mongoDBBaseUrl + "models" , {headers}).then(function (response) {
+    console.log(self.state.modelName)
+
+          if (response.status === 200) {
+              for(let model_name in response.data){
+         
+                  if(model_name === self.state.modelName){
+                      rawModel = response.data[model_name]
+                      for(let attr in rawModel){
+                        
+                        if(attr !== 'createdAt' && attr !== 'updatedAt' && attr !== 'did' && attr !== 'meta' && attr!== 'picture'){
+                          model[attr] = rawModel[attr]
+                        }
+                      }
+                  }
+              }
+              self.setState({model} )      
+          }
+      }).catch(function (error) {
+      console.log(error);
+  });
+}   
+
+
+initPerson(){
+  console.log(this.state.person)
+  let person= {}
+  for(let attr in this.state.person){
+    console.log(attr)
+    if(attr == 'picture')
+      this.setState({picture: this.state.person[attr]})
+          if(attr !== 'createdAt' && attr !== 'updatedAt' && attr !== 'did' && attr !== 'meta' && attr!== 'picture'){
+            person[attr] = this.state.person[attr]
+          }
+        }
+    this.setState({person})
+}
 
 
   async getWallet(){
@@ -179,7 +271,6 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
       'Authorization': localStorage.getItem("token") 
     }
     axios.get(apiBaseUrl + "wallet/default" , {headers: headers}).then((response) => {
-      console.log(response)
       if(response.status === 200){
           this.setState({ownDid: response.data.ownDid})
       }
@@ -197,7 +288,6 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
    
     await axios.get(apiBaseUrl + "wallet/default/connection", {headers: headers}).then(function(response){
         if (response.status === 200) {
-         console.log(response)
          let connection = response.data.filter(connection => connection.my_did === self.state.myDid) 
          
          self.setState({connection})
@@ -237,7 +327,6 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
       axios.get(apiBaseUrl + 'credentialoffer/' ,{headers: headers}).then(function (response) {
         if (response.status === 200) {
             let allCredOffer = response.data
-            console.log(response.data)
             let credentialOffers = allCredOffer.filter(credOffer => credOffer.senderDid === self.state.myDid)
             self.setState(credentialOffers)
         }
@@ -249,6 +338,40 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
   }
 
 // get all CredentialRequests and retrieve those that belong to the citzien
+
+
+async verifyProof(){
+  var self = this;
+   var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': localStorage.getItem("token") 
+   }
+   console.log(self.state.proofId)
+   await axios.get(apiBaseUrl + 'proof/' + self.state.proofId , {headers: headers}).then(function (response) {
+      console.log(response);
+      console.log(response.status);
+      if (response.status === 200) {
+        let proof = response.data
+        console.log(proof)
+        if(typeof(proof.isValid) == 'undefined'){
+          alert("Verification failed. Please try again!")
+        } else {
+          let isValid = proof.isValid ? "is" : "is not"
+          alert("Proof " + isValid + " valid!")
+          
+      }
+      }
+    }).catch(function (error) {
+    console.log(error);
+  })
+  }
+
+  verifyProofIdClick(event,id){
+    this.setState({proofId: id}, () => this.verifyProof())
+    
+  }
+  
+
 
   getConnectionStatus(){
     var self = this;
@@ -267,15 +390,7 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
      'Authorization': localStorage.getItem("token") 
     }
     await axios.get(apiBaseUrl + 'credentialrequest/' , {headers: headers}).then(function (response) {
-       console.log(response);
-       console.log(self.state.theirDid)
-       console.log(response.status);
        if (response.status === 200) {
-         
-      /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
-           //const {credentialValues} = self.state;
-           credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
-         }) */
         let allCredReq = response.data
         let credentialRequests = allCredReq.filter(credReq => credReq.senderDid === self.state.theirDid)
         self.setState({credentialRequests: credentialRequests})
@@ -292,20 +407,29 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
      'Authorization': localStorage.getItem("token") 
     }
     await axios.get(apiBaseUrl + 'credential/' , {headers: headers}).then(function (response) {
-
-       console.log(response.status);
        if (response.status === 200) {
-         
-      /*   let data = response.data.sort(Utils.compareDates).map((credReq) => {
-           //const {credentialValues} = self.state;
-           credReq.meta.offer.key_correctness_proof.xr_cap.filter((elem => elem[0] !== "master_secret"))       
-         }) */
         let allIssuedCred = response.data
         let issuedCredentials = allIssuedCred.filter(cred => cred.recipientDid === self.state.theirDid)
         self.setState({issuedCredentials})
        }
      }).catch(function (error) {
      //alert(error);
+     console.log(error);
+   })}
+
+   async getProofRequests(){
+    var self = this;
+    var headers = {
+     'Content-Type': 'application/json',
+     'Authorization': localStorage.getItem("token") 
+    }
+    await axios.get(apiBaseUrl + 'proof/' , {headers: headers}).then(function (response) {
+       if (response.status === 200) {
+        let allProofRequests = response.data
+        let proofRequests = allProofRequests.filter(req => req.did === self.state.theirDid)
+        self.setState({proofRequests})
+       }
+     }).catch(function (error) {
      console.log(error);
    })}
 
@@ -319,7 +443,9 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
   
     this.props.history.push({
       pathname: '/sendCredentials',
-      state: { credReq: credReq}
+      state: { credReq: credReq,
+              person: this.state.person,
+              modelName: this.state.modelName}
       })
   }
   
@@ -328,24 +454,103 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
   }
 
 
+
+
+
+  getAttributeValue(model, person){
+    var component = []
+    var keys = Object.keys(model)
+    for (let key of keys){
+      console.log(model[key])
+
+      if(model[key].hasOwnProperty('type')) {
+        if(person[key]!== undefined){
+          if(model[key].type === 'Date'){
+            component.push(
+              <Grid item container xs={12}>
+                <Grid item container style={{backgroundColor:'WhiteSmoke'}}>
+                  <Grid item xs={6}>
+                    <Typography>{key}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography>{this.toDate(person[key])}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )
+          }
+          else{
+            component.push(
+              <Grid item container xs={12}>
+                <Grid item container style={{backgroundColor:'WhiteSmoke'}}>
+                  <Grid item xs={6}>
+                    <Typography>{key}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography>{person[key]}</Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )
+          }
+
+        }
+        else{
+          component.push(
+            <Grid item container xs={12}>
+              <Grid item container xs={12} style={{backgroundColor:'WhiteSmoke'}}>
+                <Grid item xs={6}>
+                  <Typography>{key}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography></Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          )
+        } 
+      }
+      else{
+        component.push(<Grid item container xs={12}>
+                          <Grid item container xs={12} style={{backgroundColor: 'lightgrey'}}>
+                            <Grid item xs={12}>
+                              <Typography>{key}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              
+                                {this.getAttributeValue(model[key], person[key])}
+                            
+                            </Grid>
+                          </Grid>
+                      </Grid>)
+      }
+    }
+    return component
+} 
+
+  toDate(wrongDateFormat){
+   console.log(wrongDateFormat)
+    let year = wrongDateFormat.slice(0,4)
+    let month= wrongDateFormat.slice(5,7)
+    let day = wrongDateFormat.slice(8,10)
+    return( month + "." + day + "." + year
+            )
+   }
+
+
   render() {
-      let dateOfBirth = new Date(this.state.person.dateOfBirth)
-      let year = dateOfBirth.getFullYear()
-      let month= dateOfBirth.getMonth() + 1
-      let day = dateOfBirth.getDate()
-      
-    let pictureAvatar = <Avatar>{this.state.person.firstName[0]}</Avatar>
-      if(this.state.person.hasOwnProperty('picture') && this.state.person.picture !== ""){
-        let base64Img = this.state.person['picture']
+
+    let pictureAvatar
+      if(this.state.person.picture !== ""){
+        let base64Img = this.state.picture
         pictureAvatar = <Avatar src={base64Img} style={avatarImageStyle}/>
       } else {
-        pictureAvatar  = null
+        pictureAvatar  = <Avatar>A</Avatar>
       }
-      console.log(this.props)
     return (
       <MuiThemeProvider>
         <div className='App'>
-        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
         <div className="grid">
 
         <Container maxWidth='false' className="tableContainer">
@@ -355,17 +560,17 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
          justify='space-evenly'
          spacing={4}
          xs={12} style={{margin:"auto"}}>
-        <Grid item xs={12}>
-          <Box position='relative'>
-            <Box position="absolute" top={0} left={0}>
-                <Link  to={"db"}>
+        <Grid item container spacing={0} xs={12}>
+          <Grid item xs={1}>
+              <Link  to={"db"}>
                    <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-                </Link>  
-            </Box>
+              </Link>  
+          </Grid>
+          <Grid item xs={10}>
             <Typography variant="h5">
-               {this.props.location.state.modelName}
+               {this.props.location.state.modelName.slice(0, this.props.location.state.modelName.length-1 )}
             </Typography> 
-            </Box>   
+          </Grid>   
         </Grid>
         <Grid item xs={12} />
       <Grid item container xs={12}
@@ -374,44 +579,25 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
             spacing={8}
           >
           {pictureAvatar}
-         <Grid item xs={12}>
-            <Typography variant="h6">
-               Attributes 
-            </Typography>    
-         </Grid>
-         <Grid item container xs={8}>
-          <Grid item container xs={4} justify='center'   >
-                <Grid  item xs={6} >
-                    <Typography align='left'> personal identifier:  {this.state.person.id}</Typography>
-                    <Typography align='left'> first name: {this.state.person.firstName}</Typography>
-                    <Typography align='left'> family name:  {this.state.person.familyName}</Typography>
-                    <Typography align='left'> date of birth:  {day + "." + month + "." + year}</Typography>
-                    <Typography align='left'> place of birth:  {this.state.person.placeOfBirth}</Typography>
-                    <Typography align='left'> adress:  {this.state.person.adress}</Typography>
-                    <Typography align='left'> gender:  {this.state.person.gender}</Typography>
+
+         <Grid item container xs={12} justify='center'>
+            
+          <Grid container 
+              item xs={6}
+              justify='center'
+              spacing={2}>
+             <Box component={Grid} item container border='solid' spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant='h5'>Person</Typography>
                 </Grid>
+                {this.getAttributeValue(this.state.model, this.state.person)}   
+              </Box>  
+                              
               
           </Grid>
 
-          <Grid item container xs={4} justify='center'   >
-              <Grid xs={6}>
-                    <Typography align='left'> legal ID:  {this.state.person.legalId}</Typography>
-                    <Typography align='left'> legal name: {this.state.person.legalName}</Typography>
-                    <Typography align='left'> legal adress:  {this.state.person.legalAdress}</Typography>
-              </Grid>
           </Grid>
 
-          <Grid item container xs={4} justify='center'   >
-              <Grid  xs={6}>
-                    <Typography align='left'> vatRegistration:  {this.state.person.vatRegistration}</Typography>
-                    <Typography align='left'> taxReference: {this.state.person.taxReference}</Typography>
-                    <Typography align='left'> lei:  {this.state.person.lei}</Typography>
-                    <Typography align='left'> eori:  {this.state.person.eori}</Typography>
-                    <Typography align='left'> seed:  {this.state.person.seed}</Typography>
-                    <Typography align='left'> sic:  {this.state.person.sic}</Typography>
-              </Grid>
-          </Grid>
-          </Grid>
           <Grid item container xs={12} justify='center'>
             <Grid item xs={12}>
               <Typography variant="h6">
@@ -432,7 +618,18 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
             <Grid item xs={6} >
               <IssuedCredentialTable this={this}/>
             </Grid>
-         </Grid>      
+         </Grid> 
+
+          <Grid item container xs={12} justify='center'>
+            <Grid item xs={12}>
+              <Typography variant="h6">
+                ProofRequests
+              </Typography>   
+            </Grid> 
+            <Grid item xs={6} >
+              <ProofRequestTable this={this}/>
+            </Grid>
+         </Grid>          
 
 
          <Grid container item xs={12} justify='center'>
@@ -460,5 +657,5 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
   }
 }
 
-export default withRouter(addASchemaScreen);
+export default withRouter(PersonScreen);
 

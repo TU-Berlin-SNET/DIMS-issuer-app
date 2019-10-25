@@ -121,63 +121,58 @@ console.log(schema)
     return (
       <MuiThemeProvider>
         <div className='App'>
-        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
+        <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}  parentContext={this}/>
         <div className="grid">
-
         <Container maxWidth='false' className="tableContainer">
-        <Box > 
-    <Grid container   
-         direction="row"
-         justify='space-evenly'
-         spacing={4}
-         xs={12} style={{margin:"auto"}}>
-                    <Grid item xs={12}>
-                          <Box position='relative'>
-                            <Box position="absolute" top={0} left={0}>
-                              <Link  to={"schemas"}>
-                                <ArrowBackRounded style={{color:'white'}} fontSize="large" />
-                              </Link>
-                            </Box>
-                            <Typography variant="h5">
-                                Create new credential definiton
-                            </Typography>      
-                            </Box>
-                         </Grid>
-                         <Grid item xs={12} />
-    <Grid item container xs={10}
-          justify='center'
-          component={Paper}
-          spacing={8}
-          >
-        
-          <Grid item container xs={12} justify='center'   >
-                <Grid  item xs={2} >
-                    <Typography align='left'> Schema name: {this.state.schema_name}</Typography>
+          <Box> 
+            <Grid container   
+                direction="row"
+                justify='space-evenly'
+                spacing={4}
+                xs={12} style={{margin:"auto"}}>
+                <Grid item xs={12}>
+                    <Box position='relative'>
+                      <Box position="absolute" top={0} left={0}>
+                        <Link  to={"schemas"}>
+                          <ArrowBackRounded style={{color:'white'}} fontSize="large" />
+                        </Link>
+                      </Box>
+                      <Typography variant="h5">
+                          Create new credential definiton
+                      </Typography>      
+                    </Box>
                 </Grid>
-          </Grid>
-          <Grid item container xs={12} justify='center'   >
-                <Grid  item xs={2} >
-                    <Typography align='left'> Schema version: {this.state.schema_version}</Typography>
+            <Grid item xs={12} />
+            <Grid item container xs={12}
+              justify='center'
+              component={Paper}
+              spacing={8}
+            >   
+              <Grid item container xs={12} justify='center'   >
+                    <Grid  item xs={2} >
+                        <Typography align='left'> Schema name: {this.state.schema_name}</Typography>
+                    </Grid>
+              </Grid>
+              <Grid item container xs={12} justify='center'   >
+                    <Grid  item xs={2} >
+                        <Typography align='left'> Schema version: {this.state.schema_version}</Typography>
+                    </Grid>
+              </Grid>
+              
+              <Grid item container xs={12} justify='center'  >
+                <Grid item container xs={2}>
+                    <Grid item xs={6}>
+                        <Typography align='left'> revocation:</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
+                        <option value={true}>enabled</option>
+                        <option value={false}>disabled</option>
+                      </select>
+                    </Grid>
                 </Grid>
-          </Grid>
-          
-          <Grid item container xs={12} justify='center'  >
-            <Grid item container xs={2}>
-                <Grid item xs={6}>
-                    <Typography align='left'> revocation:</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <select value={this.state.supportRevocation} onChange={(event, newValue) => this.setState({ supportRevocation: JSON.parse(event.target.value) })}>
-                    <option value={true}>enabled</option>
-                    <option value={false}>disabled</option>
-                  </select>
-                </Grid>
-             </Grid>
-          </Grid>
-          
-        
-          <Grid item container xs={12} justify='flex-start' >
-        
+              </Grid>     
+              <Grid item container xs={12} justify='flex-start' >
                 <Grid item xs={12}>
                       <TextField
                       hintText="Enter the tag for the schema"
@@ -185,47 +180,42 @@ console.log(schema)
                       value={this.state.tag}
                       onChange={(event, newValue) => this.setState({ tag: newValue })}
                   />
-                </Grid>
-              
-          </Grid>
-
-
-          <Grid item container xs={12} >
-            <Grid item xs={12}  >
-              <Box width='50%' margin='auto'>
-                <Box width='100%' pt={2} pb={2} style={{backgroundColor:'#FF7C7C'}}>
-                  <Typography >Attributes</Typography>
+                </Grid>   
+              </Grid>
+              <Grid item container xs={12} >
+                <Grid item xs={12}  >
+                  <Box width='50%' margin='auto'>
+                    <Box width='100%' pt={2} pb={2} style={{backgroundColor:'Whitesmoke'}}>
+                      <Typography >Attributes</Typography>
+                    </Box>
+                    <Box width='100%'>
+                        <List alignItems='center'>
+                        {this.state.schema_attrNames.map((attr, index) => {
+                            return( this.currentAttribute(attr, index) )
+                        })} 
+                        </List>
+                  </Box>
                 </Box>
-                <Box width='100%'>
-                    <List alignItems='center'>
-                    {this.state.schema_attrNames.map((attr, index) => {
-                        return( this.currentAttribute(attr, index) )
-                    })} 
-                    </List>
-              </Box>
-             </Box>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} />
+            <Grid item container 
+                  justify='center'
+                  xs={12}
+            >
+              <Button style={{color:'white'}} onClick={(event) => this.handleClickNewCredDef(event)}>
+                Submit
+              </Button>
             </Grid>
           </Grid>
-
-          </Grid>
-          <Grid item xs={12} />
-    <Grid item container 
-          justify='center'
-          xs={12}>
-      <Button style={{color:'white'}} onClick={(event) => this.handleClickNewCredDef(event)}>
-        Submit
-      </Button>
-    </Grid>
-  </Grid>
-
-  </Box>
-  </Container>
-
-  </div>
-  <Footer />
-        </div>
-      </MuiThemeProvider> 
-    );
+        </Box>
+      </Container>
+      </div>
+      <Footer />
+    </div>
+  </MuiThemeProvider> 
+  );
   }
 }
 

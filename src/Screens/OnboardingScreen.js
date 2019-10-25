@@ -30,7 +30,6 @@ var QRCode = require('qrcode.react');
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
-const modelName = localStorage.getItem('model')
 
 var username =''
 
@@ -53,8 +52,8 @@ class OnboardingScreen extends Component {
       connection_message: '',
       person_id: props.location.state.person_id,
       person_did:'',
-      person_firstName: props.location.state.person_firstName,
-      person_familyName: props.location.state.person_familyName,
+      person_firstname: props.location.state.person_firstname,
+      person_lastname: props.location.state.person_lastname,
       person_verkey:'',
       username: '',
       onboarded:true,
@@ -94,11 +93,10 @@ class OnboardingScreen extends Component {
                 pathname: '/sendCredOffer',
                 state: { myDid: self.state.myDid, 
                          person_id: self.state.person_id,
-                         justOnboarded: true}
+                         justOnboarded: true,
+                        modelName: self.props.location.state.modelName}
               })
           }
-          //  Utils.sendCredentialOffer(theirDid,self.state.credDefId)
-            //this.props.history.push({pathname: "/credential",state: {credDefId: credDefId}});
           }
         }
       })
@@ -147,7 +145,7 @@ class OnboardingScreen extends Component {
     console.log(self.state.username)
      let payload_conn = {
       "meta":{
-        "username" : self.state.person_firstName + "_" + self.state.person_familyName
+        "username" : self.state.person_firstname + "_" + self.state.person_lastname
        },
        "data":{
          "app": username
@@ -195,7 +193,7 @@ handleCredentialOfferCheckChange =  event => {
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
  async addDidToPersonInformation() {
-
+  let role =Utils.getRole()
   let self = this
   let headers = {
     'Content-Type': 'application/json',
@@ -204,7 +202,7 @@ handleCredentialOfferCheckChange =  event => {
 
   let person_payload={did: self.state.myDid}
 
-  await axios.put(mongoDBBaseUrl + modelName + '/' + self.state.person_id, person_payload, {headers}).then(function (response) {
+  await axios.put(mongoDBBaseUrl  + self.props.location.state.modelName + '/' + self.state.person_id, person_payload, {headers}).then(function (response) {
           if (response.status === 200) {
           }
   }).catch(function (error) {
@@ -220,12 +218,6 @@ handleTabChange(newTab){
   this.props.onTabChange(newTab)
 }
 
-goTosendCredentialScreen(){
-  this.props.history.push({
-    pathname: '/sendCredOffer',
-    state: { myDid: this.state.myDid}
-  })
-}
 
 
   render() {
@@ -250,7 +242,7 @@ goTosendCredentialScreen(){
             </Grid>
             <Grid item xs={10}>
               <Typography variant="h5">
-                  Onboard {this.props.location.state.modelName}
+                  Onboard {this.props.location.state.modelName.slice(0,this.props.location.state.modelName.length -1)}
               </Typography> 
             </Grid>
           <Grid item xs={1} position='relative'>

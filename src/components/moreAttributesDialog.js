@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,7 +15,6 @@ export default function AlertDialog(props) {
   let raw = row.row
   let keys = Object.keys(raw).filter(key => key !== 'picture');
 
-
   var obj = {}
   for(let attr in raw){
     if(attr !== 'picture' && attr !== 'photo'){
@@ -24,7 +22,21 @@ export default function AlertDialog(props) {
     }
   }
 
-  console.log(obj)
+  /*  function filterObjectAttributes(raw){
+    var temp_obj = {}
+    for(let attr in raw){
+      if(attr !== 'picture' && attr !== 'photo'){
+        console.log(typeof(raw[attr]))
+
+        if(typeof(raw[attr]) === 'object')
+            filterObjectAttributes(raw[attr])
+        else(temp_obj[attr] = raw[attr])
+      }
+    }
+    Object.assign(obj, temp_obj)
+  }
+*/
+
   function handleClickOpen() {
     setOpen(true);
   }
@@ -33,14 +45,10 @@ export default function AlertDialog(props) {
     setOpen(false);
   }
 
-
-
-
   return (
     <Box>
       <IconButton color='primary'  size='small' onClick={handleClickOpen}>
         {props.iconText} {props.icon}
-
       </IconButton>
       <Dialog
         open={open}

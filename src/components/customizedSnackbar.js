@@ -93,7 +93,6 @@ class CustomizedSnackbar extends Component {
     }
 
     componentWillReceiveProps(){
-        console.log(this.props)
         this.setState({snackbarOpen: this.props.snackbarOpen, message: this.props.message, variant: this.props.variant })
     }
       

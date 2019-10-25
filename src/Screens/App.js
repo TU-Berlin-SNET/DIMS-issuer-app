@@ -15,7 +15,7 @@ class App extends Component {
   }
   componentWillMount(){
     var loginPage =[];
-    loginPage.push(<Loginscreen parentContext={this} onTabChange={(event, selected) => this.handleTabChange(event, selected)} />);
+    loginPage.push(<Loginscreen key={0} parentContext={this} onTabChange={(event, selected) => this.handleTabChange(event, selected)} />);
     this.setState({
                   loginPage:loginPage
                     })
@@ -28,6 +28,7 @@ class App extends Component {
     console.log(newTab)
     this.props.onTabChange(newTab)
   }
+  
   render() {
     return (
       <MuiThemeProvider>

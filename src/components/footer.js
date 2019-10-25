@@ -42,13 +42,13 @@ handleTabChange(event,newValue) {
 
   render() {
     return (
-        <Box   width="100%" position='fixed' zIndex='-1' bottom='0'>         
-              <Container  maxWidth='false' >
-                  <Box height='4vh' >
-                    <Grid container justify='flex-end'>
-                      <Button style={{color: 'white'}} component={Link} to={'about'}>Information</Button>
+        <Box   width="100%" position='fixed'  bottom='0'>         
+              <Container  maxWidth={false} >
+
+                    <Grid container item justify='flex-end'>
+                      <Button style={{color: 'white'}} component={Link} to={'information'}>Information</Button>
                     </Grid>
-                  </Box>
+                
             </Container>
         </Box>
     );
