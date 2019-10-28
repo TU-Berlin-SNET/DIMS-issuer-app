@@ -58,7 +58,8 @@ class OnboardingScreen extends Component {
       username: '',
       onboarded:true,
       myDid: props.location.state.person_did,
-      sendCredentialOfferCheck: true,
+      sendCredentialOfferCheck: false,
+      role: Utils.getRole()
     }
   }
   
@@ -193,7 +194,7 @@ handleCredentialOfferCheckChange =  event => {
   Usage:This fxn is used to end user session and redirect the user back to login page
   */
  async addDidToPersonInformation() {
-  let role =Utils.getRole()
+
   let self = this
   let headers = {
     'Content-Type': 'application/json',
@@ -212,6 +213,20 @@ handleCredentialOfferCheckChange =  event => {
 });
 
  }
+
+
+showCheckbox(){
+  if(this.state.role !== 'shop'){
+  return(<Box >
+  send credentials now?
+  <Checkbox  
+  onChange={this.handleCredentialOfferCheckChange}
+  color='primary'
+  checked={this.state.sendCredentialOfferCheck}
+  value="onboardChecked"
+  />
+</Box>)}
+}
 
 handleTabChange(newTab){
   console.log(newTab)
@@ -262,15 +277,7 @@ handleTabChange(newTab){
             <Typography children={'Scan the QR Code wih your mobile app'} /> 
           </Grid>
           <Grid item xs={2}>
-            <Box >
-              send credentials now?
-              <Checkbox  
-              onChange={this.handleCredentialOfferCheckChange}
-              color='primary'
-              checked={this.state.sendCredentialOfferCheck}
-              value="onboardChecked"
-              />
-            </Box>
+            {this.showCheckbox()}
           </Grid>
           </Grid>
           <Grid item xs={12} />

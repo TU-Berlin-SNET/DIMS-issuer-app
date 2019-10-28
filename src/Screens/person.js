@@ -108,9 +108,7 @@ function CredentialRequestsTable(props) {
 
 
   function ProofRequestTable(props) {
-    function isValid(req){
-      return req.isvalid === true ?  "true" : "false" 
-    }  
+
     return(
       <Grid item xs={12}  >
         <Table>
@@ -118,8 +116,7 @@ function CredentialRequestsTable(props) {
             <TableRow>
               <TableCell children="pos." />
               <TableCell children="status" />
-              <TableCell children="isvalid" />
-              <TableCell children="JSON" />
+              <TableCell children="{...}" />
               <TableCell children="verify" />
             </TableRow>
           </TableHead>
@@ -130,7 +127,6 @@ function CredentialRequestsTable(props) {
                   <TableRow>
                       <TableCell children={index} />
                       <TableCell children={req.status} />
-                      <TableCell children={isValid(req)} />
                       <TableCell children={<MoreAttributes row={req} icon={<MoreHoriz/>} iconText=''/>} />
                       <TableCell children={<Button onClick={(event) => props.this.verifyProofIdClick(event, req.id)}><AcceptIcon /></Button>} />
                   </TableRow>
@@ -358,6 +354,7 @@ async verifyProof(){
         } else {
           let isValid = proof.isValid ? "is" : "is not"
           alert("Proof " + isValid + " valid!")
+          if(isValid) self.storeProofDataInDB(response.data.proof.requested_proof.revealed_attrs)
           
       }
       }
@@ -371,6 +368,44 @@ async verifyProof(){
     
   }
   
+
+  async storeProofDataInDB(revealed_attrs){
+
+    var self = this;
+    var headers = {
+     'Content-Type': 'application/json',
+     'Authorization': localStorage.getItem("token") 
+    }
+
+    let person_payload={meta: {},
+                        firstname: " ",
+                        lastname: " "}
+    
+
+    Object.keys(revealed_attrs).map((attr)=> {
+      let newAttrName = attr.replace("_referent", "")
+      person_payload.meta[newAttrName] = revealed_attrs[attr].raw
+    })
+
+
+    Object.keys(person_payload.meta).map((attr) => {
+      if(attr == "firstname")
+        person_payload.firstname = person_payload.meta[attr]
+      else if(attr == "lastname")
+        person_payload.lastname = person_payload.meta[attr]
+    })
+
+    console.log(person_payload)
+
+
+    await axios.put(mongoDBBaseUrl  + self.props.location.state.modelName + '/' + self.state.person.id, person_payload, {headers}).then(function (response) {
+      if (response.status === 200) {
+      }
+    }).catch(function (error) {
+    console.log(error);
+    });
+
+  }
 
 
   getConnectionStatus(){
