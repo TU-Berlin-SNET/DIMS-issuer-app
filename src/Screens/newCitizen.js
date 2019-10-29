@@ -266,15 +266,17 @@ toDate(wrongDateFormat){
 createFields(model, person, path){
     if(this.state.flag === false){
     var component = []
+    var is_required = false
     var keys = Object.keys(model)
     for (let key of keys){
     if(person !== undefined){
       if(model[key].hasOwnProperty('type')) {
+        is_required = model[key].hasOwnProperty('required') ? " * " : ""
             if(person[key]!== undefined){
                 if(model[key].type === 'Date'){
                     component.push(
                         <Grid item xs={6}>
-                            <TextField   helperText={'Enter ' +  key}
+                            <TextField   helperText={is_required + 'Enter ' +  key}
                                          defaultValue={this.toDate(person[key])}
                                          margin='normal'       
                                          onChange= { (event) => this.handleAttributeValueChanged(path, key, event.target.value) }   
@@ -285,7 +287,7 @@ createFields(model, person, path){
                 else{
                     component.push(
                         <Grid item xs={6}>
-                            <TextField   helperText={'Enter ' +  key}
+                            <TextField   helperText={is_required + 'Enter ' +  key}
                                          defaultValue={person[key]}
                                          margin='normal'       
                                          onChange= { (event) => this.handleAttributeValueChanged(path, key, event.target.value) }   
@@ -297,7 +299,7 @@ createFields(model, person, path){
               else{
                 component.push(
                   <Grid item xs={6}>
-                      <TextField helperText={'Enter ' +  key}
+                      <TextField helperText={is_required + 'Enter ' +  key}
                               margin='normal'         
                               onChange= { () => this.handleAttributeValueChanged(path, key, person[key]) }   
        
@@ -321,9 +323,10 @@ createFields(model, person, path){
       }
       else{
         if(model[key].hasOwnProperty('type')) {
+                is_required = model[key].hasOwnProperty('required') ? " * " : ""
                 component.push(
                       <Grid item xs={6}>
-                          <TextField   helperText={'Enter ' +  key}
+                          <TextField   helperText={is_required + 'Enter ' +  key}
                                        margin='normal'       
                                        onChange= { (event) => this.handleAttributeValueChanged(path, key, event.target.value) }   
                           ></TextField>
