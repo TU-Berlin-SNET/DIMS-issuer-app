@@ -138,7 +138,7 @@ console.log(schema)
                         </Link>
                       </Box>
                       <Typography variant="h5">
-                          Create new credential definiton
+                          create credential definiton
                       </Typography>      
                     </Box>
                 </Grid>

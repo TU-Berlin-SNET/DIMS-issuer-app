@@ -122,7 +122,6 @@ function CredentialRequestsTable(props) {
           </TableHead>
         <TableBody>
               {props.this.state.proofRequests.map((req, index) => {
-                console.log(req)
                 return(
                   <TableRow>
                       <TableCell children={index} />
@@ -158,7 +157,10 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         connection: '',
         model: {},
         modelName: props.location.state.modelName,
-        justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false
+        justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
+        snackbarMessage: "",
+        snackbarOpen: false,
+        snackbarVariant: 'sent'
     }
   }
     else{
@@ -177,7 +179,10 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         model:  {},
         justSentCredentialOffer: false,
         modelName: "",
-        picture: ""
+        picture: "",
+        snackbarMessage: "",
+        snackbarOpen: false,
+        snackbarVariant: 'sent'
     }
     }
   }
@@ -222,8 +227,6 @@ async getModel(event){
     'Authorization': localStorage.getItem("token") 
   }
   await axios.get(mongoDBBaseUrl + "models" , {headers}).then(function (response) {
-    console.log(self.state.modelName)
-
           if (response.status === 200) {
               for(let model_name in response.data){
          
@@ -246,10 +249,8 @@ async getModel(event){
 
 
 initPerson(){
-  console.log(this.state.person)
   let person= {}
   for(let attr in this.state.person){
-    console.log(attr)
     if(attr == 'picture')
       this.setState({picture: this.state.person[attr]})
           if(attr !== 'createdAt' && attr !== 'updatedAt' && attr !== 'did' && attr !== 'meta' && attr!== 'picture'){
@@ -342,19 +343,22 @@ async verifyProof(){
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token") 
    }
-   console.log(self.state.proofId)
    await axios.get(apiBaseUrl + 'proof/' + self.state.proofId , {headers: headers}).then(function (response) {
-      console.log(response);
-      console.log(response.status);
       if (response.status === 200) {
         let proof = response.data
-        console.log(proof)
         if(typeof(proof.isValid) == 'undefined'){
           alert("Verification failed. Please try again!")
         } else {
-          let isValid = proof.isValid ? "is" : "is not"
-          alert("Proof " + isValid + " valid!")
-          if(isValid) self.storeProofDataInDB(response.data.proof.requested_proof.revealed_attrs)
+          let isValid = proof.isValid ? true : false
+          if(isValid){
+            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "Proof is valid"});
+            self.storeProofDataInDB(response.data.proof.requested_proof.revealed_attrs)
+          } 
+          else{
+            self.setState({snackbarVariant: "error", snackbarOpen: true, snackbarMessage: "Proof is not valid"});
+
+          }
+          
           
       }
       }
@@ -496,7 +500,6 @@ async verifyProof(){
     var component = []
     var keys = Object.keys(model)
     for (let key of keys){
-      console.log(model[key])
 
       if(model[key].hasOwnProperty('type')) {
         if(person[key]!== undefined){
@@ -588,9 +591,11 @@ async verifyProof(){
         <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr} parentContext={this}/>
         <div className="grid">
 
-        <Container maxWidth='false' className="tableContainer">
+        <Container maxWidth={false} className="tableContainer">
         <Box> 
-    <Grid container   
+    <Grid 
+         container  
+         item 
          direction="row"
          justify='space-evenly'
          spacing={4}
@@ -621,10 +626,8 @@ async verifyProof(){
               item xs={6}
               justify='center'
               spacing={2}>
-             <Box component={Grid} item container border='solid' spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant='h5'>Person</Typography>
-                </Grid>
+             <Box component={Grid} item container border={0.5} spacing={2}>
+
                 {this.getAttributeValue(this.state.model, this.state.person)}   
               </Box>  
                               

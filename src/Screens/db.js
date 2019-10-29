@@ -32,7 +32,7 @@ import Avatar from '@material-ui/core/Avatar';
 import AddIcon from '@material-ui/icons/Add';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore'
-
+import ConfirmDialog from './../components/confirm'
 import Snackbar from './../components/customizedSnackbar'
 
 
@@ -61,7 +61,11 @@ class DBScreen extends Component {
       snackbarMessage: "",
       snackbarVariant: "sent",
       models: {},
-      modelName: ""
+      modelName: "",
+      confirmDialogOpen: false,
+      confirmDialogTitle: "",
+      confirmDialogMessage: "",
+
     }
   }
   else{
@@ -75,6 +79,9 @@ class DBScreen extends Component {
       snackbarOpen: false,
       snackbarMessage: "",
       snackbarVariant: "sent",
+      confirmDialogOpen: false,
+      confirmDialogTitle: "",
+      confirmDialogMessage: "",
 
     }
   }
@@ -181,13 +188,18 @@ handleNewModel = (modelName) => {
 
  listPersons(){
   numOfEntries = 0 
+  let showAttr
+  if(role !== 'shop')
+    showAttr=['id','photo', 'firstname', 'lastname']
+  else 
+    showAttr =['id','firstname', 'lastname']
+
    let self = this
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token") 
   }
    axios.get(Constants.mongoDBBaseUrl + self.state.modelName, {headers}).then(function (response) {
-     console.log(response)
     if (response.status === 200) {
       let persons = <CUSTOMPAGINATIONACTIONSTABLE 
       onEdit={(event, selected) => self.handleEdit(event, selected)} 
@@ -195,7 +207,7 @@ handleNewModel = (modelName) => {
       
       rowFunctions= {[
      { 
-       rowFunction: function (selected){self.removePerson(selected)},
+       rowFunction: function (selected){self.handleRemovePersonClick(selected)},
       rowFunctionName : 'Delete',
       rowFunctionIcon : <DeleteIcon />
      },
@@ -229,10 +241,7 @@ handleNewModel = (modelName) => {
 
       data={response.data.map(
         (person) => {
-console.log(person)
           numOfEntries =  parseInt(person.id, 10)
-          console.log(numOfEntries)
-
           if(person.hasOwnProperty('picture') && person.picture !== ""){
             let base64Img = person['picture']
             person['photo'] = <Grid container justify="center" alignItems="center">
@@ -246,7 +255,8 @@ console.log(person)
           return(person)
         }
       )} 
-      showAttr={['id','photo', 'firstname', 'lastname']}/>
+     showAttr={showAttr}
+      />
       self.setState({db: persons})
     }
   }).catch(function (error) {
@@ -260,30 +270,37 @@ console.log(person)
   });
 }
 
-async removePerson(selected) {
+handleRemovePersonClick(){
+  let modelName = this.state.modelName
+  this.setState({confirmDialogOpen: true, confirmDialogMessage: "remove " + modelName.slice(0, modelName.length-1) + " from DB?"}, () => this.forceUpdate());
+}
 
-  let self = this
-  let headers = {
-    'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem("token") 
-  }
 
-  await axios.delete(mongoDBBaseUrl + self.state.modelName + "/" + selected.id, {headers}).then(function (response) {
-          if (response.status === 204) {
-            self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed " + self.state.modelName + " successfully"});
-            self.forceUpdate()
-            self.listPersons()
-          }
-  }).catch(function (error) {
-    console.log(error);
-});
+async removePerson(agree) {
+
+  if(agree){
+    let self = this
+    let headers = {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem("token") 
+    }
+
+    await axios.delete(mongoDBBaseUrl + self.state.modelName + "/" + self.state.selected.id, {headers}).then(function (response) {
+            if (response.status === 204) {
+              self.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "removed " + self.state.modelName + " successfully"});
+              self.forceUpdate()
+              self.listPersons()
+            }
+    }).catch(function (error) {
+      console.log(error);
+  });
+}
 
 }
 
 
 openPersonView(selected){
   //the photo field cannot be cloned
-  console.log(selected)
   delete selected['photo']
   this.props.history.push({
     pathname: '/person',
@@ -293,7 +310,6 @@ openPersonView(selected){
 }
 
 editPerson(selected){
-  console.log(selected)
   delete selected['photo']
 
   this.props.history.push({
@@ -334,7 +350,7 @@ sendProofRequest(selected){
 }
 
 handleEdit(event, selected){ //Fuction 
-  this.setState({ selected: selected}); 
+  this.setState({ selected: selected}, () => this.forceUpdate()); 
 } 
 
  handleTabChange(newTab){
@@ -402,6 +418,7 @@ getDB(){
             <Grid item xs={12} >
                 <Container maxWidth={false} className="tableContainer">
                 <Grid container   
+                      item
                       direction="row"
                       justify='space-evenly'
                       spacing={4}
@@ -444,6 +461,17 @@ getDB(){
                   variant={this.state.snackbarVariant} 
                   snackbarOpen={this.state.snackbarOpen} 
                   closeSnackbar={() => this.setState({snackbarOpen: false})} 
+        />
+        <ConfirmDialog open={this.state.confirmDialogOpen}
+                       title={this.state.confirmDialogTitle}
+                       message={this.state.confirmDialogMessage}
+                      
+                       removePerson={(agree) => {this.setState({confirmDialogOpen: false}, 
+                                                  () =>{
+                                                    this.forceUpdate()
+                                                    this.removePerson(agree)
+                                                  } )}
+                       }
         />
             <Footer />
         </Box>

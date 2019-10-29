@@ -10,14 +10,12 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
-import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import MoreAttributes from './moreAttributesDialog.js'
-import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid'
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
@@ -270,7 +268,7 @@ export default function CustomPaginationActionsTable(props) {
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={6}
+                  colSpan={props.showAttr.length+1}
                   count={rows.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

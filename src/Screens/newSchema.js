@@ -77,7 +77,7 @@ function NewSchema(props) {
                               </Link>
                             </Box>
                             <Typography variant="h5">
-                                create new schema
+                                create schema
                             </Typography>      
                             </Box>
                          </Grid>
