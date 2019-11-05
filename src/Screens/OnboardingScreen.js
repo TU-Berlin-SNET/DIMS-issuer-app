@@ -59,7 +59,8 @@ class OnboardingScreen extends Component {
       onboarded:true,
       myDid: props.location.state.person_did,
       sendCredentialOfferCheck: false,
-      role: Utils.getRole()
+      role: Utils.getRole(),
+      sendProofCheck: true
     }
   }
   
@@ -83,13 +84,7 @@ class OnboardingScreen extends Component {
           if(status === true){
             self.setState({person_did: response.data.theirDid})
             self.addDidToPersonInformation()
-            if(self.state.sendCredentialOfferCheck === false){
-            self.props.history.push({
-              pathname: '/db',
-              state : {
-                justOnboarded: true,
-              }
-            })} else {
+            if(self.state.sendCredentialOfferCheck === true){
               this.props.history.push({
                 pathname: '/sendCredOffer',
                 state: { myDid: self.state.myDid, 
@@ -97,7 +92,23 @@ class OnboardingScreen extends Component {
                          justOnboarded: true,
                         modelName: self.props.location.state.modelName}
               })
-          }
+            } 
+            else if (self.state.sendProofCheck === true){    
+              this.props.history.push({
+                pathname: '/proofs',
+                state: { myDid: self.state.myDid, 
+                         person_id: self.state.person_id,
+                         modelName: self.props.location.state.modelName}
+              })
+            }
+            else{
+              self.props.history.push({
+                pathname: '/db',
+                state : {
+                  justOnboarded: true,
+                }
+              })
+            }
           }
         }
       })
@@ -188,6 +199,10 @@ class OnboardingScreen extends Component {
 handleCredentialOfferCheckChange =  event => {
   this.setState({sendCredentialOfferCheck: event.target.checked});
 };
+
+handleSendProofCheckChange = event => {
+  this.setState({sendProofCheck: event.target.checked})
+}
 /*
   Function:handleLogout
   Parameters: event
@@ -216,16 +231,29 @@ handleCredentialOfferCheckChange =  event => {
 
 
 showCheckbox(){
-  if(this.state.role !== 'shop'){
-  return(<Box >
-  send credentials now?
-  <Checkbox  
-  onChange={this.handleCredentialOfferCheckChange}
-  color='primary'
-  checked={this.state.sendCredentialOfferCheck}
-  value="onboardChecked"
-  />
-</Box>)}
+  if(this.state.role === 'shop'){
+    return(
+      <Box >
+        send proof request now?
+        <Checkbox  
+          onChange={this.handleSendProofCheckChange}
+          color='primary'
+          checked={this.state.sendProofCheck}
+          value="sendProofChecked"
+        />
+      </Box>)
+  }
+  else{
+    return(
+      <Box >
+        send credentials now?
+        <Checkbox  
+          onChange={this.handleCredentialOfferCheckChange}
+          color='primary'
+          checked={this.state.sendCredentialOfferCheck}
+          value="onboardChecked"
+        />
+      </Box>)}
 }
 
 handleTabChange(newTab){
@@ -241,8 +269,9 @@ handleTabChange(newTab){
       <div className="App">
       <IssuerBar onTabChange={(newTab) => this.handleTabChange(newTab)} tabNr={this.props.tabNr}/>
       <Grid item xs={12} style={{margin:"auto"}}>
-      <Container maxWidth='false' className="tableContainer">
-        <Grid container   
+      <Container maxWidth={false} className="tableContainer">
+        <Grid container  
+              item 
               direction="row"
               justify='space-evenly'
               spacing={4}

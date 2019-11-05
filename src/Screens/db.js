@@ -34,6 +34,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore'
 import ConfirmDialog from './../components/confirm'
 import Snackbar from './../components/customizedSnackbar'
+import Checkbox from '@material-ui/core/Checkbox'
 
 
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
@@ -65,7 +66,7 @@ class DBScreen extends Component {
       confirmDialogOpen: false,
       confirmDialogTitle: "",
       confirmDialogMessage: "",
-
+      displayRows: [true, false]
     }
   }
   else{
@@ -82,6 +83,7 @@ class DBScreen extends Component {
       confirmDialogOpen: false,
       confirmDialogTitle: "",
       confirmDialogMessage: "",
+      displayRows: [true, false]
 
     }
   }
@@ -90,7 +92,6 @@ class DBScreen extends Component {
   componentDidMount(){
     this.getModels()
     document.title = "DIMS"
-    
     if(this.state.checkIfNewPerson === true){
       this.setState({snackbarVariant: "sent", snackbarOpen: true, snackbarMessage: "added new " + this.state.modelName+ " successfully"});
       this.forceUpdate()
@@ -189,6 +190,7 @@ handleNewModel = (modelName) => {
  listPersons(){
   numOfEntries = 0 
   let showAttr
+
   if(role !== 'shop')
     showAttr=['id','photo', 'firstname', 'lastname']
   else 
@@ -201,6 +203,42 @@ handleNewModel = (modelName) => {
   }
    axios.get(Constants.mongoDBBaseUrl + self.state.modelName, {headers}).then(function (response) {
     if (response.status === 200) {
+
+     let  revealedData = response.data.filter((person) => 
+       person.firstname !== " " && person.lastname !== " "
+     )
+
+     let hiddenData = response.data.filter((person) => 
+        person.firstname === " " || person.lastname === " "
+     )
+
+     let hiddenAndRevealedData = response.data
+     let lastAddedPerson = response.data[response.data.length-1]
+     numOfEntries =  parseInt(lastAddedPerson.id, 10)
+    let data
+
+    let displayRows = self.state.displayRows.toString()
+
+     switch(displayRows){
+       case 'true,true': 
+          data = hiddenAndRevealedData
+          break; 
+        case 'false,true': 
+          data = hiddenData
+          break;
+        case 'true,false': 
+          data = revealedData
+          break;
+        case 'false,false':
+          data = []
+          break;
+        default:
+          console.log(self.state.displayRows)
+          data = revealedData
+          break;
+     }
+
+
       let persons = <CUSTOMPAGINATIONACTIONSTABLE 
       onEdit={(event, selected) => self.handleEdit(event, selected)} 
       onDoubleClick={(selected) => self.openPersonView(selected)}
@@ -239,9 +277,8 @@ handleNewModel = (modelName) => {
       ]}
 
 
-      data={response.data.map(
+      data={data.map(
         (person) => {
-          numOfEntries =  parseInt(person.id, 10)
           if(person.hasOwnProperty('picture') && person.picture !== ""){
             let base64Img = person['picture']
             person['photo'] = <Grid container justify="center" alignItems="center">
@@ -409,6 +446,54 @@ getDB(){
     this.listPersons() 
 }
 
+handleShowHiddenRowsChange(event){
+  let displayRows =this.state.displayRows
+  displayRows[1] = event.target.checked
+  this.setState({displayRows}, () =>
+    this.getDB()
+  )
+}
+
+handleShowRevealedRowsChange(event){
+  let displayRows =this.state.displayRows
+  displayRows[0] = event.target.checked
+  this.setState({displayRows}, () =>
+    this.getDB()
+  )
+}
+
+checkBoxesForFilterOptions(){
+  if(role === 'shop'){
+    return(
+      <Grid item container xs={12}>
+      <Grid item xs={8} />
+      <Grid item xs={2} >
+        show revealed data
+        <Checkbox  
+          style={{color: 'default'}}
+          onChange={(event) => this.handleShowRevealedRowsChange(event)}
+          style={{color:'#ffffff'}}
+          checked={this.state.displayRows[0]}
+          value={this.state.displayRows[0]}
+        />
+      </Grid>
+      <Grid item xs={2} >
+        show hidden data
+        <Checkbox  
+          style={{color: 'default'}}
+          onChange={(event) => this.handleShowHiddenRowsChange(event)}
+          style={{color:'#ffffff'}}
+          checked={this.state.displayRows[1]}
+          value={this.state.displayRows[1]}
+        />
+      </Grid>
+    </Grid>
+    )
+  }
+}
+
+
+
   render() {
     return (
       <MuiThemeProvider>
@@ -449,10 +534,13 @@ getDB(){
                 component={Paper}
                 spacing={8}
                 >
+                  <Grid item xs={12}>
                             {this.state.db}
                   </Grid>
-                  <Grid item xs={12} />
-                  </Grid>
+                </Grid>
+                <Grid item xs={12} />
+                 {this.checkBoxesForFilterOptions()}
+                </Grid>
             
                 </Container>
             </Grid>

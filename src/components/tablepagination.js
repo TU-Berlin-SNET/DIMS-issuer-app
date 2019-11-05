@@ -268,7 +268,7 @@ export default function CustomPaginationActionsTable(props) {
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={props.showAttr.length+1}
+                  colSpan={props.showAttr.length+2}
                   count={rows.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

@@ -22,29 +22,44 @@ const apiBaseUrl = Constants.apiBaseUrl;
 
 function LoginForm(props) {
 
-    return(
-        <Box position='absolute'  left='0' right='0' bottom='50%'>           
-        <Box>
-     <TextField
-         hintText="Enter your Username"
-         floatingLabelText="Username"
-         onChange={(event, newValue) => props.this.setState({ username: newValue })}
-     />
-     </Box>
-     <Box>
-     <TextField
-         type="password"
-         hintText="Enter your Password"
-         floatingLabelText="Password"
-         onChange={(event, newValue) => props.this.setState({ password: newValue })}
-     />
-     </Box>
-     <RadioButtons roleChanged={(role) => {props.this.setRole(role)}} />
-     <RaisedButton label="Submit"  onClick={(event) => props.this.handleLoginClick(event)} />
-     </Box>
-    );
+
+    switch(props.this.state.formStep){
+        case 1: return(
+            <Box position='absolute'  left='0' right='0' bottom='50%'>           
+                <RadioButtons roleChanged={(role) => {props.this.setRole(role)}} />
+                <RaisedButton label="next"  onClick={(event) => props.this.setState({formStep: 2})} />
+             </Box>  
+            )
+            break;
+        case 2 : return(
+            <Box position='absolute'  left='0' right='0' bottom='50%'>           
+                <Box>
+                    <TextField
+                        hintText="Enter your Username"
+                        floatingLabelText="Username"
+                        onChange={(event, newValue) => props.this.setState({ username: newValue })}
+                    />
+                </Box>
+                <Box>
+                    <TextField
+                        type="password"
+                        hintText="Enter your Password"
+                        floatingLabelText="Password"
+                        onChange={(event, newValue) => props.this.setState({ password: newValue })}
+                    />
+                </Box>
+                <Box mt={2}>
+                    <RaisedButton label="Submit"  onClick={(event) => props.this.handleLoginClick(event)} />
+                </Box>
+            </Box>  
+             )
+             break
+            
+    }
   }
   
+
+
 
 
 class Login extends Component {
@@ -56,7 +71,8 @@ class Login extends Component {
             username: '',
             password: '',
             loginComponent:localloginComponent,
-            draweropen: false
+            draweropen: false,
+            formStep: 1
         }
 }
 handleDrawerOpen = () => {
