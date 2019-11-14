@@ -23,10 +23,335 @@ import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Footer from "./../components/footer"
+import { lighten, makeStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+
+import ListItem from '@material-ui/core/ListItem'
+import List from '@material-ui/core/List';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import CircularVerification from "./../components/CircularVerification"
+import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import { amber, green, red } from '@material-ui/core/colors';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import IconButton from '@material-ui/core/IconButton';
+import clsx from 'clsx';
+
 
 
 
 const apiBaseUrl = Constants.apiBaseUrl;
+
+
+const variantIcon = {
+  valid: CheckCircleIcon,
+  invalid: ErrorIcon,
+  pending: InfoIcon,
+  error: ErrorIcon,
+};
+
+const useStylesProofSnackbar = makeStyles(theme => ({
+  valid: {
+    backgroundColor: green[600],
+  },
+  invalid: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  pending: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1),
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+}));
+
+function ProofSnackbarContentWrapper(props) {
+  const classes = useStylesProofSnackbar();
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      className={clsx(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={clsx(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+          <CloseIcon className={classes.icon} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
+  );
+}
+
+ProofSnackbarContentWrapper.propTypes = {
+  className: PropTypes.string,
+  message: PropTypes.string,
+  onClose: PropTypes.func,
+  variant: PropTypes.oneOf(['valid', 'invalid', 'pending','error']).isRequired,
+};
+
+
+
+function ProofDialog(props) {
+
+
+  const classes = useStyles();
+  const { onClose, selectedValue, open } = props;
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [proofState, setProofState] = React.useState("pending")
+  const [verificationMessage, setVerificationMessage] = React.useState("The proof is pending")
+  const [proofVis, setProofVis] = React.useState(null)
+  const [proof, setProof] = React.useState(props.selectedValue)
+  
+   function handleSnackbarOpen() {
+     setSnackbarOpen(true);
+   }
+ 
+   function handleSnackbarClose(event, reason) {
+    setSnackbarOpen(false);
+     if (reason === 'clickaway') {
+       return;
+     }
+   }  
+
+  function handleClose() {
+    setProofVis(null)
+    setProof(null)
+    setProofState("pending")
+    onClose(selectedValue);
+  }
+
+  /* GET /api/proof/:proof_request_id
+
+*/
+async function verifyProof(proofId){
+  var headers = {
+   'Content-Type': 'application/json',
+   'Authorization': localStorage.getItem("token") 
+  }
+  await axios.get(apiBaseUrl + 'proof/' + proofId , {headers: headers}).then(function (response) {
+     console.log(response);
+     console.log(response.status);
+     if (response.status === 200) {
+       let proof = response.data
+       if(typeof(proof.isValid) == 'undefined'){
+        setProofState("error")
+        setVerificationMessage("Verification failed. Please try again!")
+        handleSnackbarOpen()
+       } else {
+         if(proof.status === "pending"){
+          setProofState("pending")
+          setVerificationMessage("The proof is pending")
+          handleSnackbarOpen()
+        } else {
+         let isValid = proof.isValid ? "valid" : "invalid"
+         let isValidM = proof.isValid ? "valid" : "not valid"
+         setVerificationMessage("The proof is " + isValidM)
+         setProofState(isValid)
+         handleSnackbarOpen()
+         //alert("Proof " + isValid + " valid!")
+        }
+     }
+     }
+   }).catch(function (error) {
+    setProofState("error")
+    setVerificationMessage("Verification error. Please try again!")
+    handleSnackbarOpen()
+    console.log(error);
+ })
+ }
+
+  function handleListItemClick(value) {
+    onClose(value);
+  }
+
+  useEffect(() => {
+    //For avoiding setting the proof once the value is set
+      setProof(selectedValue)
+    if(proof === undefined){
+      setProofVis("no proof selected")
+    } if(proof === null){
+      setProofVis("no proof selected")
+    } else if(proof.status === "received"){
+      if(proof.hasOwnProperty("attrs")){
+      setProofVis(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Credential definition: {proof.cred_def_id}
+            </ListItem>
+            <ListItem>
+            Schema: {proof.schema_id}
+            </ListItem>
+            <ListItem>
+            Wallet: {proof.wallet}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+              <List>
+              {proof.attrs.map((attr) => {return(
+                <ListItem>
+                {attr[0].replace("_referent","").replace(/_/g, " ") + ": " + attr[1]}
+                </ListItem>
+              )})}
+              </List>
+            </ListItem>
+            <ListItem>
+           <CircularVerification proofId={proof.id}/>
+            </ListItem>
+          </List>)
+          } else {
+            setProofVis(<List>
+               <ListItem>
+               Sender DID: {proof.did}
+               </ListItem>
+               <ListItem>
+               Status: {proof.status}
+               </ListItem>
+               <ListItem>
+               Credential definition: {proof.proof.identifiers[0].cred_def_id}
+               </ListItem>
+               <ListItem>
+               Schema: {proof.proof.identifiers[0].schema_id}
+               </ListItem>
+               <ListItem>
+               Wallet: {proof.wallet}
+               </ListItem>
+               <ListItem>
+               Created at: {proof.createdAt}
+               </ListItem>
+               <ListItem>
+               Proof ID: {proof.id}
+               </ListItem>
+               <ListItem>
+                 <List>
+                 {Object.keys(proof.proof.requested_proof.revealed_attrs).map((key) => {
+                   let attr = proof.proof.requested_proof.revealed_attrs[key]
+                   return(
+                   <ListItem>
+                   {key.replace("_referent","").replace(/_/g, " ") + ": " + attr["raw"]}
+                   </ListItem>
+                 )})}
+                 </List>
+               </ListItem>
+               <ListItem>
+                  <CircularVerification proofId={proof.id}/>
+               </ListItem>
+             </List>)
+          }
+      } else {
+        setProofVis(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+            <CircularVerification proofId={proof.id}/>
+            </ListItem>
+          </List>)
+      }
+     
+  },[proof,selectedValue,props.selectedValue]);
+
+  return (
+    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
+      <DialogTitle id="simple-dialog-title">Proof Request Details</DialogTitle>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <ProofSnackbarContentWrapper
+          onClose={handleSnackbarClose}
+          variant={proofState}
+          message={verificationMessage}
+        />
+      </Snackbar>
+      <div>
+      {proofVis}
+      </div>
+    </Dialog>
+  );
+}
+
+ProofDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  selectedValue: PropTypes.string.isRequired,
+};
 var tempAttributes = {}
 //var apiBaseUrl = ""REPLACE"";
 //var apiBaseUrl = ""REPLACE"";
@@ -35,7 +360,6 @@ var tempAttributes = {}
 class CredentialScreen extends Component {
 
     constructor(props){
-        console.log(props)
         super(props);
         Utils.checkLogin(this)
        
@@ -72,14 +396,12 @@ personAttributeNamesToLowerCase(){
      attributeLowerCase = attribute.toLowerCase()
      tempPerson[attributeLowerCase]  = this.state.person[attribute]
   })
-  console.log(tempPerson)
 }
 
 getAttributeNames(credReq){
     let attributes= credReq.meta.offer.key_correctness_proof.xr_cap
     attributes= attributes.filter((elem => elem[0] !== "master_secret")) 
     this.loadValueFromDatabase(attributes)
-    console.log(attributes)
 }
 
 
@@ -104,7 +426,6 @@ sendCredentialsClick(){
 async acceptCredentialRequestAndSendCred(){
   let self = this
   var values = {};  // "object literal" syntax
-  console.log(self.state.attributes)
   Object.keys(self.state.attributes).map((attr) => {
 
     
@@ -113,7 +434,6 @@ async acceptCredentialRequestAndSendCred(){
       values[name] = value
   })
 
-  console.log(values)
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': localStorage.getItem("token")
@@ -123,8 +443,6 @@ async acceptCredentialRequestAndSendCred(){
     'values': self.state.attributes
   }
   axios.post(apiBaseUrl + 'credential' ,payload, {headers: headers}).then(function (response) {
-    console.log(response);
-    console.log(response.status);
     if (response.status === 201) {
       self.props.history.push({
         pathname: '/db',
@@ -144,7 +462,6 @@ handleTabChange(newTab){
 
 
 toDate(wrongDateFormat){
-  console.log(wrongDateFormat)
    let year = wrongDateFormat.slice(0,4)
    let month= wrongDateFormat.slice(5,7)
    let day = wrongDateFormat.slice(8,10)
@@ -154,25 +471,52 @@ toDate(wrongDateFormat){
 
 loadValueFromDatabase(attributes){
    tempAttributes = {}
-  console.log(attributes)
 
+  let attribute_name
   
   for(let attr of attributes){
-    if(this.state.person[attr[0]] === undefined){
-        tempAttributes[attr[0]] = 0
+    attribute_name = attr[0]
+    if(attribute_name.includes('0')){
+      let index = attribute_name.indexOf('0')
+      let obj = attribute_name.slice(index+1, attribute_name.length)
+      attribute_name = attribute_name.slice(0, index)
+
+      if(tempAttributes[attribute_name + '0' + obj] === undefined) tempAttributes[attribute_name + '0' + obj]= {}
+
+        tempAttributes[attribute_name + '0' + obj] = this.state.person[obj][attribute_name]
+    }
+    else if(this.state.person[attribute_name] === undefined){
+        tempAttributes[attribute_name] = 0
     }
     else{
-      tempAttributes[attr[0]] = this.state.person[attr[0]]
+      if(attr[0].includes("date"))
+        tempAttributes[attribute_name] = this.toDate(this.state.person[attribute_name])
+      else
+        tempAttributes[attribute_name] = this.state.person[attribute_name]
     }
- console.log(this.state.person[attr])
   }
-  console.log(tempAttributes)
-  this.setState({attributes: tempAttributes}, () => this.forceUpdate() )
-
-
+  this.setState({attributes: tempAttributes}, () => this.forceUpdate())
 
 }
 
+
+createTextfields(key, index){
+
+  return(      
+    <Grid item xs={6} key={index}>
+      <TextField   helperText={'Enter ' +  key}
+                  defaultValue={this.state.attributes[key]}              
+                  fullWidth
+                  onChange={(event) => {
+                  let values = this.state.attributes;
+                  values[key] = event.target.value;                                         
+                  this.setState({ attributes: values})}} 
+                  
+      />
+    </Grid>
+    ); 
+  
+}
 
 render() {
   return(
@@ -217,26 +561,9 @@ render() {
                         >
                         {/*padding*/}
                         <Grid container item xs={12} direction='column' alignContent='center' spacing={2}>
-                            {Object.keys(this.state.attributes).map((key, index) => {
-                              console.log(this.state.attributes[key])
-                              return(
-                        
-                              <Grid item xs={6} key={index}>
-                              <TextField   helperText={'Enter ' +  key}
-                                          defaultValue={this.state.attributes[key]}
-                                         
-                                          fullWidth
-                                          onChange={(event) => {
-                                          let values = this.state.attributes;
-                                          values[key] = event.target.value;
-                                          
-                                          console.log(this.state.attributes)
-                                          this.setState({ attributes: values})}} 
-                                          
-                              />
-                              </Grid>
-                              );     
-                            })}
+                            {Object.keys(this.state.attributes).map((key, index) => 
+                              this.createTextfields(key, index)
+                            )}
                         </Grid>
                     </Grid>
                     <Grid item xs={12} />

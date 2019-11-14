@@ -123,6 +123,7 @@ async sendCredentialOffer(){
    'recipientDid': self.state.recipientDid,
    'credDefId': self.state.credDef.value
 }
+console.log(payload)
  await axios.post(apiBaseUrl + 'credentialoffer' ,payload, {headers}).then(function (response) {
   if (response.status === 201) {
     if(self.state.sendCredentialCheck === true){
@@ -221,13 +222,14 @@ getTheirDid(){
 
 currentAttribute(attr, index){
   return( 
-    <Grid item  xs={3}>
-        <Chip
-        style={{minWidth:'120px'}}
-        label={attr.replace("_referent","").replace(/_/g, " ")}
-        variant="outlined"
-        className="chip"
-        />
+
+      <Grid item  xs={3}>
+          <Chip
+          style={{minWidth:'120px'}}
+          label={attr.replace("_referent","").replace(/_/g, " ")}
+          variant="outlined"
+          className="chip"
+          />
     </Grid>
   )
 }
@@ -300,7 +302,7 @@ render() {
                       <Divider /> 
                    
                   </Grid>
-                    <Grid container spacing={4} justify='space-evenly' item xs={4}>
+                    <Grid container spacing={4} justify='center' item xs={6}>
                       
                     {this.state.credDef.attributes.map((attr, index) => {
                         return( this.currentAttribute(attr, index) )

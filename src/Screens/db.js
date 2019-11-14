@@ -348,14 +348,13 @@ openPersonView(selected){
 
 editPerson(selected){
   delete selected['photo']
-
+console.log(selected)
   this.props.history.push({
     pathname: '/newPerson',
     state: {            
       person: selected,
       modelName : this.state.modelName,
       updatePerson: true,
-      picture: selected.picture
     }
   })
 }

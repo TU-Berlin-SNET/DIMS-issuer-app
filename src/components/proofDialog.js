@@ -19,7 +19,7 @@ class ConfrimDialog extends Component {
     }
 
  handleClose(agree) {
-    this.setState({open: false}, () =>     this.props.removePerson(agree)
+    this.setState({open: false}, () =>     this.props.closeProofView()
     );
   }
   
@@ -42,11 +42,8 @@ class ConfrimDialog extends Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.handleClose(false)} style={{color:'rgb(200, 0 ,0)'}}>
-              Disagree
-            </Button>
             <Button onClick={() => this.handleClose(true)} style={{color: 'rgb(0, 200 ,0)'}} autoFocus>
-              Agree
+              close
             </Button>
           </DialogActions>
         </Dialog>

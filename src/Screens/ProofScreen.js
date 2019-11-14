@@ -61,12 +61,13 @@ class ProofScreen extends Component {
         ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"LMttqGZBmGcE4RcJAPZsrd:3:CL:153:naturalPerson"])
         
         let proofOfIncome2 = [
-          ["bank"], ["incomemonth1"], ["incomemonth2"], ["incomemonth3"],
-           ["balancemonth1"], ["balancemonth2"], ["balancemonth3"]
-        ].map((elem) => [elem[0].replace(/\s/g, "_")]).map((elem) => [elem[0],"X8vHHB47bYsQLVFGDdJxSF:3:CL:168:income"])
+          ["bank"], ["income_month1"], ["income_month2"], ["income_month3"],
+           ["balance_month1"], ["balance_month2"], ["balance_month3"]
+        ].map((elem) => [elem[0],"X8vHHB47bYsQLVFGDdJxSF:3:CL:172:income2"])
 
 let proofOfIncome = proofOfIncome1.concat(proofOfIncome2)
 
+console.log(proofOfIncome)
 
         let IDCard = [["Issuing municipality"], ["Last name"], 
         ["Given name"], ["Place of birth"], ["Date of birth"] ,["Sex"]
@@ -247,21 +248,6 @@ getTheirDid(){
 }
 
 
-/*currentAttribute(attr, index){
-  return(
-    <Grid item xs={3}>
-                  <Chip
-        label={attr[0].replace("_referent","").replace(/_/g, " ")}
-        onDelete={() => { 
-          var requested_attributes = this.state.requested_attributes;
-          requested_attributes.splice(index,1);
-          this.setState({ requested_attributes: requested_attributes})}}
-        variant="outlined"
-        className="chip"
-        />
-</Grid> )
-}
-*/
 
 
 mapRequestedAttributes(requested_attributes){

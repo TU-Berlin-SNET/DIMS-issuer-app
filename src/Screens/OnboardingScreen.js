@@ -60,7 +60,7 @@ class OnboardingScreen extends Component {
       myDid: props.location.state.person_did,
       sendCredentialOfferCheck: false,
       role: Utils.getRole(),
-      sendProofCheck: true
+      sendProofCheck: false
     }
   }
   
@@ -301,11 +301,11 @@ handleTabChange(newTab){
           <Grid item xs={12}>
             <RenderQR isOnboarded={this.state.onboarded} connectionMessage={this.state.connection_message}/> 
           </Grid>
-          <Grid item xs={2} />
-          <Grid item xs={8}>
+          <Grid item xs={3} />
+          <Grid item xs={6}>
             <Typography children={'Scan the QR Code wih your mobile app'} /> 
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             {this.showCheckbox()}
           </Grid>
           </Grid>

@@ -1,18 +1,9 @@
 import React, { Component, isValidElement} from 'react';
-/*
-Screen:LoginScreen
-Loginscreen is the main screen which the user is shown on first visit to page and after
-hitting logout
-*/
-/*
-Module:Material-UI
-Material-UI is used for designing ui of the app
-*/
+
 
 import './../CSS/App.css';
 
 import {withRouter, Link} from "react-router-dom";
-import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import IssuerBar from "./../components/IssuerBar";
@@ -33,6 +24,12 @@ import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import Avatar from '@material-ui/core/Avatar';
 import Snackbar from './../components/customizedSnackbar'
 import Button from '@material-ui/core/Button'
+import ProofDialog from './../components/proofDialog'
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import CircularVerification from "./../components/CircularVerification"
+
 
 const apiBaseUrl = Constants.apiBaseUrl;
 const mongoDBBaseUrl = Constants.mongoDBBaseUrl;
@@ -116,7 +113,7 @@ function CredentialRequestsTable(props) {
             <TableRow>
               <TableCell children="pos." />
               <TableCell children="status" />
-              <TableCell children="{...}" />
+              <TableCell children="details" />
               <TableCell children="verify" />
             </TableRow>
           </TableHead>
@@ -126,7 +123,11 @@ function CredentialRequestsTable(props) {
                   <TableRow>
                       <TableCell children={index} />
                       <TableCell children={req.status} />
-                      <TableCell children={<MoreAttributes row={req} icon={<MoreHoriz/>} iconText=''/>} />
+                      <TableCell >
+                        <Button variant="outlined" color="primary" onClick={() => props.this.handleShowProofDetailsClick(req)}>
+                        <VisibilityIcon/>
+                        </Button>
+                      </TableCell>
                       <TableCell children={<Button onClick={(event) => props.this.verifyProofIdClick(event, req.id)}><AcceptIcon /></Button>} />
                   </TableRow>
                 )} )}
@@ -160,7 +161,10 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         justSentCredentialOffer: props.location.state.hasOwnProperty("justSentCredentialOffer") ? props.location.state.justSentCredentialOffer : false,
         snackbarMessage: "",
         snackbarOpen: false,
-        snackbarVariant: 'sent'
+        snackbarVariant: 'sent',
+        proofDialogOpen: false,
+        proofDialogTitle: "",
+        proofDialogMessage: "",
     }
   }
     else{
@@ -182,7 +186,10 @@ if( props.location.hasOwnProperty("state") && props.location.state !== undefined
         picture: "",
         snackbarMessage: "",
         snackbarOpen: false,
-        snackbarVariant: 'sent'
+        snackbarVariant: 'sent',
+        proofDialogOpen: false,
+        proofDialogTitle: "",
+        proofDialogMessage: "",
     }
     }
   }
@@ -567,7 +574,6 @@ async verifyProof(){
 } 
 
   toDate(wrongDateFormat){
-   console.log(wrongDateFormat)
     let year = wrongDateFormat.slice(0,4)
     let month= wrongDateFormat.slice(5,7)
     let day = wrongDateFormat.slice(8,10)
@@ -575,7 +581,110 @@ async verifyProof(){
             )
    }
 
+   handleShowProofDetailsClick(proof){
+    let modelName = this.state.modelName
+    this.setState({proofDialogOpen: true, proofDialogTitle:'proof details' ,proofDialogMessage: this.proofDialogMessage(proof) }, this.forceUpdate());
+  }
 
+
+
+  proofDialogMessage(proof){
+    if(proof === undefined){
+      return("no proof selected")
+    } if(proof === null){
+      return("no proof selected")
+    } else if(proof.status === "received"){
+      if(proof.hasOwnProperty("attrs")){
+      return(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Credential definition: {proof.cred_def_id}
+            </ListItem>
+            <ListItem>
+            Schema: {proof.schema_id}
+            </ListItem>
+            <ListItem>
+            Wallet: {proof.wallet}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+              <List>
+              {proof.attrs.map((attr) => {return(
+                <ListItem>
+                {attr[0].replace("_referent","").replace(/_/g, " ") + ": " + attr[1]}
+                </ListItem>
+              )})}
+              </List>
+            </ListItem>
+
+          </List>)
+          } else {
+            return(<List>
+               <ListItem>
+               Sender DID: {proof.did}
+               </ListItem>
+               <ListItem>
+               Status: {proof.status}
+               </ListItem>
+               <ListItem>
+               Credential definition: {proof.proof.identifiers[0].cred_def_id}
+               </ListItem>
+               <ListItem>
+               Schema: {proof.proof.identifiers[0].schema_id}
+               </ListItem>
+               <ListItem>
+               Wallet: {proof.wallet}
+               </ListItem>
+               <ListItem>
+               Created at: {proof.createdAt}
+               </ListItem>
+               <ListItem>
+               Proof ID: {proof.id}
+               </ListItem>
+               <ListItem>
+                 <List>
+                 {Object.keys(proof.proof.requested_proof.revealed_attrs).map((key) => {
+                   let attr = proof.proof.requested_proof.revealed_attrs[key]
+                   return(
+                   <ListItem>
+                   {key.replace("_referent","").replace(/_/g, " ") + ": " + attr["raw"]}
+                   </ListItem>
+                 )})}
+                 </List>
+               </ListItem>
+
+             </List>)
+          }
+      } else {
+        return(<List>
+            <ListItem>
+            Sender DID: {proof.did}
+            </ListItem>
+            <ListItem>
+            Status: {proof.status}
+            </ListItem>
+            <ListItem>
+            Created at: {proof.createdAt}
+            </ListItem>
+            <ListItem>
+            Proof ID: {proof.id}
+            </ListItem>
+            <ListItem>
+            <CircularVerification proofId={proof.id}/>
+            </ListItem>
+          </List>)
+      }
+  }
   render() {
 
     let pictureAvatar
@@ -690,6 +799,17 @@ async verifyProof(){
                   closeSnackbar={() => this.setState({snackbarOpen: false})} 
         />
     </div>
+
+    <ProofDialog open={this.state.proofDialogOpen}
+                       title={this.state.proofDialogTitle}
+                       message={this.state.proofDialogMessage}
+                      
+                       closeProofView={(agree) => {this.setState({proofDialogOpen: false}, 
+                                                  () =>{
+                                                    this.forceUpdate()
+                                                } )}
+                       }
+        />
   </MuiThemeProvider> 
     );
   }
